@@ -1,0 +1,14 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY config.py .
+COPY game/ game/
+COPY server_ws/ server_ws/
+
+EXPOSE 8765
+
+CMD ["python", "-m", "server_ws.game_server"]

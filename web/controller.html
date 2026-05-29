@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+
+  <!-- Adaptation correcte à l'écran du téléphone. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <title>Phone Controller</title>
+
+  <style>
+    /* ============================================================
+       Interface du contrôleur mobile
+       ============================================================
+       Cette page est ouverte sur le téléphone.
+       Elle affiche les boutons de commande et les valeurs envoyées
+       au jeu par WebSocket.
+       ============================================================ */
+
+    /* Couleurs principales de l'interface. */
+    :root {
+      --panel: #1b1f27;
+      --panel2: #252b36;
+      --text: #f2f2f2;
+      --muted: #aab2c0;
+      --accent: #4da3ff;
+      --danger: #ff5c5c;
+      --ok: #47d17e;
+      --throttle1: #58dd89;
+      --throttle2: #2fb866;
+      --nitro1: #ff8a3d;
+      --nitro2: #ff5a28;
+    }
+
+    /* Réglages généraux pour une utilisation tactile confortable. */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Fond général de la page. */
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #0f1116, #161b23);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 14px;
+    }
+
+    /* Conteneur principal centré. */
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Bloc visuel utilisé pour séparer les sections. */
+    .card {
+      background: rgba(27, 31, 39, 0.96);
+      border: 1px solid #2e3542;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    /* Titres et textes simples. */
+    h1,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      margin-bottom: 8px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Ligne flexible pour afficher plusieurs éléments côte à côte. */
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Petite étiquette d'information. */
+    .pill {
+      padding: 10px 14px;
+      background: var(--panel2);
+      border-radius: 12px;
+      font-size: 0.95rem;
+    }
+
+    /* Couleurs des états de connexion. */
+    .status-ok {
+      color: var(--ok);
+    }
+
+    .status-bad {
+      color: var(--danger);
+    }
+
+    /* Style commun de tous les boutons. */
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 16px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      width: 100%;
+    }
+
+    /* Bouton principal. */
+    button.primary {
+      background: var(--accent);
+    }
+
+    /* Bouton secondaire. */
+    button.secondary {
+      background: #343c4b;
+    }
+
+    /* Bouton activé. */
+    button.toggle-on {
+      background: #2f7d52;
+    }
+
+    /* Bouton désactivé. */
+    button.toggle-off {
+      background: #6f3b3b;
+    }
+
+    /* Bouton d'accélération, volontairement plus grand. */
+    button.throttle {
+      background: linear-gradient(180deg, var(--throttle1), var(--throttle2));
+      min-height: 96px;
+      font-size: 1.22rem;
+    }
+
+    /* Bouton de nitro. */
+    button.nitro {
+      background: linear-gradient(180deg, var(--nitro1), var(--nitro2));
+      min-height: 82px;
+      font-size: 1.08rem;
+    }
+
+    /* Grille à deux colonnes. */
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Grille à trois colonnes. */
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .big {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    /* Barre de progression utilisée pour direction, accélération et volume. */
+    .meter {
+      height: 18px;
+      background: #2d3440;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    /* Remplissage interne d'une barre. */
+    .fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+
+    .fill.steer {
+      background: linear-gradient(90deg, #8c7cff, #53b7ff);
+    }
+
+    .fill.throttle {
+      background: linear-gradient(90deg, var(--throttle1), var(--throttle2));
+    }
+
+    .fill.volume {
+      background: linear-gradient(90deg, #ffe082, #ffb300);
+    }
+
+    /* Texte d'aide. */
+    .small {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.35;
+    }
+
+    /* Cache un élément. */
+    .hidden {
+      display: none;
+    }
+
+    /* Slider de volume. */
+    input[type="range"] {
+      width: 100%;
+      margin-top: 10px;
+      accent-color: #ffb300;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Contenu principal du contrôleur mobile. -->
+  <div class="wrap">
+
+    <!-- Titre et joueur contrôlé. -->
+    <div class="card">
+      <h1>Contrôleur iPhone</h1>
+      <p class="muted">Joueur __PLAYER_ID__ — contrôle mobile</p>
+    </div>
+
+    <!-- État du WebSocket et des capteurs. -->
+    <div class="card">
+      <div class="row">
+        <div class="pill">
+          WebSocket:
+          <span id="wsStatus" class="status-bad">déconnecté</span>
+        </div>
+
+        <div class="pill">
+          Capteurs:
+          <span id="sensorStatus" class="status-bad">désactivés</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activation des capteurs du téléphone. -->
+    <div class="card">
+      <button id="enableMotionBtn" class="primary">Activer les capteurs</button>
+      <div class="small">
+        Tiens le téléphone en paysage, puis appuie sur <strong>Recentrer</strong>.
+      </div>
+    </div>
+
+    <!-- Boutons principaux : pause, son et recentrage. -->
+    <div class="card">
+      <div class="grid3">
+        <button id="pauseBtn" class="secondary">Pause</button>
+        <button id="muteBtn" class="toggle-off">Muet: NON</button>
+        <button id="recenterBtn" class="secondary">Recentrer</button>
+      </div>
+    </div>
+
+    <!-- Réglage du volume, affiché quand le jeu est en pause. -->
+    <div id="audioPanel" class="card hidden">
+      <div class="big">Son</div>
+
+      <div>
+        Volume:
+        <span id="volumeValue">100%</span>
+      </div>
+
+      <div class="meter">
+        <div id="volumeBar" class="fill volume"></div>
+      </div>
+
+      <input id="volumeSlider" type="range" min="0" max="100" value="100" />
+
+      <div class="small">
+        Le réglage du son apparaît quand tu mets le jeu en pause.
+      </div>
+    </div>
+
+    <!-- Réglages du capteur utilisé pour tourner. -->
+    <div class="card">
+      <div class="grid2">
+        <button id="axisBtn" class="toggle-off">Axe: GAMMA</button>
+        <button id="invertBtn" class="toggle-on">Direction inversée: OUI</button>
+      </div>
+
+      <div class="small">
+        Si le comportement est faux, change l’axe ou l’inversion ici sans toucher au code.
+      </div>
+    </div>
+
+    <!-- Bouton d'accélération maintenu. -->
+    <div class="card center">
+      <div class="big">Accélération</div>
+      <button id="throttleBtn" class="throttle">MAINTENIR</button>
+    </div>
+
+    <!-- Bouton de nitro maintenu. -->
+    <div class="card center">
+      <div class="big">Nitro</div>
+      <button id="nitroBtn" class="nitro">MAINTENIR</button>
+    </div>
+
+    <!-- Affichage de la valeur de direction envoyée au jeu. -->
+    <div class="card">
+      <div>
+        Direction:
+        <span id="steerValue">0.00</span>
+      </div>
+
+      <div class="meter">
+        <div id="steerBar" class="fill steer"></div>
+      </div>
+    </div>
+
+    <!-- Affichage de la valeur d'accélération envoyée au jeu. -->
+    <div class="card">
+      <div>
+        Accélération:
+        <span id="throttleValue">0.00</span>
+      </div>
+
+      <div class="meter">
+        <div id="throttleBar" class="fill throttle"></div>
+      </div>
+    </div>
+
+    <!-- Affichage du signal capteur relatif après recentrage. -->
+    <div class="card">
+      <div>
+        Signal relatif:
+        <span id="axisDbg">--</span>
+      </div>
+
+      <div class="small">
+        PC graph: rouge = brut, bleu = filtré, vert = sortie finale.
+      </div>
+    </div>
+  </div>
+
+  <!-- Variables remplacées par le serveur Python avant l'envoi au téléphone. -->
+  <script>
+    window.PLAYER_ID = "__PLAYER_ID__";
+    window.STEER_ASSIST = "__STEER_ASSIST__";
+  </script>
+
+  <!-- Script principal du contrôleur mobile. -->
+  <script src="/static/controller.js"></script>
+</body>
+</html>

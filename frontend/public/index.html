@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Car Game - Multiplayer</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Lobby screen -->
+  <div id="lobby-screen" class="screen active">
+    <div class="lobby-container">
+      <h1>🏎️ Car Race</h1>
+      <div class="lobby-card">
+        <label for="player-name">Your Name</label>
+        <input type="text" id="player-name" maxlength="20" placeholder="Enter name..." value="Player" />
+      </div>
+      <div class="lobby-card">
+        <label for="room-code">Room Code</label>
+        <input type="text" id="room-code" maxlength="10" placeholder="Leave empty for new room" />
+      </div>
+      <div class="lobby-card settings-grid">
+        <div>
+          <label for="track-select">Track</label>
+          <select id="track-select">
+            <option value="track_1">Circuit 1</option>
+            <option value="track_2">Circuit 2</option>
+          </select>
+        </div>
+        <div>
+          <label for="laps-select">Laps</label>
+          <select id="laps-select">
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+        <div>
+          <label for="bots-select">Bots</label>
+          <select id="bots-select">
+            <option value="0">0</option>
+            <option value="2" selected>2</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <div>
+          <label for="difficulty-select">Difficulty</label>
+          <select id="difficulty-select">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+      </div>
+      <div id="players-list" class="lobby-card">
+        <h3>Players in Room</h3>
+        <ul id="player-list-ul"></ul>
+      </div>
+      <button id="join-btn" class="btn primary">Join Game</button>
+      <button id="start-btn" class="btn success hidden">Start Race</button>
+      <div id="lobby-status" class="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- Game screen -->
+  <div id="game-screen" class="screen">
+    <canvas id="game-canvas"></canvas>
+    <!-- HUD overlay -->
+    <div id="hud">
+      <div id="hud-position" class="hud-item">P1</div>
+      <div id="hud-lap" class="hud-item">Lap 1/5</div>
+      <div id="hud-speed" class="hud-item">0 km/h</div>
+      <div id="hud-nitro" class="hud-bar">
+        <div id="hud-nitro-fill" class="bar-fill nitro-fill"></div>
+      </div>
+      <div id="hud-health" class="hud-bar">
+        <div id="hud-health-fill" class="bar-fill health-fill"></div>
+      </div>
+    </div>
+    <!-- Countdown overlay -->
+    <div id="countdown-overlay" class="hidden">
+      <span id="countdown-text">3</span>
+    </div>
+    <!-- Results overlay -->
+    <div id="results-overlay" class="hidden">
+      <h2>Race Finished!</h2>
+      <ol id="results-list"></ol>
+      <button id="back-to-lobby-btn" class="btn primary">Back to Lobby</button>
+    </div>
+  </div>
+
+  <!-- Mobile controls (touch) -->
+  <div id="mobile-controls" class="hidden">
+    <button id="touch-throttle" class="touch-btn throttle-btn">GAS</button>
+    <button id="touch-brake" class="touch-btn brake-btn">BRAKE</button>
+    <button id="touch-nitro" class="touch-btn nitro-btn">N₂O</button>
+  </div>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>
