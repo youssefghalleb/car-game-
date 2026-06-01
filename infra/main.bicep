@@ -63,6 +63,10 @@ resource gameServer 'Microsoft.App/containerApps@2023-05-01' = {
         external: false
         targetPort: 8765
         transport: 'http'
+        // Sticky sessions ensure WebSocket upgrade and frames hit the same replica
+        stickySessions: {
+          affinity: 'sticky'
+        }
       }
       registries: [
         {
@@ -118,6 +122,11 @@ resource frontend 'Microsoft.App/containerApps@2023-05-01' = {
         external: true
         targetPort: 3000
         transport: 'http'
+        // Sticky sessions required for WebSocket - ensures upgrade request
+        // and subsequent frames are routed to the same frontend replica
+        stickySessions: {
+          affinity: 'sticky'
+        }
       }
       registries: [
         {

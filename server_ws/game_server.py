@@ -35,7 +35,10 @@ def get_or_create_room(room_id: str) -> Room:
 async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
     """Handle a player WebSocket connection."""
     room_id = request.match_info.get("room_id", "default")
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(
+        heartbeat=30.0,  # Send ping every 30s to keep connection alive on ACA
+        autoping=True,
+    )
     await ws.prepare(request)
 
     room = get_or_create_room(room_id)

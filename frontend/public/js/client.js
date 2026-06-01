@@ -7,6 +7,11 @@ export class GameClient {
     this.ws = null;
     this.connected = false;
     this._listeners = {};
+    this._roomId = null;
+    this._playerName = null;
+    this._reconnectAttempts = 0;
+    this._maxReconnectAttempts = 5;
+    this._reconnecting = false;
   }
 
   on(event, callback) {
@@ -19,6 +24,7 @@ export class GameClient {
   }
 
   connect(roomId) {
+    this._roomId = roomId;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const url = `${protocol}//${window.location.host}/ws/${roomId}`;
     console.log('[WS] Connecting to:', url);
@@ -28,7 +34,13 @@ export class GameClient {
     this.ws.onopen = () => {
       console.log('[WS] Connected');
       this.connected = true;
+      this._reconnectAttempts = 0;
       this._emit('connected');
+      // Re-join room after reconnect
+      if (this._reconnecting && this._playerName) {
+        this.join(this._playerName);
+        this._reconnecting = false;
+      }
     };
 
     this.ws.onmessage = (event) => {
@@ -50,13 +62,29 @@ export class GameClient {
     this.ws.onclose = (event) => {
       console.log('[WS] Disconnected, code:', event.code, 'reason:', event.reason);
       this.connected = false;
-      this._emit('disconnected');
+      // Error 1006 = abnormal closure — attempt reconnect
+      if (event.code === 1006 && this._reconnectAttempts < this._maxReconnectAttempts) {
+        this._attemptReconnect();
+      } else {
+        this._emit('disconnected');
+      }
     };
 
     this.ws.onerror = (event) => {
       console.error('[WS] Error:', event);
-      this._emit('error', 'Connection failed');
     };
+  }
+
+  _attemptReconnect() {
+    this._reconnectAttempts++;
+    this._reconnecting = true;
+    const delay = Math.min(1000 * Math.pow(2, this._reconnectAttempts - 1), 10000);
+    console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this._reconnectAttempts}/${this._maxReconnectAttempts})`);
+    setTimeout(() => {
+      if (!this.connected) {
+        this.connect(this._roomId);
+      }
+    }, delay);
   }
 
   disconnect() {
@@ -77,6 +105,7 @@ export class GameClient {
   }
 
   join(name) {
+    this._playerName = name;
     this.send({ action: 'join', name });
   }
 
