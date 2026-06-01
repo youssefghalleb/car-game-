@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  gameserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.gameserver
+    ports:
+      - "8765:8765"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - GAME_SERVER_URL=http://gameserver:8765
+      - PORT=3000
+    depends_on:
+      - gameserver
+    restart: unless-stopped

@@ -1,7 +1,5 @@
 import math
 
-import pygame
-
 
 # ============================================================
 # Gestion des circuits
@@ -14,7 +12,6 @@ import pygame
 # - les zones hors piste
 # - les respawns après pénalité
 # - le passage de la ligne départ/arrivée
-# - le dessin du circuit
 # ============================================================
 
 
@@ -101,14 +98,8 @@ class Track:
             2: (p2x, p2y, angle),
         }
 
-        # Surface invisible utilisée pour détecter si une voiture est sur la route.
-        self.road_mask_surface = pygame.Surface(
-            (self.world_width, self.world_height),
-            pygame.SRCALPHA,
-        )
-
-        self.road_mask = None
-        self._build_road_mask()
+        # Pre-compute squared road half-width for fast collision checks.
+        self._road_hw_sq = self.road_half_width ** 2
 
     def _build_track_1_points(self):
         """
@@ -291,48 +282,44 @@ class Track:
         """
         return self._start_basis()
 
-    def _build_road_mask(self):
+    def _point_to_segment_dist_sq(self, px, py, ax, ay, bx, by):
         """
-        Construit le masque invisible de la route.
-
-        Le masque permet de savoir rapidement si une voiture
-        est sur la piste ou hors piste.
+        Calcule le carré de la distance d'un point à un segment.
         """
+        abx = bx - ax
+        aby = by - ay
+        ab_len_sq = abx * abx + aby * aby
 
-        self.road_mask_surface.fill((0, 0, 0, 0))
+        if ab_len_sq == 0:
+            return (px - ax) ** 2 + (py - ay) ** 2
 
-        # Trace la route principale.
-        pygame.draw.lines(
-            self.road_mask_surface,
-            (255, 255, 255, 255),
-            True,
-            self.centerline,
-            self.road_half_width * 2,
-        )
+        t = ((px - ax) * abx + (py - ay) * aby) / ab_len_sq
+        t = max(0.0, min(1.0, t))
 
-        # Ajoute des cercles pour remplir les virages et jonctions.
-        for x, y in self.centerline:
-            pygame.draw.circle(
-                self.road_mask_surface,
-                (255, 255, 255, 255),
-                (int(x), int(y)),
-                self.road_half_width,
-            )
+        proj_x = ax + t * abx
+        proj_y = ay + t * aby
 
-        self.road_mask = pygame.mask.from_surface(self.road_mask_surface)
+        return (px - proj_x) ** 2 + (py - proj_y) ** 2
 
     def is_on_road(self, x: float, y: float) -> bool:
         """
         Vérifie si un point est sur la route.
+
+        Utilise la distance au segment de ligne centrale le plus proche.
         """
 
-        xi, yi = int(x), int(y)
-
-        # En dehors du monde = hors piste.
-        if xi < 0 or yi < 0 or xi >= self.world_width or yi >= self.world_height:
+        if x < 0 or y < 0 or x >= self.world_width or y >= self.world_height:
             return False
 
-        return self.road_mask.get_at((xi, yi)) == 1
+        n = len(self.centerline)
+        for i in range(n):
+            ax, ay = self.centerline[i]
+            bx, by = self.centerline[(i + 1) % n]
+
+            if self._point_to_segment_dist_sq(x, y, ax, ay, bx, by) <= self._road_hw_sq:
+                return True
+
+        return False
 
     def is_off_track(self, x: float, y: float) -> bool:
         """
@@ -540,108 +527,16 @@ class Track:
             and ccw(p1, p2, q1) != ccw(p1, p2, q2)
         )
 
-    def draw_world(self, surface: pygame.Surface):
+    def get_drawing_data(self):
         """
-        Dessine tout le circuit sur une surface Pygame.
-
-        Cette méthode dessine :
-        - l'herbe
-        - les motifs de fond
-        - les bordures de route
-        - la route
-        - la ligne de départ
+        Retourne les données nécessaires pour dessiner le circuit côté client.
         """
-
-        # Fond herbe.
-        surface.fill((45, 90, 48))
-
-        # Motifs verticaux sur l'herbe.
-        for x in range(0, self.world_width, 180):
-            pygame.draw.rect(
-                surface,
-                (41, 82, 44),
-                (x, 0, 90, self.world_height),
-            )
-
-        # Motifs horizontaux sur l'herbe.
-        for y in range(0, self.world_height, 220):
-            pygame.draw.line(
-                surface,
-                (36, 74, 39),
-                (0, y),
-                (self.world_width, y),
-                1,
-            )
-
-        # Bordure extérieure claire.
-        pygame.draw.lines(
-            surface,
-            (210, 210, 210),
-            True,
-            self.centerline,
-            self.road_half_width * 2 + 10,
-        )
-
-        for x, y in self.centerline:
-            pygame.draw.circle(
-                surface,
-                (210, 210, 210),
-                (int(x), int(y)),
-                self.road_half_width + 5,
-            )
-
-        # Route grise.
-        pygame.draw.lines(
-            surface,
-            (72, 74, 78),
-            True,
-            self.centerline,
-            self.road_half_width * 2,
-        )
-
-        for x, y in self.centerline:
-            pygame.draw.circle(
-                surface,
-                (72, 74, 78),
-                (int(x), int(y)),
-                self.road_half_width,
-            )
-
-        # Ligne départ/arrivée.
-        self._draw_start_line(surface)
-
-    def _draw_start_line(self, surface: pygame.Surface):
-        """
-        Dessine la ligne départ/arrivée en damier.
-        """
-
-        line_center = self.start_pos
-        tx, ty, nx, ny = self._start_basis()
-
-        # Dimensions différentes selon le circuit.
-        if self.layout_name == "track_2":
-            half_len = 128
-            thickness = 32
-            tile = 20
-        else:
-            half_len = 58
-            thickness = 20
-            tile = 14
-
-        start_x = line_center[0] - nx * half_len
-        start_y = line_center[1] - ny * half_len
-
-        # Construction du damier.
-        for i in range(int((half_len * 2) // tile)):
-            for j in range(2):
-                color = (255, 255, 255) if (i + j) % 2 == 0 else (20, 20, 20)
-
-                x = start_x + nx * tile * i
-                y = start_y + ny * tile * i
-
-                p1 = (x, y)
-                p2 = (x + nx * tile, y + ny * tile)
-                p3 = (p2[0] + tx * thickness, p2[1] + ty * thickness)
-                p4 = (p1[0] + tx * thickness, p1[1] + ty * thickness)
-
-                pygame.draw.polygon(surface, color, [p1, p2, p3, p4])
+        return {
+            "centerline": self.centerline,
+            "road_half_width": self.road_half_width,
+            "world_width": self.world_width,
+            "world_height": self.world_height,
+            "start_pos": self.start_pos,
+            "start_basis": self._start_basis(),
+            "layout_name": self.layout_name,
+        }
