@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import math
 import os
 import time
 import json
@@ -25,6 +26,8 @@ PLAYER_COLORS = [
 ]
 
 MAX_PLAYERS = 6
+COUNTDOWN_SECONDS = 3.0
+GO_HOLD_SECONDS = 0.65
 DEBUG_CONTROLLER = os.environ.get("DEBUG_CONTROLLER", "1") != "0"
 
 
@@ -268,7 +271,7 @@ class Room:
         if blockers:
             return False, blockers
         self.state = "countdown"
-        self._countdown = 4.0
+        self._countdown = COUNTDOWN_SECONDS
         try:
             self._create_race()
         except Exception as e:
@@ -310,7 +313,7 @@ class Room:
     def restart_race(self):
         if self.players:
             self.state = "countdown"
-            self._countdown = 4.0
+            self._countdown = COUNTDOWN_SECONDS
             self._create_race()
 
     def reset_race(self):
@@ -325,7 +328,7 @@ class Room:
         """Avance d'un pas de simulation."""
         if self.state == "countdown":
             self._countdown -= dt
-            if self._countdown <= 0:
+            if self._countdown <= -GO_HOLD_SECONDS:
                 self.state = "racing"
 
         elif self.state == "racing" and self.race is not None:
@@ -372,7 +375,7 @@ class Room:
             snapshot["settings"] = self.settings
 
         if self.state == "countdown":
-            snapshot["countdown"] = max(0, int(self._countdown))
+            snapshot["countdown"] = 0 if self._countdown <= 0 else max(1, math.ceil(self._countdown))
 
         if self.race is not None:
             cars = []

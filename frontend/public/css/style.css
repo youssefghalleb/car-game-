@@ -387,6 +387,11 @@ body {
   animation: countdown-pop 0.28s ease-out;
 }
 
+#countdown-text.is-go {
+  color: #7cff9b;
+  text-shadow: 0 0 26px rgba(124, 255, 155, 0.55), 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
 /* Results */
 #results-overlay {
   position: absolute;

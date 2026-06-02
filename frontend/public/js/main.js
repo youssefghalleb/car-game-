@@ -20,6 +20,7 @@ let currentState = null;
 let myPlayerId = null;
 let playerInfo = {};
 let prevCountdown = null;
+let displayedCountdown = null;
 let lastInputSentAt = 0;
 let lastInputPayload = '';
 const INPUT_SEND_INTERVAL_MS = 1000 / 30;
@@ -102,11 +103,20 @@ function showCountdown(value) {
   const overlay = document.getElementById('countdown-overlay');
   const text = document.getElementById('countdown-text');
   overlay.classList.remove('hidden');
+  if (displayedCountdown !== value) {
+    text.style.animation = 'none';
+    // Force the animation to restart for each server-authoritative tick.
+    void text.offsetWidth;
+    text.style.animation = '';
+    displayedCountdown = value;
+  }
   text.textContent = value > 0 ? value : 'GO!';
+  text.classList.toggle('is-go', value === 0);
 }
 
 function hideCountdown() {
   document.getElementById('countdown-overlay').classList.add('hidden');
+  displayedCountdown = null;
 }
 
 // Results
