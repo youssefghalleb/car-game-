@@ -28,7 +28,7 @@ PLAYER_COLORS = [
 MAX_PLAYERS = 6
 COUNTDOWN_SECONDS = 3.0
 GO_HOLD_SECONDS = 0.65
-DEBUG_CONTROLLER = os.environ.get("DEBUG_CONTROLLER", "1") != "0"
+DEBUG_CONTROLLER = os.environ.get("DEBUG_CONTROLLER", "0") == "1"
 
 
 def log_controller(message: str):

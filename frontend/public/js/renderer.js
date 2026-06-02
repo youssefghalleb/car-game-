@@ -18,7 +18,9 @@ export class Renderer {
   }
 
   resize() {
-    this.dpr = Math.min(2, window.devicePixelRatio || 1);
+    // Keep the game smooth on phones and small laptops. Rendering at 2x DPR
+    // makes the canvas do up to four times the pixel work every frame.
+    this.dpr = 1;
     this.viewWidth = window.innerWidth;
     this.viewHeight = window.innerHeight;
     this.canvas.width = Math.floor(this.viewWidth * this.dpr);
@@ -53,7 +55,7 @@ export class Renderer {
     }
 
     const speed = Math.abs(myCar?.speed || 0);
-    const baseScale = Math.min(this.canvas.width / 1180, this.canvas.height / 780);
+    const baseScale = Math.min(this.viewWidth / 1180, this.viewHeight / 780);
     const zoomOut = 1 - Math.min(0.16, speed / 2600);
     this.camera.targetScale = baseScale * zoomOut;
     this.camera.scale += (this.camera.targetScale - this.camera.scale) * 0.06;
@@ -287,7 +289,7 @@ export class Renderer {
     ctx.globalAlpha = 0.14;
     ctx.strokeStyle = '#184b27';
     ctx.lineWidth = 2;
-    for (let x = -worldHeight; x < worldWidth; x += 130) {
+    for (let x = -worldHeight; x < worldWidth; x += 240) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x + worldHeight, worldHeight);
@@ -295,8 +297,8 @@ export class Renderer {
     }
     ctx.globalAlpha = 0.1;
     ctx.fillStyle = '#78a957';
-    for (let x = 80; x < worldWidth; x += 340) {
-      for (let y = 70; y < worldHeight; y += 260) {
+    for (let x = 100; x < worldWidth; x += 620) {
+      for (let y = 90; y < worldHeight; y += 520) {
         const wobble = ((x * 17 + y * 13) % 47) - 24;
         ctx.beginPath();
         ctx.ellipse(x + wobble, y - wobble, 34, 12, 0.4, 0, Math.PI * 2);
@@ -309,9 +311,9 @@ export class Renderer {
   _drawCurbs(ctx, track) {
     const { centerline, road_half_width } = track;
     ctx.save();
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 8;
     ctx.lineCap = 'butt';
-    for (let i = 0; i < centerline.length; i += 3) {
+    for (let i = 0; i < centerline.length; i += 8) {
       const a = centerline[i];
       const b = centerline[(i + 1) % centerline.length];
       const dx = b[0] - a[0];
@@ -320,7 +322,7 @@ export class Renderer {
       if (len < 1) continue;
       const nx = -dy / len;
       const ny = dx / len;
-      const color = Math.floor(i / 3) % 2 === 0 ? '#e53935' : '#f4f4ea';
+      const color = Math.floor(i / 8) % 2 === 0 ? '#e53935' : '#f4f4ea';
       ctx.strokeStyle = color;
       for (const side of [-1, 1]) {
         ctx.beginPath();
@@ -335,7 +337,7 @@ export class Renderer {
   _drawTrackDecorations(ctx, track) {
     const { centerline, road_half_width, world_width, world_height } = track;
     ctx.save();
-    for (let i = 0; i < centerline.length; i += 14) {
+    for (let i = 0; i < centerline.length; i += 34) {
       const p = centerline[i];
       const q = centerline[(i + 2) % centerline.length];
       const dx = q[0] - p[0];
@@ -349,9 +351,9 @@ export class Renderer {
       const y = p[1] + ny * (road_half_width + 84) * side;
       if (x < 40 || y < 40 || x > world_width - 40 || y > world_height - 40) continue;
 
-      if (i % 42 === 0) {
+      if (i % 102 === 0) {
         this._drawFlag(ctx, x, y, i);
-      } else if (i % 28 === 0) {
+      } else if (i % 68 === 0) {
         this._drawTireStack(ctx, x, y);
       } else {
         this._drawCrowdBlock(ctx, x, y, i);
@@ -572,7 +574,7 @@ export class Renderer {
     for (const car of cars) {
       const speed = Math.abs(car.speed || 0);
       const turning = Math.abs(car.angular_velocity || 0);
-      if (speed > 95 && turning > 85) {
+      if (speed > 115 && turning > 105 && this._skidMarks.length < 48) {
         this._skidMarks.push({
           x: car.x,
           y: car.y,
@@ -580,10 +582,10 @@ export class Renderer {
           life: 1.6,
           maxLife: 1.6,
         });
-        if (this._skidMarks.length > 120) this._skidMarks.shift();
+        if (this._skidMarks.length > 48) this._skidMarks.shift();
       }
 
-      if (car.off_track_warning && Math.random() < 0.45) {
+      if (car.off_track_warning && this._particles.length < 48 && Math.random() < 0.18) {
         const angle = Math.random() * Math.PI * 2;
         this._particles.push({
           x: car.x,
@@ -596,6 +598,9 @@ export class Renderer {
           color: '180,145,88',
         });
       }
+    }
+    if (this._particles.length > 80) {
+      this._particles.splice(0, this._particles.length - 80);
     }
 
     for (const mark of this._skidMarks) {

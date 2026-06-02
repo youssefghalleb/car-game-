@@ -27,7 +27,7 @@ LOBBY_REFRESH_RATE = 4  # Pairing/status refreshes per second
 WS_HEARTBEAT_SECONDS = 20.0
 WS_REPLACED_CLOSE_CODE = 4001
 STATE_SEND_TIMEOUT_SECONDS = 1.0
-DEBUG_CONTROLLER = os.environ.get("DEBUG_CONTROLLER", "1") != "0"
+DEBUG_CONTROLLER = os.environ.get("DEBUG_CONTROLLER", "0") == "1"
 
 # Active rooms
 rooms: dict[str, Room] = {}
