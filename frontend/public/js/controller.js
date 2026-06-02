@@ -30,11 +30,16 @@
   let joined = false;
   let ready = true;
   let configPromise = null;
+  let lastTelemetryState = '';
+  let lastTelemetryCountdown = null;
+  let lastTelemetryHealth = null;
+  let lastNitro = false;
 
   const state = {
     roomId: roomInput.value.trim(),
     playerId: playerInput.value.trim(),
   };
+  const savedSettings = JSON.parse(localStorage.getItem('carGameControllerSettings') || '{}');
 
   function clamp(v, min, max) {
     return Math.max(min, Math.min(max, v));
@@ -72,6 +77,56 @@
     if (debugLog) {
       debugLog.textContent = `${line}\n${debugLog.textContent}`.slice(0, 3000);
     }
+  }
+
+  function vibrate(pattern) {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(pattern);
+    }
+  }
+
+  function handleTelemetry(data) {
+    if (typeof data.countdown === 'number' && data.countdown !== lastTelemetryCountdown) {
+      if (data.countdown > 0) vibrate(35);
+      else vibrate([45, 45, 90]);
+      lastTelemetryCountdown = data.countdown;
+    }
+
+    if (data.state !== lastTelemetryState) {
+      if (data.state === 'racing') vibrate([55, 35, 90]);
+      if (data.state === 'finished') vibrate([80, 50, 80, 50, 140]);
+      lastTelemetryState = data.state || '';
+    }
+
+    if (data.collision) vibrate([90, 35, 60]);
+    if (data.wrong_way || data.shortcut_warning || data.invalid_lap_warning) vibrate([35, 35, 35]);
+
+    if (lastTelemetryHealth !== null && typeof data.health === 'number' && data.health < lastTelemetryHealth - 2) {
+      vibrate([80, 30, 50]);
+    }
+    if (typeof data.health === 'number') {
+      lastTelemetryHealth = data.health;
+    }
+  }
+
+  function saveSettings() {
+    localStorage.setItem('carGameControllerSettings', JSON.stringify({
+      mode: document.getElementById('modeSelect').value,
+      axis: document.getElementById('axisSelect').value,
+      sensitivity: document.getElementById('sensitivitySlider').value,
+      deadzone: document.getElementById('deadzoneSlider').value,
+      invert,
+      neutral,
+    }));
+  }
+
+  function applySavedSettings() {
+    if (savedSettings.mode) document.getElementById('modeSelect').value = savedSettings.mode;
+    if (savedSettings.axis) document.getElementById('axisSelect').value = savedSettings.axis;
+    if (savedSettings.sensitivity) document.getElementById('sensitivitySlider').value = savedSettings.sensitivity;
+    if (savedSettings.deadzone) document.getElementById('deadzoneSlider').value = savedSettings.deadzone;
+    if (typeof savedSettings.invert === 'boolean') invert = savedSettings.invert;
+    if (typeof savedSettings.neutral === 'number') neutral = savedSettings.neutral;
   }
 
   function connect() {
@@ -137,6 +192,8 @@
           wsStatus.className = 'bad';
           log('pairing_failure', data);
           ws.close(1000, data.error);
+        } else if (data.type === 'telemetry') {
+          handleTelemetry(data);
         }
       } catch (_) {
         // State broadcasts are ignored by the controller.
@@ -177,6 +234,12 @@
     const encoded = JSON.stringify(payload);
     if (!force && encoded === lastSent && performance.now() - lastSentAt < 250) return;
     ws.send(encoded);
+    if (payload.action === 'input' && payload.nitro && !lastNitro) {
+      vibrate(45);
+    }
+    if (payload.action === 'input') {
+      lastNitro = !!payload.nitro;
+    }
     lastSent = encoded;
     lastSentAt = performance.now();
     if (force || payload.action !== 'input') {
@@ -212,6 +275,7 @@
     steer = 0;
     document.getElementById('touchSteerSlider').value = 0;
     updateUI();
+    saveSettings();
   }
 
   async function enableMotion() {
@@ -259,6 +323,12 @@
     invert = !invert;
     event.currentTarget.textContent = `Invert: ${invert ? 'On' : 'Off'}`;
     event.currentTarget.className = invert ? 'toggle-on' : 'toggle-off';
+    saveSettings();
+  });
+  ['modeSelect', 'axisSelect', 'sensitivitySlider', 'deadzoneSlider'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('change', saveSettings);
+    el.addEventListener('input', saveSettings);
   });
   document.getElementById('touchSteerSlider').addEventListener('input', (event) => {
     if (document.getElementById('modeSelect').value === 'touch') {
@@ -287,6 +357,9 @@
     });
   }, 1000 / 30);
 
+  applySavedSettings();
+  document.getElementById('invertBtn').textContent = `Invert: ${invert ? 'On' : 'Off'}`;
+  document.getElementById('invertBtn').className = invert ? 'toggle-on' : 'toggle-off';
   document.getElementById('readyBtn').textContent = ready ? 'Ready ✓' : 'Ready';
   document.getElementById('readyBtn').className = ready ? 'toggle-on' : 'primary';
 

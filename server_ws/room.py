@@ -56,6 +56,7 @@ class PlayerSlot:
         self._input_count = 0
         self._last_input_log = 0.0
         self._display_send_task = None
+        self._controller_send_task = None
         self._dropped_state_frames = 0
         self._last_send_drop_log = 0.0
         self._last_remote_input_poll = 0.0
@@ -84,6 +85,7 @@ class Room:
             "car_damage": True,
             "track_layout": "track_1",
             "steer_assist": "none",
+            "race_mode": "sprint",
         }
         self._next_player_id = 1
         self._game_task: asyncio.Task | None = None
@@ -298,6 +300,7 @@ class Room:
             bot_difficulty=self.settings["bot_difficulty"],
             car_damage=self.settings["car_damage"],
             track_layout=self.settings["track_layout"],
+            race_mode=self.settings["race_mode"],
         )
 
     def pause_race(self):
@@ -356,6 +359,7 @@ class Room:
         snapshot = {
             "room_id": self.room_id,
             "state": self.state,
+            "race_mode": self.settings.get("race_mode", "sprint"),
         }
 
         if include_meta:
@@ -378,6 +382,7 @@ class Room:
             snapshot["countdown"] = 0 if self._countdown <= 0 else max(1, math.ceil(self._countdown))
 
         if self.race is not None:
+            track = self.race.track
             cars = []
             for car in self.race.cars:
                 cars.append({
@@ -391,6 +396,11 @@ class Room:
                     "lap": car.lap,
                     "completed_laps": car.completed_laps,
                     "track_progress": round(getattr(car, "track_progress", 0.0), 4),
+                    "checkpoint": getattr(car, "current_checkpoint", 0),
+                    "checkpoint_count": getattr(track, "checkpoint_count", 0),
+                    "wrong_way": getattr(car, "wrong_way_timer", 0.0) > 0.2,
+                    "shortcut_warning": getattr(car, "shortcut_warning_timer", 0.0) > 0.0,
+                    "invalid_lap_warning": getattr(car, "invalid_lap_warning_timer", 0.0) > 0.0,
                     "current_lap_time": round(car.current_lap_time, 2),
                     "best_lap_time": (
                         round(car.best_lap_time, 2)
@@ -408,6 +418,9 @@ class Room:
             if crash_events:
                 snapshot["crash_events"] = crash_events
             snapshot["laps_to_win"] = self.race.laps_to_win
+            snapshot["race_mode"] = self.race.race_mode
+            if self.race.race_mode == "elimination":
+                snapshot["elimination_timer"] = max(0, round(self.race.elimination_timer, 1))
 
             if self.race.finished and self.race.results_snapshot:
                 snapshot["leaderboard"] = [
@@ -420,7 +433,6 @@ class Room:
                 ]
 
         if include_track and self.race is not None:
-            track = self.race.track
             snapshot["track"] = track.get_drawing_data()
             snapshot["track_id"] = self.settings["track_layout"]
 

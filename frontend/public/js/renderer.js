@@ -21,7 +21,7 @@ export class Renderer {
     this.canvas.height = window.innerHeight;
   }
 
-  render(state, myPlayerId) {
+  render(state, myPlayerId, ghostSamples = null) {
     const ctx = this.ctx;
     const { cars, track } = state;
 
@@ -64,6 +64,8 @@ export class Renderer {
     // Draw track
     this._drawTrackCached(ctx, track);
 
+    this._drawGhost(ctx, ghostSamples);
+
     // Draw cars
     for (const car of renderCars) {
       this._drawCar(ctx, car, car.id === myPlayerId);
@@ -72,6 +74,32 @@ export class Renderer {
     this._updateParticles(dt);
     this._drawParticles(ctx);
 
+    ctx.restore();
+  }
+
+  _drawGhost(ctx, samples) {
+    if (!samples || samples.length < 2) return;
+
+    ctx.save();
+    ctx.globalAlpha = 0.42;
+    ctx.strokeStyle = '#7cff9b';
+    ctx.lineWidth = 5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.setLineDash([12, 14]);
+    ctx.beginPath();
+    ctx.moveTo(samples[0].x, samples[0].y);
+    for (let i = 1; i < samples.length; i++) {
+      ctx.lineTo(samples[i].x, samples[i].y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const tail = samples[samples.length - 1];
+    ctx.fillStyle = '#7cff9b';
+    ctx.beginPath();
+    ctx.arc(tail.x, tail.y, 10, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
 

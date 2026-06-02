@@ -10,7 +10,9 @@ export class AudioManager {
     this.ctx = null;
     this.enabled = false;
     this.masterVolume = 1.0;
+    this.effectsVolume = 1.0;
     this.muted = false;
+    this.quality = 'high';
 
     // Engine state
     this.enginePlaying = false;
@@ -19,6 +21,7 @@ export class AudioManager {
 
     // Master gain
     this.masterGain = null;
+    this.effectsGain = null;
   }
 
   /**
@@ -31,6 +34,8 @@ export class AudioManager {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       this.masterGain = this.ctx.createGain();
       this.masterGain.connect(this.ctx.destination);
+      this.effectsGain = this.ctx.createGain();
+      this.effectsGain.connect(this.masterGain);
       this.enabled = true;
     } catch (e) {
       console.warn('[Audio] Web Audio not available:', e);
@@ -58,6 +63,17 @@ export class AudioManager {
     this.setMasterVolume(this.masterVolume);
   }
 
+  setEffectsVolume(v) {
+    this.effectsVolume = Math.max(0, Math.min(1, v));
+    if (this.effectsGain) {
+      this.effectsGain.gain.setTargetAtTime(this.effectsVolume, this.ctx.currentTime, 0.05);
+    }
+  }
+
+  setQuality(quality) {
+    this.quality = quality === 'low' ? 'low' : 'high';
+  }
+
   // ----------------------------------------------------------
   // Countdown beeps
   // ----------------------------------------------------------
@@ -81,6 +97,37 @@ export class AudioManager {
     this._playToneAt(1040, 0.20, 0.20, now + 0.24);
   }
 
+  playCheckpoint() {
+    if (!this.enabled) return;
+    this._playTone(780, 0.07, 0.12);
+  }
+
+  playLap() {
+    if (!this.enabled) return;
+    const now = this.ctx.currentTime;
+    this._playToneAt(740, 0.08, 0.16, now);
+    this._playToneAt(980, 0.12, 0.16, now + 0.09);
+  }
+
+  playNitro() {
+    if (!this.enabled) return;
+    const now = this.ctx.currentTime;
+    this._playToneAt(420, 0.06, 0.12, now);
+    this._playToneAt(1040, 0.18, 0.10, now + 0.04);
+  }
+
+  playWarning() {
+    if (!this.enabled) return;
+    const now = this.ctx.currentTime;
+    this._playToneAt(180, 0.08, 0.16, now);
+    this._playToneAt(180, 0.08, 0.14, now + 0.13);
+  }
+
+  playClick() {
+    if (!this.enabled) return;
+    this._playTone(640, 0.035, 0.06);
+  }
+
   // ----------------------------------------------------------
   // Crash sound (noise burst)
   // ----------------------------------------------------------
@@ -89,7 +136,8 @@ export class AudioManager {
     if (!this.enabled) return;
 
     const volume = Math.min(0.85, 0.18 + impactStrength / 140);
-    const duration = 0.04 + Math.min(0.08, impactStrength / 500);
+    const durationScale = this.quality === 'low' ? 0.6 : 1.0;
+    const duration = (0.04 + Math.min(0.08, impactStrength / 500)) * durationScale;
 
     const bufferSize = Math.floor(this.ctx.sampleRate * duration);
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -110,7 +158,7 @@ export class AudioManager {
     const gain = this.ctx.createGain();
     gain.gain.value = volume;
     source.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.effectsGain);
     source.start();
     source.onended = () => { source.disconnect(); gain.disconnect(); };
   }
@@ -181,7 +229,7 @@ export class AudioManager {
     for (const [name, cfg] of Object.entries(layerConfigs)) {
       const gain = this.ctx.createGain();
       gain.gain.value = 0;
-      gain.connect(this.masterGain);
+      gain.connect(this.effectsGain);
 
       // Use a periodic wave built from harmonics
       const real = new Float32Array(cfg.harmonics.length + 1);
@@ -249,7 +297,7 @@ export class AudioManager {
     gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
 
     osc.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.effectsGain);
     osc.start(startTime);
     osc.stop(startTime + duration + 0.01);
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };

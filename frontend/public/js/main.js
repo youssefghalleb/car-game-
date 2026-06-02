@@ -21,6 +21,15 @@ let myPlayerId = null;
 let playerInfo = {};
 let prevCountdown = null;
 let displayedCountdown = null;
+let lastCheckpoint = null;
+let lastCompletedLaps = 0;
+let lastNitroActive = false;
+let lastWarningAt = 0;
+let ghostEnabled = true;
+let ghostSamples = [];
+let bestGhostSamples = null;
+let lastGhostSampleAt = 0;
+let lastGhostLap = 0;
 let lastInputSentAt = 0;
 let lastInputPayload = '';
 const INPUT_SEND_INTERVAL_MS = 1000 / 30;
@@ -69,6 +78,8 @@ client.on('state', (state) => {
     const myCar = state.cars && state.cars.find(c => c.id === myPlayerId);
     if (myCar) {
       audio.updateEngine(myCar.speed);
+      updateRaceAudioEvents(myCar);
+      updateGhostRecording(state, myCar);
     }
     // Play crash sounds
     if (state.crash_events) {
@@ -89,6 +100,13 @@ client.on('state', (state) => {
     showResults(state.leaderboard);
   }
 });
+
+document.addEventListener('click', (event) => {
+  if (event.target.closest('button, select, input')) {
+    audio.init();
+    audio.playClick();
+  }
+}, true);
 
 client.on('error', (msg) => {
   if (typeof msg === 'object' && msg?.message) {
@@ -117,6 +135,60 @@ function showCountdown(value) {
 function hideCountdown() {
   document.getElementById('countdown-overlay').classList.add('hidden');
   displayedCountdown = null;
+}
+
+function updateRaceAudioEvents(car) {
+  if (lastCheckpoint !== null && car.checkpoint !== lastCheckpoint) {
+    audio.playCheckpoint();
+  }
+  lastCheckpoint = car.checkpoint;
+
+  if ((car.completed_laps || 0) > lastCompletedLaps) {
+    audio.playLap();
+  }
+  lastCompletedLaps = car.completed_laps || 0;
+
+  const nitroActive = (car.nitro_amount || 0) < 99 && car.speed > 40;
+  if (nitroActive && !lastNitroActive) {
+    audio.playNitro();
+  }
+  lastNitroActive = nitroActive;
+
+  const warning = car.wrong_way || car.shortcut_warning || car.invalid_lap_warning;
+  const now = performance.now();
+  if (warning && now - lastWarningAt > 900) {
+    audio.playWarning();
+    lastWarningAt = now;
+  }
+}
+
+function updateGhostRecording(state, car) {
+  const soloGhostMode = state.race_mode === 'practice' || state.race_mode === 'time_trial';
+  if (!soloGhostMode || !car || car.is_bot) return;
+
+  const ghostKey = `carGameGhost:${state.track_id || state.track?.layout_name || 'track'}:${state.race_mode}`;
+  if (!bestGhostSamples) {
+    try {
+      bestGhostSamples = JSON.parse(localStorage.getItem(ghostKey) || 'null');
+    } catch (_) {
+      bestGhostSamples = null;
+    }
+  }
+
+  const now = performance.now();
+  if (now - lastGhostSampleAt >= 120) {
+    lastGhostSampleAt = now;
+    ghostSamples.push({ x: car.x, y: car.y });
+    if (ghostSamples.length > 900) ghostSamples.shift();
+  }
+
+  const completed = car.completed_laps || 0;
+  if (completed > lastGhostLap && ghostSamples.length > 8) {
+    bestGhostSamples = ghostSamples.slice();
+    localStorage.setItem(ghostKey, JSON.stringify(bestGhostSamples));
+    ghostSamples = [];
+  }
+  lastGhostLap = completed;
 }
 
 // Results
@@ -152,8 +224,15 @@ document.getElementById('quit-race-btn').addEventListener('click', () => {
   window.location.reload();
 });
 
+document.getElementById('ghost-toggle-btn').addEventListener('click', (event) => {
+  ghostEnabled = !ghostEnabled;
+  event.currentTarget.textContent = ghostEnabled ? 'Ghost On' : 'Ghost Off';
+});
+
 const muteAudioBtn = document.getElementById('mute-audio-btn');
 const volumeSlider = document.getElementById('volume-slider');
+const effectsVolumeSlider = document.getElementById('effects-volume-slider');
+const soundQualitySelect = document.getElementById('sound-quality-select');
 muteAudioBtn.addEventListener('click', () => {
   audio.setMuted(!audio.muted);
   muteAudioBtn.textContent = audio.muted ? 'Unmute' : 'Mute';
@@ -161,11 +240,17 @@ muteAudioBtn.addEventListener('click', () => {
 volumeSlider.addEventListener('input', () => {
   audio.setMasterVolume(Number(volumeSlider.value) / 100);
 });
+effectsVolumeSlider.addEventListener('input', () => {
+  audio.setEffectsVolume(Number(effectsVolumeSlider.value) / 100);
+});
+soundQualitySelect.addEventListener('change', () => {
+  audio.setQuality(soundQualitySelect.value);
+});
 
 // Game loop: render + send input
 function gameLoop(now = performance.now()) {
   if (currentState && currentState.cars && currentState.track) {
-    renderer.render(currentState, myPlayerId);
+    renderer.render(currentState, myPlayerId, ghostEnabled ? bestGhostSamples : null);
   }
 
   // Send input to server at a stable rate, with a small heartbeat for held keys.

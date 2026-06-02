@@ -175,7 +175,8 @@ async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
                     elif action == "settings" and player_id and role == "display":
                         if room.state == "lobby":
                             for key in ("laps_to_win", "bot_count", "bot_difficulty",
-                                        "car_damage", "track_layout", "steer_assist"):
+                                        "car_damage", "track_layout", "steer_assist",
+                                        "race_mode"):
                                 if key in data:
                                     room.settings[key] = data[key]
                             await broadcast_state(room)
@@ -302,6 +303,23 @@ async def broadcast_state(room: Room, include_track: bool = False, include_meta:
             send_display_state(room, pid, slot, ws, msg)
         )
 
+        controller_ws = slot.controller_ws
+        if controller_ws is None or controller_ws.closed:
+            continue
+
+        controller_task = slot._controller_send_task
+        if controller_task is not None and controller_task.done():
+            slot._controller_send_task = None
+            controller_task = None
+        if controller_task is not None:
+            continue
+
+        telemetry = build_controller_telemetry(snapshot, pid)
+        if telemetry is not None:
+            slot._controller_send_task = asyncio.create_task(
+                send_controller_state(room, pid, slot, controller_ws, telemetry)
+            )
+
 
 async def send_display_state(room: Room, player_id: str, slot, ws: web.WebSocketResponse, msg: str):
     try:
@@ -318,6 +336,49 @@ async def send_display_state(room: Room, player_id: str, slot, ws: web.WebSocket
     finally:
         if slot._display_send_task is asyncio.current_task():
             slot._display_send_task = None
+
+
+def build_controller_telemetry(snapshot: dict, player_id: str) -> dict | None:
+    telemetry = {
+        "type": "telemetry",
+        "state": snapshot.get("state"),
+    }
+    if "countdown" in snapshot:
+        telemetry["countdown"] = snapshot["countdown"]
+
+    car = None
+    for candidate in snapshot.get("cars", []) or []:
+        if candidate.get("id") == player_id:
+            car = candidate
+            break
+    if car:
+        telemetry["speed"] = car.get("speed", 0)
+        telemetry["nitro_amount"] = car.get("nitro_amount", 0)
+        telemetry["health"] = car.get("health", 0)
+        telemetry["wrong_way"] = car.get("wrong_way", False)
+        telemetry["shortcut_warning"] = car.get("shortcut_warning", False)
+        telemetry["invalid_lap_warning"] = car.get("invalid_lap_warning", False)
+
+    if snapshot.get("crash_events"):
+        telemetry["collision"] = True
+    if snapshot.get("leaderboard"):
+        telemetry["finished"] = True
+
+    return telemetry
+
+
+async def send_controller_state(room: Room, player_id: str, slot, ws: web.WebSocketResponse, payload: dict):
+    try:
+        msg = json.dumps(payload, separators=(",", ":"))
+        await asyncio.wait_for(ws.send_str(msg), timeout=STATE_SEND_TIMEOUT_SECONDS)
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        if slot.controller_ws is ws:
+            room.detach_controller(player_id, ws)
+    finally:
+        if slot._controller_send_task is asyncio.current_task():
+            slot._controller_send_task = None
 
 
 async def game_loop(app: web.Application):

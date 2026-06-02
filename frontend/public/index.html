@@ -21,6 +21,15 @@
       </div>
       <div class="lobby-card settings-grid">
         <div>
+          <label for="mode-select">Mode</label>
+          <select id="mode-select">
+            <option value="sprint" selected>Sprint</option>
+            <option value="time_trial">Time Trial</option>
+            <option value="practice">Practice</option>
+            <option value="elimination">Elimination</option>
+          </select>
+        </div>
+        <div>
           <label for="track-select">Track</label>
           <select id="track-select">
             <option value="track_1">Circuit 1</option>
@@ -68,7 +77,15 @@
         </div>
       </div>
       <div id="players-list" class="lobby-card">
-        <h3>Players in Room</h3>
+        <h3>Room Overview</h3>
+        <div id="room-overview" class="room-overview">
+          <span>Room <strong id="overview-room">-</strong></span>
+          <span>Players <strong id="overview-players">0</strong></span>
+          <span>Spectators <strong id="overview-spectators">0</strong></span>
+          <span>Mode <strong id="overview-mode">Sprint</strong></span>
+          <span>Track <strong id="overview-track">Circuit 1</strong></span>
+        </div>
+        <h3>Players</h3>
         <ul id="player-list-ul"></ul>
       </div>
       <div id="pairing-card" class="lobby-card pairing-card hidden">
@@ -112,13 +129,21 @@
       <button id="restart-race-btn" class="btn compact">Restart</button>
       <button id="reset-race-btn" class="btn compact">Reset</button>
       <button id="quit-race-btn" class="btn compact danger">Quit</button>
+      <button id="ghost-toggle-btn" class="btn compact">Ghost On</button>
       <button id="mute-audio-btn" class="btn compact">Mute</button>
       <label for="volume-slider" class="volume-control">Volume</label>
       <input id="volume-slider" type="range" min="0" max="100" value="100" />
+      <label for="effects-volume-slider" class="volume-control">FX</label>
+      <input id="effects-volume-slider" type="range" min="0" max="100" value="100" />
+      <select id="sound-quality-select" class="compact-select">
+        <option value="high" selected>Hi-Fi</option>
+        <option value="low">Lite</option>
+      </select>
     </div>
     <div id="minimap-panel">
       <canvas id="minimap-canvas" width="220" height="140"></canvas>
     </div>
+    <div id="race-warning" class="hidden"></div>
     <!-- Countdown overlay -->
     <div id="countdown-overlay" class="hidden">
       <span id="countdown-text">3</span>

@@ -32,6 +32,8 @@ BOT_F1_NAMES = [
     "Albon",
 ]
 
+CHECKPOINT_WARNING_SECONDS = 2.2
+
 
 class Race:
     """
@@ -55,6 +57,7 @@ class Race:
         bot_difficulty="medium",
         car_damage=True,
         track_layout="track_1",
+        race_mode="sprint",
     ):
         """
         Initialise une nouvelle course avec les paramètres choisis dans le lobby.
@@ -78,10 +81,17 @@ class Race:
         self.player_entries = players or [{"id": "P1", "name": player_name, "color_index": 0}]
         self.player_name = self.player_entries[0]["name"] if self.player_entries else player_name
         self.laps_to_win = laps_to_win
+        self.race_mode = race_mode
+        if self.race_mode in ("practice", "time_trial"):
+            bot_count = 0
+        elif self.race_mode == "elimination" and len(self.player_entries) < 2:
+            bot_count = max(1, bot_count)
         self.bot_count = min(4, bot_count)
         self.bot_difficulty = bot_difficulty
         self.car_damage = car_damage
         self.track_layout = track_layout
+        self.elimination_timer = 25.0
+        self.elimination_interval = 25.0
 
         # Liste de toutes les voitures présentes dans la course.
         self.cars = []
@@ -127,6 +137,7 @@ class Race:
                 bot.display_name = bot_name
                 bot.track_progress = 0.0
                 bot.wrong_way_timer = 0.0
+                self._init_checkpoint_state(bot)
 
                 self.cars.append(bot)
 
@@ -164,6 +175,7 @@ class Race:
             player.display_name = entry.get("name", f"Player {index + 1}")
             player.track_progress = 0.0
             player.wrong_way_timer = 0.0
+            self._init_checkpoint_state(player)
 
             self.cars.append(player)
             self.player_cars.append(player)
@@ -172,6 +184,56 @@ class Race:
 
         # Calcule immédiatement la progression initiale de toutes les voitures.
         self._refresh_progress_all()
+
+    def _init_checkpoint_state(self, car):
+        checkpoint = self.track.get_checkpoint_index(car.x, car.y)
+        car.current_checkpoint = checkpoint
+        car.last_valid_checkpoint = checkpoint
+        car.visited_checkpoints = {checkpoint}
+        car.shortcut_warning_timer = 0.0
+        car.invalid_lap_warning_timer = 0.0
+
+    def _reset_lap_checkpoints(self, car):
+        checkpoint = self.track.get_checkpoint_index(car.x, car.y)
+        car.current_checkpoint = checkpoint
+        car.last_valid_checkpoint = checkpoint
+        car.visited_checkpoints = {checkpoint}
+
+    def _has_valid_lap_checkpoints(self, car) -> bool:
+        required = set(range(1, self.track.checkpoint_count))
+        return required.issubset(getattr(car, "visited_checkpoints", set()))
+
+    def _update_checkpoint_state(self, car):
+        checkpoint = self.track.get_checkpoint_index(car.x, car.y)
+        previous = getattr(car, "current_checkpoint", checkpoint)
+        count = self.track.checkpoint_count
+        if checkpoint == previous:
+            return
+
+        forward_delta = (checkpoint - previous) % count
+        reverse_delta = (previous - checkpoint) % count
+
+        # Normal forward movement usually advances one checkpoint, but allow two
+        # for high speed frames. Larger jumps are treated as shortcut attempts.
+        if forward_delta in (1, 2):
+            car.current_checkpoint = checkpoint
+            car.last_valid_checkpoint = checkpoint
+            car.visited_checkpoints.add(checkpoint)
+            return
+
+        if reverse_delta in (1, 2):
+            car.current_checkpoint = checkpoint
+            car.wrong_way_timer = max(getattr(car, "wrong_way_timer", 0.0), 0.15)
+            return
+
+        if not getattr(car, "is_bot", False):
+            car.shortcut_warning_timer = CHECKPOINT_WARNING_SECONDS
+            self._respawn_player_with_penalty(
+                car,
+                time_penalty=2.0,
+                impact_penalty=6.0,
+                prefer_checkpoint=True,
+            )
 
     def pop_crash_events(self):
         """
@@ -229,6 +291,7 @@ class Race:
         car,
         time_penalty: float,
         impact_penalty: float = 0.0,
+        prefer_checkpoint: bool = False,
     ):
         """
         Replace une voiture sur la piste avec une pénalité.
@@ -242,15 +305,18 @@ class Race:
         pour éviter de donner un tour gratuitement.
         """
 
-        # Vérifie si la voiture était déjà après la ligne de départ.
-        after_start = car.lap_timing_started or self.track.is_after_start_line(car.x, car.y)
+        if prefer_checkpoint and hasattr(car, "last_valid_checkpoint"):
+            rx, ry, ra = self.track.get_checkpoint_respawn(car.last_valid_checkpoint)
+        else:
+            # Vérifie si la voiture était déjà après la ligne de départ.
+            after_start = car.lap_timing_started or self.track.is_after_start_line(car.x, car.y)
 
-        # Récupère le point de respawn adapté à la zone actuelle.
-        rx, ry, ra = self.track.get_penalty_respawn(
-            car.x,
-            car.y,
-            after_start=after_start,
-        )
+            # Récupère le point de respawn adapté à la zone actuelle.
+            rx, ry, ra = self.track.get_penalty_respawn(
+                car.x,
+                car.y,
+                after_start=after_start,
+            )
 
         # Replace la voiture.
         car.reset_to(rx, ry, ra)
@@ -261,6 +327,7 @@ class Race:
 
         # Ajoute une pénalité de temps.
         car.total_time += time_penalty
+        self._reset_lap_checkpoints(car)
 
         # Si toutes les voitures humaines sont détruites, la partie est terminée.
         if (
@@ -329,6 +396,7 @@ class Race:
                 car,
                 time_penalty=3.0,
                 impact_penalty=8.0,
+                prefer_checkpoint=True,
             )
             car.wrong_way_timer = 0.0
 
@@ -357,9 +425,22 @@ class Race:
                         car.lap_timing_started = True
                         car.current_lap_time = 0.0
                         car.lap = 1
+                        self._reset_lap_checkpoints(car)
 
                     # Passage suivant : un tour est terminé.
                     else:
+                        if not self._has_valid_lap_checkpoints(car):
+                            if not getattr(car, "is_bot", False):
+                                car.invalid_lap_warning_timer = CHECKPOINT_WARNING_SECONDS
+                                self._respawn_player_with_penalty(
+                                    car,
+                                    time_penalty=3.0,
+                                    impact_penalty=6.0,
+                                    prefer_checkpoint=True,
+                                )
+                            car.crossed_start_recently = True
+                            return
+
                         completed = car.current_lap_time
                         car.last_lap_time = completed
 
@@ -370,16 +451,21 @@ class Race:
                         car.completed_laps += 1
 
                         # Fin de course si le nombre de tours est atteint.
-                        if car.completed_laps >= self.laps_to_win:
+                        if self.race_mode not in ("practice", "time_trial") and car.completed_laps >= self.laps_to_win:
                             car.finished = True
                         else:
                             car.lap = car.completed_laps + 1
                             car.current_lap_time = 0.0
+                            self._reset_lap_checkpoints(car)
 
                 # Passage de la ligne dans le mauvais sens.
                 else:
                     if car.lap_timing_started and not getattr(car, "is_bot", False):
-                        self._respawn_player_with_penalty(car, time_penalty=3.0)
+                        self._respawn_player_with_penalty(
+                            car,
+                            time_penalty=3.0,
+                            prefer_checkpoint=True,
+                        )
 
                 car.crossed_start_recently = True
 
@@ -419,11 +505,20 @@ class Race:
                     dt,
                     all_cars=self.cars,
                 )
+                self._update_checkpoint_state(car)
 
             # Mise à jour du joueur.
             else:
                 control = controls_by_player.get(car.player_id, {})
                 car.update(dt, control)
+                car.shortcut_warning_timer = max(
+                    0.0,
+                    getattr(car, "shortcut_warning_timer", 0.0) - dt,
+                )
+                car.invalid_lap_warning_timer = max(
+                    0.0,
+                    getattr(car, "invalid_lap_warning_timer", 0.0) - dt,
+                )
 
                 # Sortie de piste : respawn avec pénalité.
                 if self.track.is_off_track(car.x, car.y):
@@ -431,8 +526,11 @@ class Race:
                         car,
                         time_penalty=2.5,
                         impact_penalty=10.0,
+                        prefer_checkpoint=True,
                     )
                     continue
+
+                self._update_checkpoint_state(car)
 
                 # Vérification du mauvais sens.
                 self._check_wrong_direction(car, dt)
@@ -459,6 +557,9 @@ class Race:
         # Collisions entre voitures.
         self.handle_car_collisions()
 
+        if self.race_mode == "elimination":
+            self._update_elimination(dt)
+
         # Progression de chaque voiture sur le circuit.
         self._refresh_progress_all()
 
@@ -471,12 +572,40 @@ class Race:
             self.game_over = True
 
         # Fin de course dès qu'une voiture termine tous les tours.
-        if any(car.finished for car in self.cars):
+        if self.race_mode not in ("practice", "time_trial") and any(car.finished for car in self.cars):
             self.finished = True
 
             # Sauvegarde le classement final une seule fois.
             if self.results_snapshot is None:
                 self.results_snapshot = self.get_leaderboard()
+
+    def _update_elimination(self, dt: float):
+        active = [car for car in self.cars if not car.finished and not car.destroyed]
+        if len(active) <= 1:
+            if len(active) == 1:
+                active[0].finished = True
+            self.finished = True
+            if self.results_snapshot is None:
+                self.results_snapshot = self.get_leaderboard()
+            return
+
+        self.elimination_timer -= dt
+        if self.elimination_timer > 0:
+            return
+
+        self.elimination_timer = self.elimination_interval
+        last = sorted(
+            active,
+            key=lambda c: (
+                getattr(c, "completed_laps", 0),
+                getattr(c, "track_progress", 0.0),
+                -getattr(c, "total_time", 0.0),
+            ),
+        )[0]
+        last.finished = True
+        last.speed = 0.0
+        last.vel_x = 0.0
+        last.vel_y = 0.0
 
     def handle_car_collisions(self):
         """

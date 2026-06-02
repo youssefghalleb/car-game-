@@ -49,6 +49,7 @@ class Track:
 
         # Ligne centrale lissée du circuit.
         self.centerline = self._chaikin_closed(base_points, iterations=2)
+        self.checkpoint_count = 8
 
         # Position de la ligne de départ selon le circuit.
         if self.layout_name == "track_2":
@@ -437,6 +438,23 @@ class Track:
         rel = (idx - self.start_index) % n
 
         return rel / max(1, n)
+
+    def get_checkpoint_index(self, x: float, y: float) -> int:
+        """
+        Retourne l'indice de checkpoint logique correspondant à la position.
+        """
+        progress = self.get_progress_from_start(x, y)
+        return max(0, min(self.checkpoint_count - 1, int(progress * self.checkpoint_count)))
+
+    def get_checkpoint_respawn(self, checkpoint_index: int, lateral_offset: float = 0.0):
+        """
+        Retourne un respawn sûr aligné avec un checkpoint validé.
+        """
+        checkpoint = max(0, min(self.checkpoint_count - 1, int(checkpoint_index)))
+        n = len(self.centerline)
+        idx = (self.start_index + int((checkpoint / self.checkpoint_count) * n)) % n
+        center_x, center_y = self.centerline[idx]
+        return self._safe_pose(center_x, center_y, idx, lateral_offset)
 
     def is_after_start_line(self, x: float, y: float) -> bool:
         """

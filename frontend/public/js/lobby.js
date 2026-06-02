@@ -17,6 +17,11 @@ export class LobbyUI {
     this.pairPlayerEl = document.getElementById('pair-player');
     this.controllerLinkEl = document.getElementById('controller-link');
     this.qrEl = document.getElementById('pair-qr');
+    this.overviewRoomEl = document.getElementById('overview-room');
+    this.overviewPlayersEl = document.getElementById('overview-players');
+    this.overviewSpectatorsEl = document.getElementById('overview-spectators');
+    this.overviewModeEl = document.getElementById('overview-mode');
+    this.overviewTrackEl = document.getElementById('overview-track');
     this._pendingJoinName = null;
     this._ready = false;
     this._myPlayerId = null;
@@ -59,6 +64,7 @@ export class LobbyUI {
 
     // Send settings then start
     const settings = {
+      race_mode: document.getElementById('mode-select').value,
       track_layout: document.getElementById('track-select').value,
       laps_to_win: parseInt(document.getElementById('laps-select').value),
       bot_count: parseInt(document.getElementById('bots-select').value),
@@ -94,6 +100,7 @@ export class LobbyUI {
     this.startBtn.classList.remove('hidden');
     this.startBtn.disabled = true;
     this.showPairing(data.room_id, data.player_id);
+    this.overviewRoomEl.textContent = data.room_id;
     this._updateReadyButton();
   }
 
@@ -113,11 +120,19 @@ export class LobbyUI {
 
   updatePlayers(players) {
     if (!players) return;
+    this.overviewPlayersEl.textContent = Object.keys(players).length;
+    this.overviewSpectatorsEl.textContent = '0';
     this.playerListEl.innerHTML = Object.entries(players)
       .map(([id, p]) => {
         const controller = p.controller ? (p.controller_ready ? 'Controller ready' : 'Controller linked') : 'Scan QR';
-        const monitor = p.ready ? 'Monitor ready' : 'Monitor waiting';
-        return `<li><span>${id} · ${this._escape(p.name)}</span><span>${monitor} · ${controller}</span></li>`;
+        const monitor = p.ready ? 'Ready' : 'Waiting';
+        const ping = p.ping_ms ? `${p.ping_ms}ms` : '-';
+        return `
+          <li>
+            <span>${id} · ${this._escape(p.name)} · Roadster</span>
+            <span>${monitor} · ${controller} · ${ping}</span>
+          </li>
+        `;
       })
       .join('');
   }
@@ -131,6 +146,8 @@ export class LobbyUI {
       this._ready = !!state.players[this._myPlayerId].ready;
       this._updateReadyButton();
     }
+    this.overviewModeEl.textContent = this._formatMode(state.settings?.race_mode || state.race_mode || 'sprint');
+    this.overviewTrackEl.textContent = this._formatTrack(state.settings?.track_layout || 'track_1');
     if (canStart) {
       this.showStatus('All players ready');
     } else if (state.start_blockers?.length) {
@@ -155,5 +172,18 @@ export class LobbyUI {
       '"': '&quot;',
       "'": '&#39;',
     }[ch]));
+  }
+
+  _formatMode(mode) {
+    return {
+      sprint: 'Sprint',
+      time_trial: 'Time Trial',
+      practice: 'Practice',
+      elimination: 'Elimination',
+    }[mode] || 'Sprint';
+  }
+
+  _formatTrack(track) {
+    return track === 'track_2' ? 'Circuit 2' : 'Circuit 1';
   }
 }

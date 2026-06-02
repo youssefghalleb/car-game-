@@ -10,6 +10,7 @@ export class HUD {
     this.timeEl = document.getElementById('hud-time');
     this.nitroFill = document.getElementById('hud-nitro-fill');
     this.healthFill = document.getElementById('hud-health-fill');
+    this.warningEl = document.getElementById('race-warning');
     this.leaderboardEl = document.getElementById('leaderboard-list');
     this.minimapCanvas = document.getElementById('minimap-canvas');
     this.minimapCtx = this.minimapCanvas?.getContext('2d');
@@ -51,6 +52,7 @@ export class HUD {
 
     this._updateLeaderboard(sorted, myPlayerId, state.laps_to_win || 5);
     this._drawMinimap(state, myPlayerId);
+    this._updateWarning(myCar);
   }
 
   _sortCars(cars) {
@@ -111,6 +113,18 @@ export class HUD {
       ctx.strokeStyle = car.id === myPlayerId ? '#ffffff' : 'rgba(0,0,0,0.65)';
       ctx.stroke();
     }
+  }
+
+  _updateWarning(car) {
+    if (!this.warningEl) return;
+
+    let text = '';
+    if (car.wrong_way) text = 'Wrong way';
+    else if (car.shortcut_warning) text = 'Shortcut penalty';
+    else if (car.invalid_lap_warning) text = 'Checkpoint missed';
+
+    this.warningEl.textContent = text;
+    this.warningEl.classList.toggle('hidden', !text);
   }
 
   _ensureMinimapTrack(track, w, h, scale, ox, oy) {
