@@ -52,6 +52,10 @@ class PlayerSlot:
         self.assist_steer_state = 0.0
         self._input_count = 0
         self._last_input_log = 0.0
+        self._display_send_task = None
+        self._dropped_state_frames = 0
+        self._last_send_drop_log = 0.0
+        self._last_remote_input_poll = 0.0
 
 
 class Room:
@@ -327,9 +331,12 @@ class Room:
         elif self.state == "racing" and self.race is not None:
             controls = {}
             for pid, slot in self.players.items():
-                remote_input = shared_pairing.read_input(self.room_id, pid)
-                if remote_input:
-                    self.update_input(pid, remote_input)
+                now = time.monotonic()
+                if now - slot._last_remote_input_poll >= 1.0 / 30.0:
+                    slot._last_remote_input_poll = now
+                    remote_input = shared_pairing.read_input(self.room_id, pid)
+                    if remote_input:
+                        self.update_input(pid, remote_input)
                 controls[pid] = {
                     "steer": slot.steer,
                     "throttle": slot.throttle,

@@ -26,6 +26,7 @@ BROADCAST_RATE = 24     # State broadcasts per second
 LOBBY_REFRESH_RATE = 4  # Pairing/status refreshes per second
 WS_HEARTBEAT_SECONDS = 20.0
 WS_REPLACED_CLOSE_CODE = 4001
+STATE_SEND_TIMEOUT_SECONDS = 1.0
 DEBUG_CONTROLLER = os.environ.get("DEBUG_CONTROLLER", "1") != "0"
 
 # Active rooms
@@ -271,17 +272,52 @@ async def broadcast_state(room: Room, include_track: bool = False, include_meta:
     """Send current state to all players in a room."""
     snapshot = room.get_state_snapshot(include_track=include_track, include_meta=include_meta)
     msg = json.dumps(snapshot, separators=(",", ":"))
-    disconnected = []
 
     for pid, slot in room.players.items():
-        try:
-            if slot.display_ws is not None:
-                await slot.display_ws.send_str(msg)
-        except Exception:
-            disconnected.append(pid)
+        ws = slot.display_ws
+        if ws is None or ws.closed:
+            continue
 
-    for pid in disconnected:
-        room.detach_display(pid)
+        task = slot._display_send_task
+        if task is not None and task.done():
+            slot._display_send_task = None
+            task = None
+
+        if task is not None:
+            slot._dropped_state_frames += 1
+            now = time.monotonic()
+            if now - slot._last_send_drop_log >= 2.0:
+                slot._last_send_drop_log = now
+                log_controller(
+                    f"state_frame_skip room={room.room_id} player={pid} "
+                    f"dropped={slot._dropped_state_frames}"
+                )
+            if include_track:
+                task.cancel()
+                slot._display_send_task = None
+            else:
+                continue
+
+        slot._display_send_task = asyncio.create_task(
+            send_display_state(room, pid, slot, ws, msg)
+        )
+
+
+async def send_display_state(room: Room, player_id: str, slot, ws: web.WebSocketResponse, msg: str):
+    try:
+        await asyncio.wait_for(ws.send_str(msg), timeout=STATE_SEND_TIMEOUT_SECONDS)
+    except asyncio.CancelledError:
+        raise
+    except Exception as exc:
+        if slot.display_ws is ws:
+            log_controller(
+                f"display_send_fail room={room.room_id} player={player_id} "
+                f"error={type(exc).__name__}"
+            )
+            room.detach_display(player_id, ws)
+    finally:
+        if slot._display_send_task is asyncio.current_task():
+            slot._display_send_task = None
 
 
 async def game_loop(app: web.Application):
