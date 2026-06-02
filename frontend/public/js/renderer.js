@@ -6,7 +6,7 @@ export class Renderer {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.camera = { x: 0, y: 0, scale: 1 };
+    this.camera = { x: 0, y: 0, scale: 1, targetScale: 1 };
     this._trackCacheKey = null;
     this._trackCanvas = null;
     this._particles = [];
@@ -18,8 +18,13 @@ export class Renderer {
   }
 
   resize() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    this.dpr = Math.min(2, window.devicePixelRatio || 1);
+    this.viewWidth = window.innerWidth;
+    this.viewHeight = window.innerHeight;
+    this.canvas.width = Math.floor(this.viewWidth * this.dpr);
+    this.canvas.height = Math.floor(this.viewHeight * this.dpr);
+    this.canvas.style.width = `${this.viewWidth}px`;
+    this.canvas.style.height = `${this.viewHeight}px`;
   }
 
   render(state, myPlayerId, ghostSamples = null) {
@@ -43,15 +48,15 @@ export class Renderer {
       const rad = (myCar.angle * Math.PI) / 180;
       const targetX = myCar.x + Math.cos(rad) * lead;
       const targetY = myCar.y + Math.sin(rad) * lead;
-      this.camera.x += (targetX - this.camera.x) * 0.16;
-      this.camera.y += (targetY - this.camera.y) * 0.16;
+      this.camera.x += (targetX - this.camera.x) * 0.14;
+      this.camera.y += (targetY - this.camera.y) * 0.14;
     }
 
-    // Calculate scale to show a reasonable area
-    this.camera.scale = Math.min(
-      this.canvas.width / 1200,
-      this.canvas.height / 800
-    );
+    const speed = Math.abs(myCar?.speed || 0);
+    const baseScale = Math.min(this.canvas.width / 1180, this.canvas.height / 780);
+    const zoomOut = 1 - Math.min(0.16, speed / 2600);
+    this.camera.targetScale = baseScale * zoomOut;
+    this.camera.scale += (this.camera.targetScale - this.camera.scale) * 0.06;
     this._clampCameraToTrack(track);
 
     ctx.save();
@@ -219,69 +224,171 @@ export class Renderer {
     const { centerline, road_half_width, world_width, world_height } = track;
     if (!centerline || centerline.length < 2) return;
 
-    // Background
-    ctx.fillStyle = '#2f6a39';
+    const grass = ctx.createLinearGradient(0, 0, world_width, world_height);
+    grass.addColorStop(0, '#2f7040');
+    grass.addColorStop(0.48, '#255e34');
+    grass.addColorStop(1, '#356f3c');
+    ctx.fillStyle = grass;
     ctx.fillRect(0, 0, world_width, world_height);
 
-    ctx.globalAlpha = 0.16;
-    ctx.strokeStyle = '#214f2a';
-    ctx.lineWidth = 2;
-    for (let x = -world_height; x < world_width; x += 120) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x + world_height, world_height);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
+    this._drawGrassTexture(ctx, world_width, world_height);
+    this._drawTrackDecorations(ctx, track);
 
-    // Draw road border (white)
-    ctx.beginPath();
-    ctx.moveTo(centerline[0][0], centerline[0][1]);
-    for (let i = 1; i < centerline.length; i++) {
-      ctx.lineTo(centerline[i][0], centerline[i][1]);
-    }
-    ctx.closePath();
-    ctx.lineWidth = road_half_width * 2 + 18;
-    ctx.strokeStyle = '#d9d9d2';
+    this._pathTrack(ctx, centerline);
+    ctx.lineWidth = road_half_width * 2 + 38;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.28)';
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(centerline[0][0], centerline[0][1]);
-    for (let i = 1; i < centerline.length; i++) {
-      ctx.lineTo(centerline[i][0], centerline[i][1]);
-    }
-    ctx.closePath();
-    ctx.lineWidth = road_half_width * 2 + 6;
-    ctx.strokeStyle = '#1f2329';
+    this._pathTrack(ctx, centerline);
+    ctx.lineWidth = road_half_width * 2 + 24;
+    ctx.strokeStyle = '#d8d7ca';
     ctx.stroke();
 
-    // Draw road surface (gray)
-    ctx.beginPath();
-    ctx.moveTo(centerline[0][0], centerline[0][1]);
-    for (let i = 1; i < centerline.length; i++) {
-      ctx.lineTo(centerline[i][0], centerline[i][1]);
-    }
-    ctx.closePath();
+    this._pathTrack(ctx, centerline);
+    ctx.lineWidth = road_half_width * 2 + 10;
+    ctx.strokeStyle = '#22272f';
+    ctx.stroke();
+
+    this._pathTrack(ctx, centerline);
     ctx.lineWidth = road_half_width * 2;
-    ctx.strokeStyle = '#4d5056';
+    ctx.strokeStyle = '#4a4f58';
     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(centerline[0][0], centerline[0][1]);
-    for (let i = 1; i < centerline.length; i++) {
-      ctx.lineTo(centerline[i][0], centerline[i][1]);
-    }
-    ctx.closePath();
+    this._pathTrack(ctx, centerline);
+    ctx.lineWidth = Math.max(8, road_half_width * 1.25);
+    ctx.strokeStyle = 'rgba(112, 118, 126, 0.45)';
+    ctx.stroke();
+
+    this._drawCurbs(ctx, track);
+
+    this._pathTrack(ctx, centerline);
     ctx.lineWidth = 3;
     ctx.setLineDash([28, 34]);
-    ctx.strokeStyle = 'rgba(255,255,255,0.26)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.24)';
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Draw start line
     this._drawStartLine(ctx, track);
+  }
+
+  _pathTrack(ctx, centerline) {
+    ctx.beginPath();
+    ctx.moveTo(centerline[0][0], centerline[0][1]);
+    for (let i = 1; i < centerline.length; i++) {
+      ctx.lineTo(centerline[i][0], centerline[i][1]);
+    }
+    ctx.closePath();
+  }
+
+  _drawGrassTexture(ctx, worldWidth, worldHeight) {
+    ctx.save();
+    ctx.globalAlpha = 0.14;
+    ctx.strokeStyle = '#184b27';
+    ctx.lineWidth = 2;
+    for (let x = -worldHeight; x < worldWidth; x += 130) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x + worldHeight, worldHeight);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 0.1;
+    ctx.fillStyle = '#78a957';
+    for (let x = 80; x < worldWidth; x += 340) {
+      for (let y = 70; y < worldHeight; y += 260) {
+        const wobble = ((x * 17 + y * 13) % 47) - 24;
+        ctx.beginPath();
+        ctx.ellipse(x + wobble, y - wobble, 34, 12, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  _drawCurbs(ctx, track) {
+    const { centerline, road_half_width } = track;
+    ctx.save();
+    ctx.lineWidth = 10;
+    ctx.lineCap = 'butt';
+    for (let i = 0; i < centerline.length; i += 3) {
+      const a = centerline[i];
+      const b = centerline[(i + 1) % centerline.length];
+      const dx = b[0] - a[0];
+      const dy = b[1] - a[1];
+      const len = Math.hypot(dx, dy);
+      if (len < 1) continue;
+      const nx = -dy / len;
+      const ny = dx / len;
+      const color = Math.floor(i / 3) % 2 === 0 ? '#e53935' : '#f4f4ea';
+      ctx.strokeStyle = color;
+      for (const side of [-1, 1]) {
+        ctx.beginPath();
+        ctx.moveTo(a[0] + nx * road_half_width * side, a[1] + ny * road_half_width * side);
+        ctx.lineTo(b[0] + nx * road_half_width * side, b[1] + ny * road_half_width * side);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  _drawTrackDecorations(ctx, track) {
+    const { centerline, road_half_width, world_width, world_height } = track;
+    ctx.save();
+    for (let i = 0; i < centerline.length; i += 14) {
+      const p = centerline[i];
+      const q = centerline[(i + 2) % centerline.length];
+      const dx = q[0] - p[0];
+      const dy = q[1] - p[1];
+      const len = Math.hypot(dx, dy);
+      if (len < 1) continue;
+      const nx = -dy / len;
+      const ny = dx / len;
+      const side = i % 28 === 0 ? 1 : -1;
+      const x = p[0] + nx * (road_half_width + 84) * side;
+      const y = p[1] + ny * (road_half_width + 84) * side;
+      if (x < 40 || y < 40 || x > world_width - 40 || y > world_height - 40) continue;
+
+      if (i % 42 === 0) {
+        this._drawFlag(ctx, x, y, i);
+      } else if (i % 28 === 0) {
+        this._drawTireStack(ctx, x, y);
+      } else {
+        this._drawCrowdBlock(ctx, x, y, i);
+      }
+    }
+    ctx.restore();
+  }
+
+  _drawFlag(ctx, x, y, seed) {
+    ctx.fillStyle = 'rgba(20, 22, 26, 0.45)';
+    ctx.fillRect(x - 2, y - 5, 4, 34);
+    ctx.fillStyle = seed % 2 === 0 ? '#ffd166' : '#53b7ff';
+    ctx.beginPath();
+    ctx.moveTo(x + 2, y - 4);
+    ctx.lineTo(x + 35, y + 3);
+    ctx.lineTo(x + 2, y + 12);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  _drawTireStack(ctx, x, y) {
+    for (let i = 0; i < 4; i++) {
+      ctx.fillStyle = i % 2 ? '#20242b' : '#111318';
+      ctx.beginPath();
+      ctx.arc(x + i * 9, y + (i % 2) * 5, 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  _drawCrowdBlock(ctx, x, y, seed) {
+    ctx.fillStyle = 'rgba(18, 20, 24, 0.28)';
+    ctx.fillRect(x - 18, y - 10, 44, 22);
+    for (let i = 0; i < 5; i++) {
+      const hue = ['#f4f4ea', '#ff8a3d', '#53b7ff', '#7cff9b'][Math.abs(seed + i) % 4];
+      ctx.fillStyle = hue;
+      ctx.fillRect(x - 14 + i * 8, y - 7 + (i % 2) * 8, 5, 5);
+    }
   }
 
   _drawStartLine(ctx, track) {
@@ -322,7 +429,7 @@ export class Renderer {
     ctx.translate(x, y);
     ctx.rotate((angle * Math.PI) / 180);
 
-    const w = 38, h = 19;
+    const w = 42, h = 20;
 
     // Speed/nitro trail
     if ((speed || 0) > 110) {
@@ -337,9 +444,14 @@ export class Renderer {
     }
 
     if ((nitro_amount || 0) < 99 && (speed || 0) > 80) {
-      ctx.fillStyle = 'rgba(255, 134, 61, 0.78)';
+      const flame = 1 + Math.min(1.5, speed / 220);
+      ctx.fillStyle = 'rgba(255, 134, 61, 0.82)';
       ctx.beginPath();
-      ctx.ellipse(-w / 2 - 6, 0, 11, 4, 0, 0, Math.PI * 2);
+      ctx.ellipse(-w / 2 - 9, 0, 9 * flame, 4.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255, 220, 120, 0.78)';
+      ctx.beginPath();
+      ctx.ellipse(-w / 2 - 8, 0, 5 * flame, 2.5, 0, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -349,35 +461,65 @@ export class Renderer {
     ctx.roundRect(-w / 2 + 3, -h / 2 + 4, w, h, 5);
     ctx.fill();
 
+    // Rear and front wings
+    ctx.fillStyle = 'rgba(18, 22, 28, 0.92)';
+    ctx.fillRect(-w / 2 - 4, -h / 2 - 2, 9, h + 4);
+    ctx.fillRect(w / 2 - 6, -h / 2 - 4, 9, h + 8);
+
     // Car body
-    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    const bodyGradient = ctx.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
+    bodyGradient.addColorStop(0, `rgb(${Math.min(255, r + 34)},${Math.min(255, g + 34)},${Math.min(255, b + 34)})`);
+    bodyGradient.addColorStop(0.52, `rgb(${r},${g},${b})`);
+    bodyGradient.addColorStop(1, `rgb(${Math.max(0, r - 36)},${Math.max(0, g - 36)},${Math.max(0, b - 36)})`);
+    ctx.fillStyle = bodyGradient;
     ctx.beginPath();
     ctx.roundRect(-w / 2, -h / 2, w, h, 5);
     ctx.fill();
 
-    ctx.fillStyle = `rgba(255,255,255,${isPlayer ? 0.24 : 0.14})`;
-    ctx.fillRect(-w / 2 + 5, -h / 2 + 3, w * 0.45, 3);
+    // Nose cone
+    ctx.beginPath();
+    ctx.moveTo(w / 2 + 10, 0);
+    ctx.lineTo(w / 2 - 2, -h / 2 + 2);
+    ctx.lineTo(w / 2 - 2, h / 2 - 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = `rgba(255,255,255,${isPlayer ? 0.30 : 0.16})`;
+    ctx.fillRect(-w / 2 + 6, -h / 2 + 3, w * 0.52, 3);
 
     // Nose and wheels
     ctx.fillStyle = 'rgba(20, 24, 30, 0.9)';
-    ctx.fillRect(w / 2 - 9, -h / 2 + 2, 7, h - 4);
-    ctx.fillRect(-w / 2 + 6, -h / 2 - 3, 8, 4);
-    ctx.fillRect(-w / 2 + 6, h / 2 - 1, 8, 4);
-    ctx.fillRect(w / 2 - 14, -h / 2 - 3, 8, 4);
-    ctx.fillRect(w / 2 - 14, h / 2 - 1, 8, 4);
+    for (const wx of [-w / 2 + 8, w / 2 - 13]) {
+      ctx.beginPath();
+      ctx.roundRect(wx, -h / 2 - 5, 10, 6, 2);
+      ctx.roundRect(wx, h / 2 - 1, 10, 6, 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(220, 228, 238, 0.28)';
+      ctx.fillRect(wx + 2, -h / 2 - 3, 5, 1);
+      ctx.fillRect(wx + 2, h / 2 + 1, 5, 1);
+      ctx.fillStyle = 'rgba(20, 24, 30, 0.9)';
+    }
 
     // Highlight player car
     if (isPlayer) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(-w / 2 - 4, -h / 2 - 4, w + 8, h + 8, 7);
+      ctx.roundRect(-w / 2 - 6, -h / 2 - 6, w + 16, h + 12, 8);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255, 209, 102, 0.55)';
+      ctx.lineWidth = 1;
       ctx.stroke();
     }
 
     // Windshield
-    ctx.fillStyle = 'rgba(128, 206, 255, 0.72)';
-    ctx.fillRect(w / 5, -h / 3, w / 5, h * 2 / 3);
+    ctx.fillStyle = 'rgba(128, 206, 255, 0.82)';
+    ctx.beginPath();
+    ctx.roundRect(1, -h / 3, 10, h * 2 / 3, 3);
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(14, 16, 20, 0.35)';
+    ctx.fillRect(-w / 2 + 5, -1, w - 10, 2);
 
     if (health <= 35) {
       ctx.strokeStyle = 'rgba(255, 80, 80, 0.85)';
@@ -385,6 +527,8 @@ export class Renderer {
       ctx.beginPath();
       ctx.moveTo(-4, -h / 2 + 2);
       ctx.lineTo(8, h / 2 - 2);
+      ctx.moveTo(-12, h / 2 - 2);
+      ctx.lineTo(0, -h / 2 + 3);
       ctx.stroke();
     }
 
