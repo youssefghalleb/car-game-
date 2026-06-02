@@ -34,6 +34,9 @@
   let lastTelemetryCountdown = null;
   let lastTelemetryHealth = null;
   let lastNitro = false;
+  let vibrationPrimed = false;
+  let vibrationUnsupportedLogged = false;
+  let lastWarningVibrationAt = 0;
 
   const state = {
     roomId: roomInput.value.trim(),
@@ -79,30 +82,51 @@
     }
   }
 
-  function vibrate(pattern) {
-    if ('vibrate' in navigator) {
-      navigator.vibrate(pattern);
+  function vibrate(pattern, force = false) {
+    if (!('vibrate' in navigator)) {
+      if (!vibrationUnsupportedLogged) {
+        vibrationUnsupportedLogged = true;
+        log('vibration_unavailable');
+      }
+      return false;
     }
+
+    if (!force && !vibrationPrimed) return false;
+
+    const ok = navigator.vibrate(pattern);
+    if (ok) vibrationPrimed = true;
+    return ok;
+  }
+
+  function primeVibration(pattern = 35) {
+    vibrationPrimed = true;
+    vibrate(pattern, true);
   }
 
   function handleTelemetry(data) {
     if (typeof data.countdown === 'number' && data.countdown !== lastTelemetryCountdown) {
-      if (data.countdown > 0) vibrate(35);
-      else vibrate([45, 45, 90]);
+      if (data.countdown > 0) vibrate([45, 25, 45]);
+      else vibrate([70, 35, 110]);
       lastTelemetryCountdown = data.countdown;
     }
 
     if (data.state !== lastTelemetryState) {
-      if (data.state === 'racing') vibrate([55, 35, 90]);
-      if (data.state === 'finished') vibrate([80, 50, 80, 50, 140]);
+      if (data.state === 'racing') vibrate([80, 35, 120]);
+      if (data.state === 'finished') vibrate([100, 55, 100, 55, 160]);
       lastTelemetryState = data.state || '';
     }
 
-    if (data.collision) vibrate([90, 35, 60]);
-    if (data.wrong_way || data.shortcut_warning || data.invalid_lap_warning) vibrate([35, 35, 35]);
+    if (data.collision) vibrate([110, 35, 75]);
+    if (data.wrong_way || data.shortcut_warning || data.invalid_lap_warning || data.off_track_warning) {
+      const now = performance.now();
+      if (now - lastWarningVibrationAt > 900) {
+        lastWarningVibrationAt = now;
+        vibrate([50, 40, 50]);
+      }
+    }
 
     if (lastTelemetryHealth !== null && typeof data.health === 'number' && data.health < lastTelemetryHealth - 2) {
-      vibrate([80, 30, 50]);
+      vibrate([95, 30, 60]);
     }
     if (typeof data.health === 'number') {
       lastTelemetryHealth = data.health;
@@ -130,6 +154,7 @@
   }
 
   function connect() {
+    primeVibration(30);
     state.roomId = normalizeRoomId(roomInput.value);
     state.playerId = normalizePlayerId(playerInput.value);
     if (!state.roomId || !state.playerId) return;
@@ -235,7 +260,7 @@
     if (!force && encoded === lastSent && performance.now() - lastSentAt < 250) return;
     ws.send(encoded);
     if (payload.action === 'input' && payload.nitro && !lastNitro) {
-      vibrate(45);
+      vibrate([55, 25, 55]);
     }
     if (payload.action === 'input') {
       lastNitro = !!payload.nitro;
@@ -279,6 +304,7 @@
   }
 
   async function enableMotion() {
+    primeVibration([25, 25, 45]);
     if (typeof DeviceOrientationEvent !== 'undefined'
       && typeof DeviceOrientationEvent.requestPermission === 'function') {
       const result = await DeviceOrientationEvent.requestPermission();
@@ -294,7 +320,7 @@
 
   function bindHold(id, onChange) {
     const button = document.getElementById(id);
-    const down = (event) => { event.preventDefault(); onChange(true); };
+    const down = (event) => { event.preventDefault(); primeVibration(20); onChange(true); };
     const up = (event) => { if (event) event.preventDefault(); onChange(false); };
     button.addEventListener('touchstart', down, { passive: false });
     button.addEventListener('touchend', up, { passive: false });
@@ -307,6 +333,10 @@
   document.getElementById('connectBtn').addEventListener('click', connect);
   document.getElementById('reconnectBtn').addEventListener('click', connect);
   document.getElementById('enableMotionBtn').addEventListener('click', enableMotion);
+  document.getElementById('testVibrationBtn').addEventListener('click', () => {
+    primeVibration([80, 45, 130]);
+    log('vibration_test');
+  });
   document.getElementById('calibrateBtn').addEventListener('click', calibrate);
   document.getElementById('zeroSteerBtn').addEventListener('click', () => {
     steer = 0;
@@ -314,6 +344,7 @@
     updateUI();
   });
   document.getElementById('readyBtn').addEventListener('click', (event) => {
+    primeVibration(35);
     ready = !ready;
     event.currentTarget.textContent = ready ? 'Ready ✓' : 'Ready';
     event.currentTarget.className = ready ? 'toggle-on' : 'primary';

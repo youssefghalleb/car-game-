@@ -74,6 +74,7 @@ async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
     player_id = None
     role = None
     remote_controller = False
+    spectator_id = None
 
     try:
         async for msg in ws:
@@ -127,6 +128,27 @@ async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
                             await broadcast_state(room)
                             continue
 
+                        if role == "spectator":
+                            role = "spectator"
+                            spectator_id = room.add_spectator(name, ws)
+                            ensure_room_loop(room)
+                            await ws.send_json({
+                                "action": "joined",
+                                "role": "spectator",
+                                "connection_id": connection_id,
+                                "spectator_id": spectator_id,
+                                "room_id": room_id,
+                            })
+                            await ws.send_str(json.dumps(
+                                room.get_state_snapshot(
+                                    include_track=room.race is not None,
+                                    include_meta=True,
+                                ),
+                                separators=(",", ":"),
+                            ))
+                            await broadcast_state(room)
+                            continue
+
                         role = "display"
                         player_id, old_ws = room.add_display(name, ws, requested_player_id)
                         if player_id is None:
@@ -164,6 +186,9 @@ async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
                             )
 
                     elif action == "start" and player_id and role == "display":
+                        if not room.is_host(player_id):
+                            await ws.send_json({"error": "host_only"})
+                            continue
                         started, blockers = room.start_race()
                         if not started:
                             await ws.send_json({
@@ -173,13 +198,15 @@ async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
                         await broadcast_state(room, include_track=started)
 
                     elif action == "settings" and player_id and role == "display":
-                        if room.state == "lobby":
+                        if room.state == "lobby" and room.is_host(player_id):
                             for key in ("laps_to_win", "bot_count", "bot_difficulty",
                                         "car_damage", "track_layout", "steer_assist",
                                         "race_mode"):
                                 if key in data:
                                     room.settings[key] = data[key]
                             await broadcast_state(room)
+                        elif room.state == "lobby":
+                            await ws.send_json({"error": "host_only"})
 
                     elif action == "ready" and player_id:
                         ready = bool(data.get("ready", True))
@@ -210,6 +237,15 @@ async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
                         room.quit_to_lobby()
                         await broadcast_state(room)
 
+                    elif action == "chat":
+                        sender = "Spectator"
+                        if role == "display" and player_id in room.players:
+                            sender = room.players[player_id].name
+                        elif role == "spectator" and spectator_id in room.spectators:
+                            sender = room.spectators[spectator_id].name
+                        room.add_chat_message(sender, data.get("text", ""))
+                        await broadcast_state(room)
+
                 except Exception as e:
                     log_controller(
                         f"ws_message_error connection={connection_id} room={room_id} "
@@ -233,7 +269,15 @@ async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
                 await broadcast_state(room)
             room.cleanup_inactive_players(grace_seconds=30.0)
             shared_pairing.cleanup()
-            if room.player_count == 0:
+            if room.active_count == 0:
+                log_controller(f"room_remove_empty room={room_id}")
+                rooms.pop(room_id, None)
+        elif spectator_id and role == "spectator":
+            detached = room.detach_spectator(spectator_id, ws)
+            if detached:
+                log_controller(f"spectator_close connection={connection_id} room={room_id} spectator={spectator_id}")
+                await broadcast_state(room)
+            if room.active_count == 0:
                 log_controller(f"room_remove_empty room={room_id}")
                 rooms.pop(room_id, None)
 
@@ -250,7 +294,7 @@ async def room_loop(room: Room):
     last_broadcast = 0.0
 
     try:
-        while room.player_count > 0:
+        while room.active_count > 0:
             now = time.perf_counter()
             dt = min(now - last_tick, tick_interval * 2)
             last_tick = now
@@ -274,8 +318,15 @@ async def broadcast_state(room: Room, include_track: bool = False, include_meta:
     snapshot = room.get_state_snapshot(include_track=include_track, include_meta=include_meta)
     msg = json.dumps(snapshot, separators=(",", ":"))
 
-    for pid, slot in room.players.items():
-        ws = slot.display_ws
+    recipients = [
+        (pid, slot, slot.display_ws, False)
+        for pid, slot in room.players.items()
+    ] + [
+        (sid, slot, slot.ws, True)
+        for sid, slot in room.spectators.items()
+    ]
+
+    for pid, slot, ws, is_spectator in recipients:
         if ws is None or ws.closed:
             continue
 
@@ -303,6 +354,9 @@ async def broadcast_state(room: Room, include_track: bool = False, include_meta:
             send_display_state(room, pid, slot, ws, msg)
         )
 
+        if is_spectator:
+            continue
+
         controller_ws = slot.controller_ws
         if controller_ws is None or controller_ws.closed:
             continue
@@ -327,12 +381,16 @@ async def send_display_state(room: Room, player_id: str, slot, ws: web.WebSocket
     except asyncio.CancelledError:
         raise
     except Exception as exc:
-        if slot.display_ws is ws:
+        current_ws = getattr(slot, "display_ws", getattr(slot, "ws", None))
+        if current_ws is ws:
             log_controller(
                 f"display_send_fail room={room.room_id} player={player_id} "
                 f"error={type(exc).__name__}"
             )
-            room.detach_display(player_id, ws)
+            if str(player_id).startswith("S"):
+                room.detach_spectator(player_id, ws)
+            else:
+                room.detach_display(player_id, ws)
     finally:
         if slot._display_send_task is asyncio.current_task():
             slot._display_send_task = None
@@ -358,6 +416,7 @@ def build_controller_telemetry(snapshot: dict, player_id: str) -> dict | None:
         telemetry["wrong_way"] = car.get("wrong_way", False)
         telemetry["shortcut_warning"] = car.get("shortcut_warning", False)
         telemetry["invalid_lap_warning"] = car.get("invalid_lap_warning", False)
+        telemetry["off_track_warning"] = car.get("off_track_warning", False)
 
     if snapshot.get("crash_events"):
         telemetry["collision"] = True
@@ -389,7 +448,7 @@ async def game_loop(app: web.Application):
         for room in list(rooms.values()):
             room.cleanup_inactive_players(grace_seconds=30.0)
             shared_pairing.cleanup()
-            if room.player_count == 0:
+            if room.active_count == 0:
                 rooms.pop(room.room_id, None)
                 task = room_tasks.pop(room.room_id, None)
                 if task is not None:
@@ -421,6 +480,7 @@ async def room_list(request: web.Request) -> web.Response:
             "room_id": rid,
             "state": room.state,
             "players": room.player_count,
+            "spectators": len(room.spectators),
         })
     return web.json_response(result)
 

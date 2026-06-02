@@ -44,14 +44,22 @@ body {
   justify-content: center;
 }
 
+#lobby-screen.active {
+  align-items: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Lobby */
 .lobby-container {
-  max-width: 480px;
+  max-width: 560px;
   width: 100%;
-  padding: 24px;
+  min-height: 100vh;
+  padding: 18px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .lobby-container h1 {
@@ -87,6 +95,11 @@ body {
   font-size: 1rem;
 }
 
+.lobby-card select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -96,6 +109,8 @@ body {
 #player-list-ul {
   list-style: none;
   padding: 8px 0;
+  max-height: 160px;
+  overflow-y: auto;
 }
 
 #player-list-ul li {
@@ -390,6 +405,58 @@ body {
   font-size: 0.95rem;
 }
 
+.records-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.records-summary span,
+.achievement-pill {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.records-summary strong {
+  display: block;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.chat-card {
+  display: grid;
+  gap: 10px;
+}
+
+.chat-log {
+  min-height: 54px;
+  max-height: 120px;
+  overflow-y: auto;
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.chat-message {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.chat-message strong {
+  color: var(--accent2);
+}
+
+.chat-row {
+  display: grid;
+  grid-template-columns: 1fr 82px;
+  gap: 8px;
+}
+
 .compact-select {
   height: 30px;
   border-radius: 6px;
@@ -505,11 +572,22 @@ body {
 @media (max-width: 720px) {
   .lobby-container {
     max-width: 100%;
-    padding: 16px;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .lobby-container h1 {
+    font-size: 1.55rem;
+    margin-bottom: 0;
+  }
+
+  .lobby-card {
+    padding: 12px;
   }
 
   .settings-grid {
     grid-template-columns: 1fr;
+    gap: 9px;
   }
 
   #hud {

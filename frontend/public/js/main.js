@@ -27,9 +27,17 @@ let lastNitroActive = false;
 let lastWarningAt = 0;
 let ghostEnabled = true;
 let ghostSamples = [];
-let bestGhostSamples = null;
+let personalGhost = null;
+let sessionGhost = null;
 let lastGhostSampleAt = 0;
 let lastGhostLap = 0;
+let lastLapStartTime = 0;
+let raceStats = {
+  maxSpeed: 0,
+  nitroUses: 0,
+  collisions: 0,
+  cleanLap: true,
+};
 let lastInputSentAt = 0;
 let lastInputPayload = '';
 const INPUT_SEND_INTERVAL_MS = 1000 / 30;
@@ -43,7 +51,7 @@ function showScreen(id) {
 
 // Client event handlers
 client.on('joined', (data) => {
-  myPlayerId = data.player_id;
+  myPlayerId = data.role === 'spectator' ? null : data.player_id;
   lobby.onJoined(data);
   // Initialize audio on first user interaction (join click)
   audio.init();
@@ -62,6 +70,9 @@ client.on('state', (state) => {
     showScreen('game-screen');
     renderer.resize();
     showCountdown(state.countdown);
+    if (state.countdown === 3 && prevCountdown !== 3) {
+      resetRaceTracking();
+    }
     // Play countdown beeps
     if (state.countdown !== prevCountdown && state.countdown > 0 && state.countdown <= 3) {
       audio.playCountdownBeep(state.countdown);
@@ -77,12 +88,15 @@ client.on('state', (state) => {
     // Update engine sound based on player speed
     const myCar = state.cars && state.cars.find(c => c.id === myPlayerId);
     if (myCar) {
+      raceStats.maxSpeed = Math.max(raceStats.maxSpeed, Math.abs(myCar.speed || 0));
       audio.updateEngine(myCar.speed);
       updateRaceAudioEvents(myCar);
       updateGhostRecording(state, myCar);
     }
     // Play crash sounds
     if (state.crash_events) {
+      raceStats.collisions += state.crash_events.length;
+      raceStats.cleanLap = false;
       for (const ev of state.crash_events) {
         audio.playCrash(ev.impact);
       }
@@ -98,6 +112,7 @@ client.on('state', (state) => {
     audio.stopEngine();
     audio.playVictory();
     showResults(state.leaderboard);
+    updatePersonalRecords(state);
   }
 });
 
@@ -145,20 +160,29 @@ function updateRaceAudioEvents(car) {
 
   if ((car.completed_laps || 0) > lastCompletedLaps) {
     audio.playLap();
+    lastLapStartTime = performance.now();
+    raceStats.cleanLap = true;
   }
   lastCompletedLaps = car.completed_laps || 0;
 
   const nitroActive = (car.nitro_amount || 0) < 99 && car.speed > 40;
   if (nitroActive && !lastNitroActive) {
+    raceStats.nitroUses += 1;
     audio.playNitro();
   }
   lastNitroActive = nitroActive;
 
-  const warning = car.wrong_way || car.shortcut_warning || car.invalid_lap_warning;
+  const warning = car.wrong_way || car.shortcut_warning || car.invalid_lap_warning || car.off_track_warning;
   const now = performance.now();
   if (warning && now - lastWarningAt > 900) {
+    if (car.off_track_warning) audio.playOffTrack();
     audio.playWarning();
     lastWarningAt = now;
+    raceStats.cleanLap = false;
+  }
+
+  if (Math.abs(car.angular_velocity || 0) > 92 && Math.abs(car.speed || 0) > 80) {
+    audio.playTireScreech(Math.min(1, Math.abs(car.angular_velocity) / 220));
   }
 }
 
@@ -167,11 +191,11 @@ function updateGhostRecording(state, car) {
   if (!soloGhostMode || !car || car.is_bot) return;
 
   const ghostKey = `carGameGhost:${state.track_id || state.track?.layout_name || 'track'}:${state.race_mode}`;
-  if (!bestGhostSamples) {
+  if (!personalGhost) {
     try {
-      bestGhostSamples = JSON.parse(localStorage.getItem(ghostKey) || 'null');
+      personalGhost = JSON.parse(localStorage.getItem(ghostKey) || 'null');
     } catch (_) {
-      bestGhostSamples = null;
+      personalGhost = null;
     }
   }
 
@@ -184,11 +208,71 @@ function updateGhostRecording(state, car) {
 
   const completed = car.completed_laps || 0;
   if (completed > lastGhostLap && ghostSamples.length > 8) {
-    bestGhostSamples = ghostSamples.slice();
-    localStorage.setItem(ghostKey, JSON.stringify(bestGhostSamples));
+    const lapTime = car.last_lap_time || ((performance.now() - lastLapStartTime) / 1000);
+    const ghost = { lapTime, samples: ghostSamples.slice() };
+    if (!sessionGhost || lapTime < sessionGhost.lapTime) {
+      sessionGhost = ghost;
+    }
+    if (!personalGhost || lapTime < personalGhost.lapTime) {
+      personalGhost = ghost;
+      localStorage.setItem(ghostKey, JSON.stringify(personalGhost));
+    }
     ghostSamples = [];
   }
   lastGhostLap = completed;
+}
+
+function resetRaceTracking() {
+  lastCheckpoint = null;
+  lastCompletedLaps = 0;
+  lastNitroActive = false;
+  ghostSamples = [];
+  personalGhost = null;
+  sessionGhost = null;
+  lastGhostSampleAt = 0;
+  lastGhostLap = 0;
+  lastLapStartTime = performance.now();
+  raceStats = { maxSpeed: 0, nitroUses: 0, collisions: 0, cleanLap: true };
+}
+
+function updatePersonalRecords(state) {
+  if (!myPlayerId || !state.cars) return;
+  const myCar = state.cars.find(c => c.id === myPlayerId);
+  if (!myCar) return;
+
+  let records = {};
+  try {
+    records = JSON.parse(localStorage.getItem('carGameRecords') || '{}');
+  } catch (_) {
+    records = {};
+  }
+
+  const leaderboard = state.leaderboard || [];
+  const position = leaderboard.findIndex(p => p.name === myCar.name);
+  const rank = position >= 0 ? position + 1 : null;
+  const achievements = new Set(records.achievements || []);
+
+  records.races_completed = (records.races_completed || 0) + 1;
+  if (rank === 1) records.wins = (records.wins || 0) + 1;
+  if (rank && rank <= 3) records.podiums = (records.podiums || 0) + 1;
+  if (myCar.best_lap_time) {
+    records.best_lap = Math.min(records.best_lap || Infinity, myCar.best_lap_time);
+  }
+  if (myCar.total_time || leaderboard[0]?.time) {
+    records.best_race_time = Math.min(records.best_race_time || Infinity, myCar.total_time || leaderboard[0].time);
+  }
+
+  achievements.add('First Race');
+  if ((records.wins || 0) >= 1) achievements.add('First Win');
+  if ((records.wins || 0) >= 10) achievements.add('10 Wins');
+  if (raceStats.cleanLap && myCar.best_lap_time) achievements.add('Perfect Lap');
+  if (raceStats.maxSpeed >= 240) achievements.add('Speed Demon');
+  if (raceStats.nitroUses >= 5) achievements.add('Nitro Master');
+  if ((records.races_completed || 0) >= 25) achievements.add('Long Distance Driver');
+
+  records.achievements = [...achievements].sort();
+  localStorage.setItem('carGameRecords', JSON.stringify(records));
+  lobby.updateRecords();
 }
 
 // Results
@@ -250,7 +334,10 @@ soundQualitySelect.addEventListener('change', () => {
 // Game loop: render + send input
 function gameLoop(now = performance.now()) {
   if (currentState && currentState.cars && currentState.track) {
-    renderer.render(currentState, myPlayerId, ghostEnabled ? bestGhostSamples : null);
+    renderer.render(currentState, myPlayerId, ghostEnabled ? {
+      personal: personalGhost?.samples || null,
+      session: sessionGhost?.samples || null,
+    } : null);
   }
 
   // Send input to server at a stable rate, with a small heartbeat for held keys.

@@ -10,6 +10,7 @@ export class Renderer {
     this._trackCacheKey = null;
     this._trackCanvas = null;
     this._particles = [];
+    this._skidMarks = [];
     this._lastCrashEvents = null;
     this._lastFrame = performance.now();
     this._smoothCars = new Map();
@@ -71,18 +72,29 @@ export class Renderer {
       this._drawCar(ctx, car, car.id === myPlayerId);
     }
 
+    this._queueDrivingEffects(renderCars, dt);
     this._updateParticles(dt);
     this._drawParticles(ctx);
+    this._drawSkidMarks(ctx);
 
     ctx.restore();
   }
 
   _drawGhost(ctx, samples) {
+    if (samples && !Array.isArray(samples)) {
+      this._drawGhostPath(ctx, samples.session, '#53b7ff', 0.28);
+      this._drawGhostPath(ctx, samples.personal, '#7cff9b', 0.42);
+      return;
+    }
+    this._drawGhostPath(ctx, samples, '#7cff9b', 0.42);
+  }
+
+  _drawGhostPath(ctx, samples, color, alpha) {
     if (!samples || samples.length < 2) return;
 
     ctx.save();
-    ctx.globalAlpha = 0.42;
-    ctx.strokeStyle = '#7cff9b';
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -96,7 +108,7 @@ export class Renderer {
     ctx.setLineDash([]);
 
     const tail = samples[samples.length - 1];
-    ctx.fillStyle = '#7cff9b';
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(tail.x, tail.y, 10, 0, Math.PI * 2);
     ctx.fill();
@@ -167,6 +179,9 @@ export class Renderer {
         'is_bot',
         'name',
         'color',
+        'wrong_way',
+        'off_track_warning',
+        'angular_velocity',
       ]) {
         smooth[key] = car[key];
       }
@@ -409,6 +424,42 @@ export class Renderer {
     }
   }
 
+  _queueDrivingEffects(cars, dt) {
+    for (const car of cars) {
+      const speed = Math.abs(car.speed || 0);
+      const turning = Math.abs(car.angular_velocity || 0);
+      if (speed > 95 && turning > 85) {
+        this._skidMarks.push({
+          x: car.x,
+          y: car.y,
+          angle: car.angle,
+          life: 1.6,
+          maxLife: 1.6,
+        });
+        if (this._skidMarks.length > 120) this._skidMarks.shift();
+      }
+
+      if (car.off_track_warning && Math.random() < 0.45) {
+        const angle = Math.random() * Math.PI * 2;
+        this._particles.push({
+          x: car.x,
+          y: car.y,
+          vx: Math.cos(angle) * 45,
+          vy: Math.sin(angle) * 45,
+          life: 0.28,
+          maxLife: 0.28,
+          radius: 3 + Math.random() * 5,
+          color: '180,145,88',
+        });
+      }
+    }
+
+    for (const mark of this._skidMarks) {
+      mark.life -= dt;
+    }
+    this._skidMarks = this._skidMarks.filter(mark => mark.life > 0);
+  }
+
   _updateParticles(dt) {
     for (const p of this._particles) {
       p.x += p.vx * dt;
@@ -427,6 +478,19 @@ export class Renderer {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius * alpha, 0, Math.PI * 2);
       ctx.fill();
+    }
+  }
+
+  _drawSkidMarks(ctx) {
+    for (const mark of this._skidMarks) {
+      const alpha = Math.max(0, mark.life / mark.maxLife) * 0.24;
+      ctx.save();
+      ctx.translate(mark.x, mark.y);
+      ctx.rotate((mark.angle * Math.PI) / 180);
+      ctx.fillStyle = `rgba(12, 14, 18, ${alpha})`;
+      ctx.fillRect(-18, -12, 24, 3);
+      ctx.fillRect(-18, 9, 24, 3);
+      ctx.restore();
     }
   }
 }

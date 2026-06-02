@@ -113,6 +113,16 @@ class BotDriver:
                 "overtake_bonus": 34.0,
                 "commit_time": 2.5,
             },
+            "expert": {
+                "top_speed": 314.0,
+                "accel": 144.0,
+                "brake": 118.0,
+                "corner_factor": 1.40,
+                "drs_bonus": 34.0,
+                "lane_keep": 1.0,
+                "overtake_bonus": 42.0,
+                "commit_time": 2.8,
+            },
         }[difficulty]
 
     def _normalize_angle(self, angle):

@@ -187,6 +187,10 @@ export class GameClient {
     });
   }
 
+  spectate(name) {
+    this.join(name, { role: 'spectator' });
+  }
+
   sendInput(controls) {
     this.send({ action: 'input', ...controls });
   }
@@ -201,6 +205,10 @@ export class GameClient {
 
   updateSettings(settings) {
     this.send({ action: 'settings', ...settings });
+  }
+
+  sendChat(text) {
+    this.send({ action: 'chat', text });
   }
 
   pauseRace() {

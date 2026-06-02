@@ -58,6 +58,7 @@
             <option value="easy">Easy</option>
             <option value="medium" selected>Medium</option>
             <option value="hard">Hard</option>
+            <option value="expert">Expert</option>
           </select>
         </div>
         <div>
@@ -88,6 +89,18 @@
         <h3>Players</h3>
         <ul id="player-list-ul"></ul>
       </div>
+      <div id="records-card" class="lobby-card records-card">
+        <h3>Personal Records</h3>
+        <div id="records-summary" class="records-summary"></div>
+      </div>
+      <div id="chat-card" class="lobby-card chat-card">
+        <h3>Room Chat</h3>
+        <div id="chat-log" class="chat-log"></div>
+        <div class="chat-row">
+          <input type="text" id="chat-input" maxlength="160" placeholder="Message..." />
+          <button id="chat-send-btn" class="btn compact">Send</button>
+        </div>
+      </div>
       <div id="pairing-card" class="lobby-card pairing-card hidden">
         <div>
           <h3>Controller Pairing</h3>
@@ -97,6 +110,7 @@
         <img id="pair-qr" alt="Controller QR code" />
       </div>
       <button id="join-btn" class="btn primary">Join Game</button>
+      <button id="spectate-btn" class="btn">Spectate</button>
       <button id="ready-btn" class="btn hidden">Ready</button>
       <button id="start-btn" class="btn success hidden">Start Race</button>
       <div id="lobby-status" class="status-msg"></div>

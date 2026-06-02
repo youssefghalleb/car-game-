@@ -6,6 +6,7 @@ import time
 
 DB_PATH = os.environ.get("PAIRING_DB_PATH", "/tmp/car_game_pairing.sqlite")
 STALE_SECONDS = 90.0
+INPUT_STALE_SECONDS = 0.35
 
 
 def _connect():
@@ -124,7 +125,7 @@ def write_input(room_id: str, player_id: str, controls: dict):
 
 
 def read_input(room_id: str, player_id: str) -> dict | None:
-    cutoff = time.time() - STALE_SECONDS
+    cutoff = time.time() - INPUT_STALE_SECONDS
 
     def read(conn):
         row = conn.execute(
@@ -139,6 +140,20 @@ def read_input(room_id: str, player_id: str) -> dict | None:
         return json.loads(row[0])
 
     return _execute(read)
+
+
+def clear_input(room_id: str, player_id: str):
+    def write(conn):
+        conn.execute(
+            """
+            UPDATE players
+            SET input_json=NULL, input_seen=NULL
+            WHERE room_id=? AND player_id=?
+            """,
+            (room_id, player_id),
+        )
+
+    _execute(write)
 
 
 def cleanup():

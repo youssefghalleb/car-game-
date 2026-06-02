@@ -18,6 +18,8 @@ export class AudioManager {
     this.enginePlaying = false;
     this.engineLayers = {};
     this.engineGains = {};
+    this.lastScreechAt = 0;
+    this.lastOffTrackAt = 0;
 
     // Master gain
     this.masterGain = null;
@@ -121,6 +123,46 @@ export class AudioManager {
     const now = this.ctx.currentTime;
     this._playToneAt(180, 0.08, 0.16, now);
     this._playToneAt(180, 0.08, 0.14, now + 0.13);
+  }
+
+  playOffTrack() {
+    if (!this.enabled) return;
+    const nowMs = performance.now();
+    if (nowMs - this.lastOffTrackAt < 700) return;
+    this.lastOffTrackAt = nowMs;
+    const now = this.ctx.currentTime;
+    this._playToneAt(150, 0.10, 0.18, now);
+    this._playToneAt(220, 0.08, 0.12, now + 0.11);
+  }
+
+  playTireScreech(intensity = 0.5) {
+    if (!this.enabled || this.quality === 'low') return;
+    const nowMs = performance.now();
+    if (nowMs - this.lastScreechAt < 180) return;
+    this.lastScreechAt = nowMs;
+
+    const amount = Math.max(0.15, Math.min(1, intensity));
+    const duration = 0.055 + amount * 0.055;
+    const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    let last = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / bufferSize;
+      const white = Math.random() * 2 - 1;
+      last = 0.72 * last + 0.28 * white;
+      data[i] = last * (1 - t) * amount * 0.22;
+    }
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0.45;
+    source.connect(gain);
+    gain.connect(this.effectsGain);
+    source.start();
+    source.onended = () => { source.disconnect(); gain.disconnect(); };
   }
 
   playClick() {

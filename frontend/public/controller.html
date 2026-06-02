@@ -18,17 +18,22 @@
       --nitro: #ff8a3d;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+    }
     body {
       margin: 0;
-      min-height: 100vh;
-      padding: 14px;
+      min-height: 100dvh;
+      padding: 10px;
       font-family: Arial, sans-serif;
       color: var(--text);
       background: linear-gradient(180deg, #10141a, #171c24);
+      overscroll-behavior: none;
     }
-    .wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 12px; }
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
-    h1 { font-size: 1.35rem; margin: 0 0 8px; }
+    .wrap { width: min(100%, 560px); margin: 0 auto; display: grid; gap: 8px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+    h1 { font-size: 1.18rem; margin: 0 0 5px; }
     .muted, label { color: var(--muted); font-size: 0.92rem; }
     .row, .grid2, .grid3 { display: grid; gap: 10px; }
     .row { grid-template-columns: 1fr 1fr; }
@@ -36,21 +41,21 @@
     .grid3 { grid-template-columns: repeat(3, 1fr); }
     input, select, button {
       width: 100%;
-      min-height: 44px;
+      min-height: 40px;
       border-radius: 8px;
       border: 1px solid var(--border);
       font-size: 1rem;
     }
-    input, select { margin-top: 5px; padding: 10px; color: var(--text); background: var(--panel2); }
+    input, select { margin-top: 4px; padding: 8px; color: var(--text); background: var(--panel2); }
     input[type="range"] { padding: 0; accent-color: var(--accent); }
     button { border: 0; color: white; font-weight: 800; background: #343c4b; touch-action: none; }
     button.primary { background: var(--accent); }
     button.toggle-on { background: #2f7d52; }
     button.toggle-off { background: #704040; }
-    button.throttle { min-height: 110px; background: linear-gradient(180deg, #58dd89, #2fb866); font-size: 1.2rem; }
-    button.brake { min-height: 82px; background: linear-gradient(180deg, #ff7474, #c84444); }
-    button.nitro { min-height: 82px; background: linear-gradient(180deg, #ffad5c, var(--nitro)); }
-    .pill { padding: 10px 12px; background: var(--panel2); border-radius: 8px; }
+    button.throttle { min-height: 92px; background: linear-gradient(180deg, #58dd89, #2fb866); font-size: 1.08rem; }
+    button.brake { min-height: 74px; background: linear-gradient(180deg, #ff7474, #c84444); }
+    button.nitro { min-height: 74px; background: linear-gradient(180deg, #ffad5c, var(--nitro)); }
+    .pill { padding: 9px 10px; background: var(--panel2); border-radius: 8px; }
     .ok { color: var(--ok); }
     .bad { color: var(--danger); }
     .meter { height: 16px; margin-top: 8px; background: #2d3440; border-radius: 999px; overflow: hidden; }
@@ -65,7 +70,18 @@
     }
     .hidden { display: none; }
     @media (max-width: 560px) {
-      .row, .grid2, .grid3 { grid-template-columns: 1fr; }
+      body { padding: 6px; }
+      .wrap { gap: 6px; }
+      .card { padding: 8px; }
+      .row, .grid2 { grid-template-columns: 1fr; }
+      .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      h1 { font-size: 1.05rem; }
+      .muted, label { font-size: 0.78rem; }
+      input, select, button { min-height: 36px; font-size: 0.86rem; }
+      button.throttle { min-height: 78px; }
+      button.brake,
+      button.nitro { min-height: 64px; }
+      .debug-log { max-height: 58px; }
     }
   </style>
 </head>
@@ -90,6 +106,7 @@
 
     <div class="card grid3">
       <button id="readyBtn" class="primary">Ready</button>
+      <button id="testVibrationBtn">Vibrate</button>
       <button id="pauseBtn">Pause</button>
       <button id="restartBtn">Restart</button>
     </div>

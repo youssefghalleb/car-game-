@@ -25,13 +25,21 @@ export class HUD {
     if (!myCar) return;
 
     // Position in race
-    const sorted = this._sortCars(state.cars);
+    const raceMode = state.race_mode || 'sprint';
+    const sorted = this._sortCars(state.cars, raceMode);
     const position = sorted.findIndex(c => c.id === myPlayerId) + 1;
     this.posEl.textContent = `P${position}`;
 
     // Lap
     const lapsToWin = state.laps_to_win || 5;
-    this.lapEl.textContent = `Lap ${myCar.lap || 1}/${lapsToWin}`;
+    if (raceMode === 'practice') {
+      this.lapEl.textContent = `Practice L${myCar.completed_laps + 1}`;
+    } else if (raceMode === 'elimination') {
+      const seconds = Math.ceil(state.elimination_timer || 0);
+      this.lapEl.textContent = `Elim ${seconds}s`;
+    } else {
+      this.lapEl.textContent = `Lap ${myCar.lap || 1}/${lapsToWin}`;
+    }
 
     // Speed (convert game units to km/h-ish display)
     const kmh = Math.round(Math.abs(myCar.speed) * 1.2);
@@ -50,13 +58,16 @@ export class HUD {
     this.healthFill.style.width = `${healthPct}%`;
     this.healthFill.style.background = healthPct > 50 ? '#47d17e' : healthPct > 25 ? '#ffb300' : '#ff5c5c';
 
-    this._updateLeaderboard(sorted, myPlayerId, state.laps_to_win || 5);
+    this._updateLeaderboard(sorted, myPlayerId, state.laps_to_win || 5, raceMode);
     this._drawMinimap(state, myPlayerId);
     this._updateWarning(myCar);
   }
 
-  _sortCars(cars) {
+  _sortCars(cars, raceMode = 'sprint') {
     return [...cars].sort((a, b) => {
+      if (raceMode === 'elimination' && a.finished !== b.finished) {
+        return a.finished ? 1 : -1;
+      }
       if (b.completed_laps !== a.completed_laps) return b.completed_laps - a.completed_laps;
       if ((b.track_progress || 0) !== (a.track_progress || 0)) {
         return (b.track_progress || 0) - (a.track_progress || 0);
@@ -65,18 +76,21 @@ export class HUD {
     });
   }
 
-  _updateLeaderboard(cars, myPlayerId, lapsToWin) {
+  _updateLeaderboard(cars, myPlayerId, lapsToWin, raceMode) {
     if (!this.leaderboardEl) return;
 
     this.leaderboardEl.innerHTML = cars.map((car, index) => {
       const lap = Math.min(lapsToWin, car.completed_laps + 1);
       const name = this._escape(car.name || `Car ${car.id}`);
       const klass = car.id === myPlayerId ? ' class="is-player"' : '';
+      let meta = `L${lap}/${lapsToWin}`;
+      if (raceMode === 'practice') meta = `${Math.round((car.speed || 0) * 1.2)} km/h`;
+      if (raceMode === 'elimination') meta = car.finished ? 'Out' : `L${car.completed_laps + 1}`;
       return `
         <li${klass}>
           <span class="lb-rank">${index + 1}</span>
           <span class="lb-name">${name}</span>
-          <span class="lb-meta">L${lap}/${lapsToWin}</span>
+          <span class="lb-meta">${meta}</span>
         </li>
       `;
     }).join('');

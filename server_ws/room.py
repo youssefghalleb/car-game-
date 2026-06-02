@@ -62,6 +62,16 @@ class PlayerSlot:
         self._last_remote_input_poll = 0.0
 
 
+class SpectatorSlot:
+    def __init__(self, spectator_id: str, name: str, ws):
+        self.spectator_id = spectator_id
+        self.name = name
+        self.ws = ws
+        self._display_send_task = None
+        self._dropped_state_frames = 0
+        self._last_send_drop_log = 0.0
+
+
 class Room:
     """
     Salle de jeu contenant un lobby et une course.
@@ -77,7 +87,10 @@ class Room:
         self.room_id = room_id
         self.state = "lobby"  # lobby, countdown, racing, finished
         self.players: dict[str, PlayerSlot] = {}
+        self.spectators: dict[str, SpectatorSlot] = {}
         self.race: Race | None = None
+        self.host_id: str | None = None
+        self.chat_messages: list[dict] = []
         self.settings = {
             "laps_to_win": 5,
             "bot_count": 2,
@@ -88,12 +101,17 @@ class Room:
             "race_mode": "sprint",
         }
         self._next_player_id = 1
+        self._next_spectator_id = 1
         self._game_task: asyncio.Task | None = None
         self._countdown = 0.0
 
     @property
     def player_count(self):
         return len(self.players)
+
+    @property
+    def active_count(self):
+        return len(self.players) + len(self.spectators)
 
     def add_display(self, name: str, ws, requested_player_id: str | None = None) -> tuple[str | None, object | None]:
         """Ajoute ou reconnecte l'écran d'un joueur. Retourne l'ID et l'ancien socket."""
@@ -119,9 +137,26 @@ class Room:
 
         color_index = len(self.players) % len(PLAYER_COLORS)
         self.players[player_id] = PlayerSlot(player_id, name, ws, color_index)
+        if self.host_id is None:
+            self.host_id = player_id
         shared_pairing.register_display(self.room_id, player_id, name)
         log_controller(f"display_registered room={self.room_id} player={player_id} name={name}")
         return player_id, None
+
+    def add_spectator(self, name: str, ws) -> str:
+        spectator_id = self._generate_spectator_id()
+        self.spectators[spectator_id] = SpectatorSlot(spectator_id, name, ws)
+        log_controller(f"spectator_registered room={self.room_id} spectator={spectator_id} name={name}")
+        return spectator_id
+
+    def detach_spectator(self, spectator_id: str, ws=None) -> bool:
+        slot = self.spectators.get(str(spectator_id))
+        if slot is None:
+            return False
+        if ws is not None and slot.ws is not ws:
+            return False
+        self.spectators.pop(str(spectator_id), None)
+        return True
 
     def attach_controller(self, player_id: str, ws) -> tuple[bool, object | None]:
         """Associe un contrôleur à une voiture existante."""
@@ -150,6 +185,7 @@ class Room:
         slot.throttle = 0.0
         slot.brake = 0.0
         slot.nitro = False
+        shared_pairing.clear_input(self.room_id, player_id)
         if slot.display_ws is None:
             slot.disconnected_at = time.monotonic()
         return True
@@ -169,8 +205,24 @@ class Room:
     def remove_player(self, player_id: str):
         """Retire une voiture de la salle quand son écran quitte."""
         self.players.pop(player_id, None)
+        if self.host_id == player_id:
+            self.host_id = next(iter(self.players.keys()), None)
         if self.player_count == 0:
             self._stop_game()
+
+    def is_host(self, player_id: str | None) -> bool:
+        return player_id is not None and player_id == self.host_id
+
+    def add_chat_message(self, sender: str, text: str):
+        cleaned = " ".join(str(text or "").strip().split())[:160]
+        if not cleaned:
+            return
+        self.chat_messages.append({
+            "sender": sender[:24] or "Player",
+            "text": cleaned,
+            "time": round(time.time(), 3),
+        })
+        self.chat_messages = self.chat_messages[-20:]
 
     def cleanup_inactive_players(self, grace_seconds: float = 30.0):
         now = time.monotonic()
@@ -338,7 +390,7 @@ class Room:
             controls = {}
             for pid, slot in self.players.items():
                 now = time.monotonic()
-                if now - slot._last_remote_input_poll >= 1.0 / 30.0:
+                if slot.controller_ws is None and now - slot._last_remote_input_poll >= 1.0 / 30.0:
                     slot._last_remote_input_poll = now
                     remote_input = shared_pairing.read_input(self.room_id, pid)
                     if remote_input:
@@ -366,6 +418,7 @@ class Room:
             snapshot["players"] = {
                 str(pid): {
                     "name": s.name,
+                    "host": pid == self.host_id,
                     "ready": s.ready,
                     "controller_ready": s.controller_ready or shared_pairing.controller_active(self.room_id, pid),
                     "controller": s.controller_ws is not None or shared_pairing.controller_active(self.room_id, pid),
@@ -373,6 +426,12 @@ class Room:
                 }
                 for pid, s in self.players.items()
             }
+            snapshot["host_id"] = self.host_id
+            snapshot["spectators"] = {
+                sid: {"name": s.name}
+                for sid, s in self.spectators.items()
+            }
+            snapshot["chat"] = self.chat_messages
             blockers = self.start_requirements()
             snapshot["can_start"] = self.state == "lobby" and not blockers
             snapshot["start_blockers"] = blockers
@@ -401,6 +460,8 @@ class Room:
                     "wrong_way": getattr(car, "wrong_way_timer", 0.0) > 0.2,
                     "shortcut_warning": getattr(car, "shortcut_warning_timer", 0.0) > 0.0,
                     "invalid_lap_warning": getattr(car, "invalid_lap_warning_timer", 0.0) > 0.0,
+                    "off_track_warning": getattr(car, "off_track_warning_timer", 0.0) > 0.0,
+                    "angular_velocity": round(getattr(car, "angular_velocity", 0.0), 1),
                     "current_lap_time": round(car.current_lap_time, 2),
                     "best_lap_time": (
                         round(car.best_lap_time, 2)
@@ -451,6 +512,13 @@ class Room:
             self._next_player_id += 1
             if player_id not in self.players:
                 return player_id
+
+    def _generate_spectator_id(self) -> str:
+        while True:
+            spectator_id = f"S{self._next_spectator_id}"
+            self._next_spectator_id += 1
+            if spectator_id not in self.spectators:
+                return spectator_id
 
     def _sanitize_player_id(self, player_id: str | None) -> str | None:
         if player_id is None:
