@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Race Controller</title>
+  <style>
+    :root {
+      --bg: #10141a;
+      --panel: #1b1f27;
+      --panel2: #252b36;
+      --border: #354052;
+      --text: #f2f2f2;
+      --muted: #aab2c0;
+      --accent: #4da3ff;
+      --ok: #47d17e;
+      --danger: #ff5c5c;
+      --nitro: #ff8a3d;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 14px;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #10141a, #171c24);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+    h1 { font-size: 1.35rem; margin: 0 0 8px; }
+    .muted, label { color: var(--muted); font-size: 0.92rem; }
+    .row, .grid2, .grid3 { display: grid; gap: 10px; }
+    .row { grid-template-columns: 1fr 1fr; }
+    .grid2 { grid-template-columns: 1fr 1fr; }
+    .grid3 { grid-template-columns: repeat(3, 1fr); }
+    input, select, button {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 1rem;
+    }
+    input, select { margin-top: 5px; padding: 10px; color: var(--text); background: var(--panel2); }
+    input[type="range"] { padding: 0; accent-color: var(--accent); }
+    button { border: 0; color: white; font-weight: 800; background: #343c4b; touch-action: none; }
+    button.primary { background: var(--accent); }
+    button.toggle-on { background: #2f7d52; }
+    button.toggle-off { background: #704040; }
+    button.throttle { min-height: 110px; background: linear-gradient(180deg, #58dd89, #2fb866); font-size: 1.2rem; }
+    button.brake { min-height: 82px; background: linear-gradient(180deg, #ff7474, #c84444); }
+    button.nitro { min-height: 82px; background: linear-gradient(180deg, #ffad5c, var(--nitro)); }
+    .pill { padding: 10px 12px; background: var(--panel2); border-radius: 8px; }
+    .ok { color: var(--ok); }
+    .bad { color: var(--danger); }
+    .meter { height: 16px; margin-top: 8px; background: #2d3440; border-radius: 999px; overflow: hidden; }
+    .fill { width: 0%; height: 100%; background: linear-gradient(90deg, #8c7cff, #53b7ff); }
+    .debug-log {
+      max-height: 130px;
+      overflow: auto;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .hidden { display: none; }
+    @media (max-width: 560px) {
+      .row, .grid2, .grid3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Race Controller</h1>
+      <p class="muted">Room <strong id="roomLabel">-</strong> · Player <strong id="playerLabel">-</strong></p>
+    </div>
+
+    <div class="card row">
+      <label>Room ID<input id="roomInput" autocomplete="off" /></label>
+      <label>Player ID<input id="playerInput" autocomplete="off" /></label>
+      <button id="connectBtn" class="primary">Connect</button>
+      <div class="pill">WebSocket: <span id="wsStatus" class="bad">disconnected</span></div>
+    </div>
+
+    <div class="card">
+      <button id="enableMotionBtn" class="primary">Enable Motion</button>
+      <p class="muted">Hold the phone in your driving position, then calibrate.</p>
+    </div>
+
+    <div class="card grid3">
+      <button id="readyBtn" class="primary">Ready</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="restartBtn">Restart</button>
+    </div>
+
+    <div class="card grid3">
+      <button id="calibrateBtn">Calibrate</button>
+      <button id="zeroSteerBtn">Zero</button>
+      <button id="reconnectBtn">Reconnect</button>
+    </div>
+
+    <div class="card grid2">
+      <label>Sensor Mode
+        <select id="modeSelect">
+          <option value="tilt">Tilt</option>
+          <option value="touch">Touch slider</option>
+        </select>
+      </label>
+      <label>Axis
+        <select id="axisSelect">
+          <option value="gamma">Gamma</option>
+          <option value="beta">Beta</option>
+        </select>
+      </label>
+      <label>Sensitivity <input id="sensitivitySlider" type="range" min="50" max="160" value="100" /></label>
+      <label>Dead Zone <input id="deadzoneSlider" type="range" min="0" max="15" value="6" /></label>
+      <button id="invertBtn" class="toggle-on">Invert: On</button>
+      <label>Touch Steering <input id="touchSteerSlider" type="range" min="-100" max="100" value="0" /></label>
+    </div>
+
+    <div class="card grid3">
+      <button id="throttleBtn" class="throttle">Throttle</button>
+      <button id="brakeBtn" class="brake">Brake</button>
+      <button id="nitroBtn" class="nitro">Nitro</button>
+    </div>
+
+    <div class="card">
+      <div>Steer: <span id="steerValue">0.00</span></div>
+      <div class="meter"><div id="steerBar" class="fill"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="muted">Debug</div>
+      <pre id="debugLog" class="debug-log"></pre>
+    </div>
+  </div>
+  <script src="/js/controller.js"></script>
+</body>
+</html>

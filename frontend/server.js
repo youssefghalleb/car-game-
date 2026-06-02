@@ -5,14 +5,22 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const GAME_SERVER = process.env.GAME_SERVER_URL || 'http://localhost:8765';
+const PUBLIC_GAME_SERVER_WS_URL = process.env.PUBLIC_GAME_SERVER_WS_URL || '';
 
 // Derive WebSocket target from HTTP target
 const WS_TARGET = GAME_SERVER.replace(/^http/, 'ws');
+
+app.get('/api/config', (_req, res) => {
+  res.json({
+    gameServerWsUrl: PUBLIC_GAME_SERVER_WS_URL,
+  });
+});
 
 // Proxy API calls to game server (BEFORE static files)
 app.use('/api', createProxyMiddleware({
   target: GAME_SERVER,
   changeOrigin: true,
+  pathRewrite: (path) => `/api${path}`,
 }));
 
 // Proxy WebSocket connections to game server
@@ -20,15 +28,23 @@ const wsProxy = createProxyMiddleware({
   target: WS_TARGET,
   changeOrigin: true,
   ws: true,
-  // Required for ACA: prevent proxy from buffering and allow raw WebSocket frames
-  onProxyReqWs: (proxyReq, req, socket, options, head) => {
-    // Keep connection alive through ACA's load balancer
-    proxyReq.setHeader('Connection', 'Upgrade');
-    proxyReq.setHeader('Upgrade', 'websocket');
-  },
-  // Log proxy errors for debugging
-  onError: (err, req, res) => {
-    console.error('[WS Proxy] Error:', err.message);
+  xfwd: true,
+  timeout: 0,
+  proxyTimeout: 0,
+  on: {
+    // http-proxy-middleware v3 exposes event hooks under the `on` option.
+    proxyReqWs: (_proxyReq, req) => {
+      console.log(`[WS Proxy] upgrade ${req.url} -> ${WS_TARGET}`);
+    },
+    error: (err, req) => {
+      console.error('[WS Proxy] Error:', req?.url, err.message);
+    },
+    open: (_proxySocket) => {
+      console.log('[WS Proxy] target socket opened');
+    },
+    close: (_res, socket) => {
+      console.log(`[WS Proxy] socket closed destroyed=${socket?.destroyed ?? 'unknown'}`);
+    },
   },
 });
 app.use('/ws', wsProxy);

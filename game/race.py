@@ -49,6 +49,7 @@ class Race:
     def __init__(
         self,
         player_name="Player",
+        players=None,
         laps_to_win=5,
         bot_count=4,
         bot_difficulty="medium",
@@ -74,7 +75,8 @@ class Race:
         self.crash_events = []
 
         # Paramètres généraux de la course.
-        self.player_name = player_name
+        self.player_entries = players or [{"id": "P1", "name": player_name, "color_index": 0}]
+        self.player_name = self.player_entries[0]["name"] if self.player_entries else player_name
         self.laps_to_win = laps_to_win
         self.bot_count = min(4, bot_count)
         self.bot_difficulty = bot_difficulty
@@ -87,14 +89,6 @@ class Race:
         # Dictionnaire des pilotes automatiques des bots.
         self.bot_drivers = {}
 
-        # Position et orientation de référence au départ.
-        start_x, start_y, angle = self.track.get_spawn(1)
-
-        # Base locale de la ligne de départ :
-        # tx, ty = direction de la piste
-        # nx, ny = direction latérale
-        tx, ty, nx, ny = self.track.get_start_basis()
-
         # ----------------------------------------------------
         # Création des bots
         # ----------------------------------------------------
@@ -105,39 +99,16 @@ class Race:
                 pace_factors = [0.985, 0.995, 1.0, 0.99]
                 styles = ["balanced", "balanced", "traction", "balanced"]
 
-                longitudinal_gap = 92.0
-                lateral_gap = 30.0
-                grid_shift = 0.0
-
             # Paramètres spécifiques au circuit principal.
             else:
                 lane_biases = [-30.0, -8.0, 14.0, 34.0]
                 pace_factors = [0.995, 1.0, 1.01, 1.005]
                 styles = ["balanced", "balanced", "late_braker", "traction"]
 
-                longitudinal_gap = 84.0
-                lateral_gap = 24.0
-                grid_shift = 10.0
-
             for i in range(self.bot_count):
-                # Les bots commencent à l'identifiant 2.
-                player_id = i + 2
+                player_id = f"BOT{i + 1}"
 
-                # Placement en grille sur deux colonnes.
-                row = i // 2
-                col = i % 2
-
-                # Décalage arrière par rapport à la ligne de départ.
-                back = longitudinal_gap * (self.bot_count - i)
-
-                # Décalage latéral pour éviter que les voitures soient alignées.
-                side = (-0.5 if col == 0 else 0.5) * lateral_gap
-                side += row * 4.0 * (-1 if col == 0 else 1)
-                side += grid_shift
-
-                # Position finale du bot.
-                bx = start_x - tx * back + nx * side
-                by = start_y - ty * back + ny * side
+                bx, by, angle = self.track.get_grid_position(i)
 
                 # Nom du bot.
                 bot_name = BOT_F1_NAMES[i] if i < len(BOT_F1_NAMES) else f"Bot {i + 1}"
@@ -179,29 +150,25 @@ class Race:
                 self.bot_drivers[player_id] = driver
 
         # ----------------------------------------------------
-        # Création de la voiture du joueur
+        # Création des voitures des joueurs
         # ----------------------------------------------------
 
-        # Le joueur est placé derrière les bots.
-        if self.track_layout == "track_2":
-            player_back = 92.0 * (self.bot_count + 1)
-            player_side = 0.0
-        else:
-            player_back = 84.0 * (self.bot_count + 1)
-            player_side = 10.0
+        self.player_cars = []
 
-        px = start_x - tx * player_back + nx * player_side
-        py = start_y - ty * player_back + ny * player_side
+        for index, entry in enumerate(self.player_entries):
+            px, py, angle = self.track.get_grid_position(self.bot_count + index)
 
-        # Création de la voiture contrôlée par le joueur.
-        player = Car(px, py, angle, PLAYER_COLORS[0], 1)
-        player.is_bot = False
-        player.display_name = player_name
-        player.track_progress = 0.0
-        player.wrong_way_timer = 0.0
+            color_index = int(entry.get("color_index", index)) % len(PLAYER_COLORS)
+            player = Car(px, py, angle, PLAYER_COLORS[color_index], str(entry["id"]))
+            player.is_bot = False
+            player.display_name = entry.get("name", f"Player {index + 1}")
+            player.track_progress = 0.0
+            player.wrong_way_timer = 0.0
 
-        self.cars.append(player)
-        self.player_car = player
+            self.cars.append(player)
+            self.player_cars.append(player)
+
+        self.player_car = self.player_cars[0] if self.player_cars else None
 
         # Calcule immédiatement la progression initiale de toutes les voitures.
         self._refresh_progress_all()
@@ -295,8 +262,12 @@ class Race:
         # Ajoute une pénalité de temps.
         car.total_time += time_penalty
 
-        # Si la voiture est détruite, la partie est terminée.
-        if self.car_damage and car.destroyed:
+        # Si toutes les voitures humaines sont détruites, la partie est terminée.
+        if (
+            self.car_damage
+            and self.player_cars
+            and all(player.destroyed for player in self.player_cars)
+        ):
             self.game_over = True
 
     def _check_wrong_direction(self, car, dt: float):
@@ -466,8 +437,12 @@ class Race:
                 # Vérification du mauvais sens.
                 self._check_wrong_direction(car, dt)
 
-                # Si les dégâts sont activés, une voiture détruite finit la partie.
-                if self.car_damage and car.destroyed:
+                # Si tous les joueurs sont détruits, la partie est terminée.
+                if (
+                    self.car_damage
+                    and self.player_cars
+                    and all(player.destroyed for player in self.player_cars)
+                ):
                     self.game_over = True
                     continue
 
@@ -487,9 +462,12 @@ class Race:
         # Progression de chaque voiture sur le circuit.
         self._refresh_progress_all()
 
-        # Game over si le joueur est détruit.
-        player = self.player_car
-        if player is not None and self.car_damage and player.destroyed:
+        # Game over si tous les joueurs humains sont détruits.
+        if (
+            self.player_cars
+            and self.car_damage
+            and all(player.destroyed for player in self.player_cars)
+        ):
             self.game_over = True
 
         # Fin de course dès qu'une voiture termine tous les tours.

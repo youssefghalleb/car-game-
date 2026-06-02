@@ -64,42 +64,13 @@ class Track:
             (self.start_index - 1) % len(self.centerline)
         ]
 
-        sx, sy = self.start_pos
-
-        # Angle de départ de la voiture.
-        angle = self._segment_angle(
-            self.centerline[(self.start_index - 1) % len(self.centerline)],
-            self.centerline[self.start_index],
-        )
-
-        # Base locale au niveau du départ.
-        # tx, ty : direction de la piste
-        # nx, ny : direction latérale
-        tx, ty, nx, ny = self._start_basis()
-
-        # Décalage des positions de départ selon le circuit.
-        if self.layout_name == "track_2":
-            back_offset = 220.0
-            lane_offset = 40.0
-        else:
-            back_offset = 96.0
-            lane_offset = 24.0
-
-        # Position de départ du joueur 1.
-        p1x = sx - tx * back_offset - nx * lane_offset
-        p1y = sy - ty * back_offset - ny * lane_offset
-
-        # Position de départ du joueur 2 ou référence secondaire.
-        p2x = sx - tx * back_offset + nx * lane_offset
-        p2y = sy - ty * back_offset + ny * lane_offset
-
-        self.spawn_positions = {
-            1: (p1x, p1y, angle),
-            2: (p2x, p2y, angle),
-        }
-
         # Pre-compute squared road half-width for fast collision checks.
         self._road_hw_sq = self.road_half_width ** 2
+
+        self.spawn_positions = {
+            1: self.get_grid_position(0),
+            2: self.get_grid_position(1),
+        }
 
     def _build_track_1_points(self):
         """
@@ -282,6 +253,96 @@ class Track:
         """
         return self._start_basis()
 
+    def _basis_at_index(self, idx: int):
+        n = len(self.centerline)
+        a = self.centerline[idx % n]
+        b = self.centerline[(idx + 1) % n]
+        dx = b[0] - a[0]
+        dy = b[1] - a[1]
+        length = math.hypot(dx, dy)
+        if length == 0:
+            return 1.0, 0.0, 0.0, 1.0, 0.0
+
+        tx = dx / length
+        ty = dy / length
+        nx = -ty
+        ny = tx
+        angle = math.degrees(math.atan2(ty, tx))
+        return tx, ty, nx, ny, angle
+
+    def _walk_centerline(self, start_idx: int, distance: float, direction: int):
+        """
+        Avance sur la ligne centrale.
+
+        direction = 1 avance dans le sens de course.
+        direction = -1 recule avant le point donné.
+        """
+        n = len(self.centerline)
+        idx = start_idx % n
+        remaining = max(0.0, distance)
+
+        while remaining > 0.0:
+            next_idx = (idx + direction) % n
+            ax, ay = self.centerline[idx]
+            bx, by = self.centerline[next_idx]
+            segment_len = math.hypot(bx - ax, by - ay)
+
+            if segment_len <= 1e-6:
+                idx = next_idx
+                continue
+
+            if remaining <= segment_len:
+                t = remaining / segment_len
+                x = ax + (bx - ax) * t
+                y = ay + (by - ay) * t
+                basis_idx = idx if direction > 0 else next_idx
+                return x, y, basis_idx
+
+            remaining -= segment_len
+            idx = next_idx
+
+        x, y = self.centerline[idx]
+        return x, y, idx
+
+    def _safe_pose(self, center_x: float, center_y: float, basis_idx: int, lateral_offset: float = 0.0):
+        tx, ty, nx, ny, angle = self._basis_at_index(basis_idx)
+        max_offset = max(0.0, self.road_half_width - 30.0)
+        offset = max(-max_offset, min(max_offset, lateral_offset))
+
+        for scale in (1.0, 0.75, 0.5, 0.25, 0.0):
+            x = center_x + nx * offset * scale
+            y = center_y + ny * offset * scale
+            if self.is_on_road(x, y):
+                return x, y, angle
+
+        return center_x, center_y, angle
+
+    def get_grid_position(self, slot_index: int):
+        """
+        Retourne une position de grille sûre, alignée sur la piste.
+        """
+        if self.layout_name == "track_2":
+            front_offset = 150.0
+            row_gap = 88.0
+            lane_gap = 70.0
+        else:
+            front_offset = 92.0
+            row_gap = 66.0
+            lane_gap = 38.0
+
+        row = slot_index // 2
+        col = slot_index % 2
+        side = -0.5 if col == 0 else 0.5
+        if row % 2 == 1:
+            side *= -1
+
+        center_x, center_y, basis_idx = self._walk_centerline(
+            self.start_index,
+            front_offset + row * row_gap,
+            direction=-1,
+        )
+        return self._safe_pose(center_x, center_y, basis_idx, side * lane_gap)
+
     def _point_to_segment_dist_sq(self, px, py, ax, ay, bx, by):
         """
         Calcule le carré de la distance d'un point à un segment.
@@ -404,67 +465,19 @@ class Track:
         Le but est d'éviter les bugs de tour gratuit.
         """
 
-        r = self.get_progress_from_start(x, y)
+        idx = self._nearest_centerline_index(x, y)
+        n = len(self.centerline)
+        rel = (idx - self.start_index) % n
+        min_after_start = max(2, int(n * 0.035))
 
-        # ----------------------------------------------------
-        # Circuit de démonstration
-        # ----------------------------------------------------
-        if self.layout_name == "track_2":
-            # Le départ est sur la ligne droite du bas.
-            pre_start_respawn = (2920, 2262, 180)
-            post_start_respawn = (2100, 2265, 180)
+        if after_start and rel < min_after_start:
+            idx = (self.start_index + min_after_start) % n
+            center_x, center_y = self.centerline[idx]
+            return self._safe_pose(center_x, center_y, idx, 0.0)
 
-            # Si le joueur est déjà après la ligne,
-            # on évite de le renvoyer avant la ligne.
-            if after_start:
-                if r < 0.22:
-                    return post_start_respawn
-
-            if 0.00 <= r < 0.18:
-                return pre_start_respawn
-
-            if 0.18 <= r < 0.36:
-                return (3400, 845, 28)
-
-            if 0.36 <= r < 0.54:
-                return (3790, 1500, 90)
-
-            if 0.54 <= r < 0.72:
-                return (3050, 2255, 180)
-
-            if 0.72 <= r < 0.88:
-                return (1160, 2200, -165)
-
-            return (610, 1450, -95)
-
-        # ----------------------------------------------------
-        # Circuit principal
-        # ----------------------------------------------------
-        if after_start and r < 0.12:
-            return (2050, 805, 6)
-
-        if 0.00 <= r < 0.10:
-            return (980, 300, 58)
-
-        if 0.10 <= r < 0.18:
-            return (2050, 805, 6)
-
-        if 0.18 <= r < 0.34:
-            return (2760, 875, 18)
-
-        if 0.34 <= r < 0.50:
-            return (3040, 1080, 80)
-
-        if 0.50 <= r < 0.66:
-            return (2650, 1355, 180)
-
-        if 0.66 <= r < 0.82:
-            return (1700, 1315, 185)
-
-        if 0.82 <= r < 0.92:
-            return (760, 1188, 180)
-
-        return (250, 700, -92)
+        back_distance = 140.0 if self.layout_name == "track_2" else 95.0
+        center_x, center_y, basis_idx = self._walk_centerline(idx, back_distance, direction=-1)
+        return self._safe_pose(center_x, center_y, basis_idx, 0.0)
 
     def crossed_start_finish_direction(self, old_pos: tuple, new_pos: tuple) -> int:
         """

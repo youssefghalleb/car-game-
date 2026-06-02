@@ -18,7 +18,12 @@ const audio = new AudioManager();
 
 let currentState = null;
 let myPlayerId = null;
+let playerInfo = {};
 let prevCountdown = null;
+let lastInputSentAt = 0;
+let lastInputPayload = '';
+const INPUT_SEND_INTERVAL_MS = 1000 / 30;
+const INPUT_HEARTBEAT_MS = 250;
 
 // Handle screen transitions
 function showScreen(id) {
@@ -35,11 +40,14 @@ client.on('joined', (data) => {
 });
 
 client.on('state', (state) => {
+  if (state.players) {
+    playerInfo = state.players;
+  }
   currentState = state;
-  console.log('[Main] State received:', state.state, state.state === 'countdown' ? `countdown=${state.countdown}` : '');
 
   if (state.state === 'lobby') {
-    lobby.updatePlayers(state.players);
+    lobby.updatePlayers(playerInfo);
+    lobby.updateStartState(state);
   } else if (state.state === 'countdown') {
     showScreen('game-screen');
     renderer.resize();
@@ -67,6 +75,11 @@ client.on('state', (state) => {
         audio.playCrash(ev.impact);
       }
     }
+  } else if (state.state === 'paused') {
+    showScreen('game-screen');
+    hideCountdown();
+    hud.update(state, myPlayerId);
+    audio.stopEngine();
   } else if (state.state === 'finished') {
     showScreen('game-screen');
     hideCountdown();
@@ -77,7 +90,11 @@ client.on('state', (state) => {
 });
 
 client.on('error', (msg) => {
-  lobby.showStatus(msg);
+  if (typeof msg === 'object' && msg?.message) {
+    lobby.showStatus(msg.message);
+  } else {
+    lobby.showStatus(msg);
+  }
 });
 
 // Countdown
@@ -99,7 +116,7 @@ function showResults(leaderboard) {
   const list = document.getElementById('results-list');
   overlay.classList.remove('hidden');
   list.innerHTML = leaderboard.map(p =>
-    `<li>${p.name} — ${p.laps} laps — ${p.time}s</li>`
+    `<li>${p.name} - ${p.laps} laps - ${p.time}s</li>`
   ).join('');
 }
 
@@ -110,16 +127,51 @@ document.getElementById('back-to-lobby-btn').addEventListener('click', () => {
   client.disconnect();
 });
 
+document.getElementById('pause-race-btn').addEventListener('click', () => client.pauseRace());
+document.getElementById('resume-race-btn').addEventListener('click', () => client.resumeRace());
+document.getElementById('restart-race-btn').addEventListener('click', () => {
+  document.getElementById('results-overlay').classList.add('hidden');
+  client.restartRace();
+});
+document.getElementById('reset-race-btn').addEventListener('click', () => client.resetRace());
+document.getElementById('quit-race-btn').addEventListener('click', () => {
+  audio.stopAll();
+  client.quitRace();
+  client.disconnect();
+  showScreen('lobby-screen');
+  window.location.reload();
+});
+
+const muteAudioBtn = document.getElementById('mute-audio-btn');
+const volumeSlider = document.getElementById('volume-slider');
+muteAudioBtn.addEventListener('click', () => {
+  audio.setMuted(!audio.muted);
+  muteAudioBtn.textContent = audio.muted ? 'Unmute' : 'Mute';
+});
+volumeSlider.addEventListener('input', () => {
+  audio.setMasterVolume(Number(volumeSlider.value) / 100);
+});
+
 // Game loop: render + send input
-function gameLoop() {
+function gameLoop(now = performance.now()) {
   if (currentState && currentState.cars && currentState.track) {
     renderer.render(currentState, myPlayerId);
   }
 
-  // Send input to server
-  if (client.connected && myPlayerId) {
+  // Send input to server at a stable rate, with a small heartbeat for held keys.
+  const controllerLinked = !!playerInfo?.[myPlayerId]?.controller;
+  if (client.connected && myPlayerId && !controllerLinked) {
     const controls = input.getControls();
-    client.sendInput(controls);
+    const payload = JSON.stringify(controls);
+    const due = now - lastInputSentAt >= INPUT_SEND_INTERVAL_MS;
+    const changed = payload !== lastInputPayload;
+    const heartbeat = now - lastInputSentAt >= INPUT_HEARTBEAT_MS;
+
+    if (due && (changed || heartbeat)) {
+      client.sendInput(controls);
+      lastInputSentAt = now;
+      lastInputPayload = payload;
+    }
   }
 
   requestAnimationFrame(gameLoop);

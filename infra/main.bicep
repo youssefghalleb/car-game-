@@ -2,6 +2,8 @@
 // Deploy with: az deployment group create --resource-group <rg> --template-file main.bicep
 
 @description('Base name for all resources')
+@minLength(2)
+@maxLength(47)
 param appName string = 'cargame'
 
 @description('Azure region')
@@ -52,15 +54,16 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
   }
 }
 
-// Game Server Container App (internal, not exposed to internet)
+// Game Server Container App
 resource gameServer 'Microsoft.App/containerApps@2023-05-01' = {
   name: '${appName}-gameserver'
   location: location
   properties: {
     managedEnvironmentId: containerAppEnv.id
     configuration: {
+      activeRevisionsMode: 'Single'
       ingress: {
-        external: false
+        external: true
         targetPort: 8765
         transport: 'http'
         // Sticky sessions ensure WebSocket upgrade and frames hit the same replica
@@ -95,7 +98,8 @@ resource gameServer 'Microsoft.App/containerApps@2023-05-01' = {
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 5
+        // Rooms live in process memory, so all room participants must hit the same gameserver.
+        maxReplicas: 1
         rules: [
           {
             name: 'http-scaling'
@@ -118,6 +122,7 @@ resource frontend 'Microsoft.App/containerApps@2023-05-01' = {
   properties: {
     managedEnvironmentId: containerAppEnv.id
     configuration: {
+      activeRevisionsMode: 'Single'
       ingress: {
         external: true
         targetPort: 3000
@@ -154,11 +159,15 @@ resource frontend 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
               name: 'GAME_SERVER_URL'
-              value: 'http://${gameServer.properties.configuration.ingress.fqdn}'
+              value: 'https://${gameServer.properties.configuration.ingress.fqdn}'
             }
             {
               name: 'PORT'
               value: '3000'
+            }
+            {
+              name: 'PUBLIC_GAME_SERVER_WS_URL'
+              value: 'wss://${gameServer.properties.configuration.ingress.fqdn}'
             }
           ]
         }

@@ -8,32 +8,50 @@ export class LobbyUI {
     this._joined = false;
 
     this.joinBtn = document.getElementById('join-btn');
+    this.readyBtn = document.getElementById('ready-btn');
     this.startBtn = document.getElementById('start-btn');
     this.statusEl = document.getElementById('lobby-status');
     this.playerListEl = document.getElementById('player-list-ul');
+    this.pairingCard = document.getElementById('pairing-card');
+    this.pairRoomEl = document.getElementById('pair-room');
+    this.pairPlayerEl = document.getElementById('pair-player');
+    this.controllerLinkEl = document.getElementById('controller-link');
+    this.qrEl = document.getElementById('pair-qr');
+    this._pendingJoinName = null;
+    this._ready = false;
+    this._myPlayerId = null;
 
     this.joinBtn.addEventListener('click', () => this._onJoin());
+    this.readyBtn.addEventListener('click', () => this._onReadyToggle());
     this.startBtn.addEventListener('click', () => this._onStart());
+    this.client.on('connected', () => {
+      if (this._pendingJoinName) {
+        this.client.join(this._pendingJoinName);
+        this._pendingJoinName = null;
+      }
+    });
+  }
+
+  _onReadyToggle() {
+    this._ready = !this._ready;
+    this.client.setReady(this._ready);
+    this._updateReadyButton();
   }
 
   _onJoin() {
     const name = document.getElementById('player-name').value.trim() || 'Player';
-    const roomCode = document.getElementById('room-code').value.trim() || this._generateCode();
+    const roomCode = this._normalizeRoomCode(
+      document.getElementById('room-code').value.trim() || this._generateCode()
+    );
 
     document.getElementById('room-code').value = roomCode;
 
     this.showStatus('Connecting...');
+    this._pendingJoinName = name;
     this.client.connect(roomCode);
-    this.client.on('connected', () => {
-      this.client.join(name);
-    });
   }
 
   _onStart() {
-    console.log('[Lobby] Start button clicked');
-    console.log('[Lobby] Client connected:', this.client.connected);
-    console.log('[Lobby] WS state:', this.client.ws?.readyState);
-
     if (!this.client.connected) {
       this.showStatus('Error: not connected to server');
       return;
@@ -45,12 +63,12 @@ export class LobbyUI {
       laps_to_win: parseInt(document.getElementById('laps-select').value),
       bot_count: parseInt(document.getElementById('bots-select').value),
       bot_difficulty: document.getElementById('difficulty-select').value,
+      car_damage: document.getElementById('damage-select').value === 'true',
+      steer_assist: document.getElementById('assist-select').value,
     };
-    console.log('[Lobby] Sending settings:', settings);
     this.client.updateSettings(settings);
 
     setTimeout(() => {
-      console.log('[Lobby] Sending start command');
       this.client.startRace();
     }, 100);
   }
@@ -59,21 +77,83 @@ export class LobbyUI {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
+  _normalizeRoomCode(value) {
+    return String(value || '')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_-]/g, '')
+      .slice(0, 32);
+  }
+
   onJoined(data) {
     this._joined = true;
+    this._myPlayerId = data.player_id;
     this.showStatus(`Joined room: ${data.room_id} (You are Player ${data.player_id})`);
     this.joinBtn.classList.add('hidden');
+    this.readyBtn.classList.remove('hidden');
     this.startBtn.classList.remove('hidden');
+    this.startBtn.disabled = true;
+    this.showPairing(data.room_id, data.player_id);
+    this._updateReadyButton();
+  }
+
+  showPairing(roomId, playerId) {
+    const controllerUrl = new URL('/controller.html', window.location.origin);
+    controllerUrl.searchParams.set('room', roomId);
+    controllerUrl.searchParams.set('player', playerId);
+
+    this.pairRoomEl.textContent = roomId;
+    this.pairPlayerEl.textContent = playerId;
+    this.controllerLinkEl.href = controllerUrl.toString();
+    this.controllerLinkEl.textContent = controllerUrl.pathname + controllerUrl.search;
+    console.info(`[Pairing] controller room=${roomId} player=${playerId} url=${controllerUrl.toString()}`);
+    this.qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(controllerUrl.toString())}`;
+    this.pairingCard.classList.remove('hidden');
   }
 
   updatePlayers(players) {
     if (!players) return;
     this.playerListEl.innerHTML = Object.entries(players)
-      .map(([id, p]) => `<li>🏎️ ${p.name} ${p.ready ? '✓' : ''}</li>`)
+      .map(([id, p]) => {
+        const controller = p.controller ? (p.controller_ready ? 'Controller ready' : 'Controller linked') : 'Scan QR';
+        const monitor = p.ready ? 'Monitor ready' : 'Monitor waiting';
+        return `<li><span>${id} · ${this._escape(p.name)}</span><span>${monitor} · ${controller}</span></li>`;
+      })
       .join('');
+  }
+
+  updateStartState(state) {
+    if (!this._joined) return;
+    const canStart = !!state.can_start;
+    this.startBtn.disabled = !canStart;
+    this.startBtn.classList.toggle('disabled', !canStart);
+    if (state.players?.[this._myPlayerId]) {
+      this._ready = !!state.players[this._myPlayerId].ready;
+      this._updateReadyButton();
+    }
+    if (canStart) {
+      this.showStatus('All players ready');
+    } else if (state.start_blockers?.length) {
+      this.showStatus(state.start_blockers.slice(0, 2).join(' · '));
+    }
   }
 
   showStatus(msg) {
     this.statusEl.textContent = msg;
+  }
+
+  _updateReadyButton() {
+    this.readyBtn.textContent = this._ready ? 'Ready ✓' : 'Ready';
+    this.readyBtn.classList.toggle('success', this._ready);
+  }
+
+  _escape(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    }[ch]));
   }
 }

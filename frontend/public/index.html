@@ -51,12 +51,36 @@
             <option value="hard">Hard</option>
           </select>
         </div>
+        <div>
+          <label for="damage-select">Damage</label>
+          <select id="damage-select">
+            <option value="true" selected>On</option>
+            <option value="false">Off</option>
+          </select>
+        </div>
+        <div>
+          <label for="assist-select">Steering</label>
+          <select id="assist-select">
+            <option value="none" selected>Direct</option>
+            <option value="medium">Assist</option>
+            <option value="full">Stable</option>
+          </select>
+        </div>
       </div>
       <div id="players-list" class="lobby-card">
         <h3>Players in Room</h3>
         <ul id="player-list-ul"></ul>
       </div>
+      <div id="pairing-card" class="lobby-card pairing-card hidden">
+        <div>
+          <h3>Controller Pairing</h3>
+          <p class="pairing-meta">Room <strong id="pair-room">-</strong> · Player <strong id="pair-player">-</strong></p>
+          <a id="controller-link" href="#" target="_blank" rel="noreferrer">Open controller</a>
+        </div>
+        <img id="pair-qr" alt="Controller QR code" />
+      </div>
       <button id="join-btn" class="btn primary">Join Game</button>
+      <button id="ready-btn" class="btn hidden">Ready</button>
       <button id="start-btn" class="btn success hidden">Start Race</button>
       <div id="lobby-status" class="status-msg"></div>
     </div>
@@ -70,12 +94,30 @@
       <div id="hud-position" class="hud-item">P1</div>
       <div id="hud-lap" class="hud-item">Lap 1/5</div>
       <div id="hud-speed" class="hud-item">0 km/h</div>
+      <div id="hud-time" class="hud-item">0.00s</div>
       <div id="hud-nitro" class="hud-bar">
         <div id="hud-nitro-fill" class="bar-fill nitro-fill"></div>
       </div>
       <div id="hud-health" class="hud-bar">
         <div id="hud-health-fill" class="bar-fill health-fill"></div>
       </div>
+    </div>
+    <div id="race-panel">
+      <div class="panel-title">Leaderboard</div>
+      <ol id="leaderboard-list"></ol>
+    </div>
+    <div id="race-controls">
+      <button id="pause-race-btn" class="btn compact">Pause</button>
+      <button id="resume-race-btn" class="btn compact">Resume</button>
+      <button id="restart-race-btn" class="btn compact">Restart</button>
+      <button id="reset-race-btn" class="btn compact">Reset</button>
+      <button id="quit-race-btn" class="btn compact danger">Quit</button>
+      <button id="mute-audio-btn" class="btn compact">Mute</button>
+      <label for="volume-slider" class="volume-control">Volume</label>
+      <input id="volume-slider" type="range" min="0" max="100" value="100" />
+    </div>
+    <div id="minimap-panel">
+      <canvas id="minimap-canvas" width="220" height="140"></canvas>
     </div>
     <!-- Countdown overlay -->
     <div id="countdown-overlay" class="hidden">
