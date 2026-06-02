@@ -2,6 +2,13 @@
 // WebSocket client for game server communication
 // ============================================================
 
+const DEBUG_WS = new URLSearchParams(window.location.search).get('debug') === '1'
+  || localStorage.getItem('carGameDebug') === '1';
+
+function debugWs(message) {
+  if (DEBUG_WS) console.info(message);
+}
+
 export class GameClient {
   constructor() {
     this.ws = null;
@@ -79,14 +86,14 @@ export class GameClient {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsBase = configuredWsBase || `${protocol}//${window.location.host}`;
       const url = `${wsBase}/ws/${encodeURIComponent(roomId)}`;
-      console.info(`[WS] connecting room=${roomId} url=${url}`);
+      debugWs(`[WS] connecting room=${roomId} url=${url}`);
       this.ws = new WebSocket(url);
 
       this.ws.onopen = () => {
       if (seq !== this._connectSeq) return;
       this.connected = true;
       this._reconnectAttempts = 0;
-      console.info(`[WS] connected room=${roomId}`);
+      debugWs(`[WS] connected room=${roomId}`);
       this._emit('connected');
       // Re-join room after reconnect
       if (this._reconnecting && this._playerName) {
@@ -124,7 +131,7 @@ export class GameClient {
       this.ws.onclose = (event) => {
       if (seq !== this._connectSeq) return;
       this.connected = false;
-      console.info(`[WS] closed room=${roomId} code=${event.code} reason=${event.reason || ''}`);
+      debugWs(`[WS] closed room=${roomId} code=${event.code} reason=${event.reason || ''}`);
       const replaced = event.code === 4001 || event.reason === 'replaced';
       if (!this._manualClose && !replaced && this._reconnectAttempts < this._maxReconnectAttempts) {
         this._attemptReconnect();
@@ -145,7 +152,7 @@ export class GameClient {
     this._reconnectAttempts++;
     this._reconnecting = true;
     const delay = Math.min(1000 * Math.pow(2, this._reconnectAttempts - 1), 10000);
-    console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this._reconnectAttempts}/${this._maxReconnectAttempts})`);
+    debugWs(`[WS] Reconnecting in ${delay}ms (attempt ${this._reconnectAttempts}/${this._maxReconnectAttempts})`);
     this._reconnectTimer = setTimeout(() => {
       this._reconnectTimer = null;
       if (!this.connected) {

@@ -40,13 +40,17 @@ let raceStats = {
 };
 let lastInputSentAt = 0;
 let lastInputPayload = '';
+let activeScreenId = document.querySelector('.screen.active')?.id || null;
 const INPUT_SEND_INTERVAL_MS = 1000 / 30;
 const INPUT_HEARTBEAT_MS = 250;
 
 // Handle screen transitions
 function showScreen(id) {
+  if (activeScreenId === id) return false;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  activeScreenId = id;
+  return true;
 }
 
 // Client event handlers
@@ -67,8 +71,9 @@ client.on('state', (state) => {
     lobby.updatePlayers(playerInfo);
     lobby.updateStartState(state);
   } else if (state.state === 'countdown') {
-    showScreen('game-screen');
-    renderer.resize();
+    if (showScreen('game-screen')) {
+      renderer.resize();
+    }
     showCountdown(state.countdown);
     if (state.countdown === 3 && prevCountdown !== 3) {
       resetRaceTracking();
@@ -148,7 +153,10 @@ function showCountdown(value) {
 }
 
 function hideCountdown() {
-  document.getElementById('countdown-overlay').classList.add('hidden');
+  const overlay = document.getElementById('countdown-overlay');
+  if (!overlay.classList.contains('hidden')) {
+    overlay.classList.add('hidden');
+  }
   displayedCountdown = null;
 }
 

@@ -162,7 +162,6 @@ export class LobbyUI {
     this.pairPlayerEl.textContent = playerId;
     this.controllerLinkEl.href = controllerUrl.toString();
     this.controllerLinkEl.textContent = controllerUrl.pathname + controllerUrl.search;
-    console.info(`[Pairing] controller room=${roomId} player=${playerId} url=${controllerUrl.toString()}`);
     this.qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(controllerUrl.toString())}`;
     this.pairingCard.classList.remove('hidden');
   }

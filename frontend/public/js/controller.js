@@ -7,7 +7,9 @@
   const wsStatus = document.getElementById('wsStatus');
   const steerValue = document.getElementById('steerValue');
   const steerBar = document.getElementById('steerBar');
+  const debugCard = document.getElementById('debugCard');
   const debugLog = document.getElementById('debugLog');
+  const debugEnabled = qs.get('debug') === '1' || localStorage.getItem('carGameDebug') === '1';
 
   roomInput.value = qs.get('room') || '';
   playerInput.value = qs.get('player') || '';
@@ -37,6 +39,7 @@
   let vibrationPrimed = false;
   let vibrationUnsupportedLogged = false;
   let lastWarningVibrationAt = 0;
+  let lastUiSteer = null;
 
   const state = {
     roomId: roomInput.value.trim(),
@@ -75,6 +78,7 @@
   }
 
   function log(message, data = null) {
+    if (!debugEnabled) return;
     const line = `[${new Date().toLocaleTimeString()}] ${message}${data ? ` ${JSON.stringify(data)}` : ''}`;
     console.info(`[Controller] ${message}`, data || '');
     if (debugLog) {
@@ -273,6 +277,8 @@
   }
 
   function updateUI() {
+    if (lastUiSteer !== null && Math.abs(steer - lastUiSteer) < 0.01) return;
+    lastUiSteer = steer;
     steerValue.textContent = steer.toFixed(2);
     steerBar.style.width = `${Math.abs(steer) * 100}%`;
   }
@@ -389,6 +395,7 @@
   }, 1000 / 30);
 
   applySavedSettings();
+  if (debugEnabled && debugCard) debugCard.classList.remove('hidden');
   document.getElementById('invertBtn').textContent = `Invert: ${invert ? 'On' : 'Off'}`;
   document.getElementById('invertBtn').className = invert ? 'toggle-on' : 'toggle-off';
   document.getElementById('readyBtn').textContent = ready ? 'Ready ✓' : 'Ready';

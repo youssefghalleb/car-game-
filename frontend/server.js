@@ -6,6 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const GAME_SERVER = process.env.GAME_SERVER_URL || 'http://localhost:8765';
 const PUBLIC_GAME_SERVER_WS_URL = process.env.PUBLIC_GAME_SERVER_WS_URL || '';
+const DEBUG_PROXY = process.env.DEBUG_PROXY === '1';
 
 // Derive WebSocket target from HTTP target
 const WS_TARGET = GAME_SERVER.replace(/^http/, 'ws');
@@ -34,16 +35,16 @@ const wsProxy = createProxyMiddleware({
   on: {
     // http-proxy-middleware v3 exposes event hooks under the `on` option.
     proxyReqWs: (_proxyReq, req) => {
-      console.log(`[WS Proxy] upgrade ${req.url} -> ${WS_TARGET}`);
+      if (DEBUG_PROXY) console.log(`[WS Proxy] upgrade ${req.url} -> ${WS_TARGET}`);
     },
     error: (err, req) => {
       console.error('[WS Proxy] Error:', req?.url, err.message);
     },
     open: (_proxySocket) => {
-      console.log('[WS Proxy] target socket opened');
+      if (DEBUG_PROXY) console.log('[WS Proxy] target socket opened');
     },
     close: (_res, socket) => {
-      console.log(`[WS Proxy] socket closed destroyed=${socket?.destroyed ?? 'unknown'}`);
+      if (DEBUG_PROXY) console.log(`[WS Proxy] socket closed destroyed=${socket?.destroyed ?? 'unknown'}`);
     },
   },
 });

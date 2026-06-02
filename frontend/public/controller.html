@@ -20,12 +20,18 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
     html, body {
       width: 100%;
+      min-height: 100%;
       overflow-x: hidden;
     }
     body {
       margin: 0;
+      min-height: 100svh;
       min-height: 100dvh;
-      padding: 10px;
+      padding:
+        max(8px, env(safe-area-inset-top))
+        max(8px, env(safe-area-inset-right))
+        max(8px, env(safe-area-inset-bottom))
+        max(8px, env(safe-area-inset-left));
       font-family: Arial, sans-serif;
       color: var(--text);
       background: linear-gradient(180deg, #10141a, #171c24);
@@ -34,6 +40,7 @@
     .wrap { width: min(100%, 560px); margin: 0 auto; display: grid; gap: 8px; }
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
     h1 { font-size: 1.18rem; margin: 0 0 5px; }
+    p { margin: 4px 0 0; }
     .muted, label { color: var(--muted); font-size: 0.92rem; }
     .row, .grid2, .grid3 { display: grid; gap: 10px; }
     .row { grid-template-columns: 1fr 1fr; }
@@ -55,7 +62,7 @@
     button.throttle { min-height: 92px; background: linear-gradient(180deg, #58dd89, #2fb866); font-size: 1.08rem; }
     button.brake { min-height: 74px; background: linear-gradient(180deg, #ff7474, #c84444); }
     button.nitro { min-height: 74px; background: linear-gradient(180deg, #ffad5c, var(--nitro)); }
-    .pill { padding: 9px 10px; background: var(--panel2); border-radius: 8px; }
+    .pill { padding: 9px 10px; background: var(--panel2); border-radius: 8px; min-width: 0; overflow-wrap: anywhere; }
     .ok { color: var(--ok); }
     .bad { color: var(--danger); }
     .meter { height: 16px; margin-top: 8px; background: #2d3440; border-radius: 999px; overflow: hidden; }
@@ -74,6 +81,9 @@
       .wrap { gap: 6px; }
       .card { padding: 8px; }
       .row, .grid2 { grid-template-columns: 1fr; }
+      .connection-card,
+      .settings-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .connection-card .pill { display: flex; align-items: center; min-height: 36px; padding: 7px 8px; }
       .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       h1 { font-size: 1.05rem; }
       .muted, label { font-size: 0.78rem; }
@@ -83,41 +93,99 @@
       button.nitro { min-height: 64px; }
       .debug-log { max-height: 58px; }
     }
+    @media (max-height: 900px) {
+      body { padding-top: 5px; padding-bottom: 5px; }
+      .wrap { gap: 5px; }
+      .card { padding: 7px; }
+      h1 { font-size: 0.98rem; margin-bottom: 2px; }
+      p { margin-top: 2px; }
+      .muted, label { font-size: 0.74rem; }
+      input, select, button { min-height: 32px; font-size: 0.82rem; }
+      input, select { margin-top: 3px; padding: 6px; }
+      button.throttle { min-height: 68px; }
+      button.brake,
+      button.nitro { min-height: 56px; }
+      .meter { height: 12px; margin-top: 5px; }
+      .motion-hint { display: none; }
+    }
+    @media (max-width: 360px) {
+      .wrap { gap: 5px; }
+      .card { padding: 6px; }
+      .grid3 { gap: 6px; }
+      input, select, button { font-size: 0.78rem; }
+      .pill { font-size: 0.72rem; }
+    }
+    @media (orientation: landscape) and (max-height: 560px) {
+      body { overflow-y: auto; }
+      .wrap {
+        width: 100%;
+        max-width: 980px;
+        grid-template-columns: minmax(260px, 0.95fr) minmax(310px, 1.25fr);
+        align-items: start;
+      }
+      .title-card,
+      .connection-card,
+      .motion-card,
+      .settings-card {
+        grid-column: 1;
+      }
+      .quick-card,
+      .action-card,
+      .pedals-card,
+      .steer-card,
+      #debugCard {
+        grid-column: 2;
+      }
+      .connection-card,
+      .settings-card {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .quick-card,
+      .action-card,
+      .pedals-card {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      button.throttle,
+      button.brake,
+      button.nitro {
+        min-height: 72px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
+    <div class="card title-card">
       <h1>Race Controller</h1>
       <p class="muted">Room <strong id="roomLabel">-</strong> · Player <strong id="playerLabel">-</strong></p>
     </div>
 
-    <div class="card row">
+    <div class="card row connection-card">
       <label>Room ID<input id="roomInput" autocomplete="off" /></label>
       <label>Player ID<input id="playerInput" autocomplete="off" /></label>
       <button id="connectBtn" class="primary">Connect</button>
       <div class="pill">WebSocket: <span id="wsStatus" class="bad">disconnected</span></div>
     </div>
 
-    <div class="card">
+    <div class="card motion-card">
       <button id="enableMotionBtn" class="primary">Enable Motion</button>
-      <p class="muted">Hold the phone in your driving position, then calibrate.</p>
+      <p class="muted motion-hint">Hold the phone in your driving position, then calibrate.</p>
     </div>
 
-    <div class="card grid3">
+    <div class="card grid3 quick-card">
       <button id="readyBtn" class="primary">Ready</button>
       <button id="testVibrationBtn">Vibrate</button>
       <button id="pauseBtn">Pause</button>
       <button id="restartBtn">Restart</button>
     </div>
 
-    <div class="card grid3">
+    <div class="card grid3 action-card">
       <button id="calibrateBtn">Calibrate</button>
       <button id="zeroSteerBtn">Zero</button>
       <button id="reconnectBtn">Reconnect</button>
     </div>
 
-    <div class="card grid2">
+    <div class="card grid2 settings-card">
       <label>Sensor Mode
         <select id="modeSelect">
           <option value="tilt">Tilt</option>
@@ -136,18 +204,18 @@
       <label>Touch Steering <input id="touchSteerSlider" type="range" min="-100" max="100" value="0" /></label>
     </div>
 
-    <div class="card grid3">
+    <div class="card grid3 pedals-card">
       <button id="throttleBtn" class="throttle">Throttle</button>
       <button id="brakeBtn" class="brake">Brake</button>
       <button id="nitroBtn" class="nitro">Nitro</button>
     </div>
 
-    <div class="card">
+    <div class="card steer-card">
       <div>Steer: <span id="steerValue">0.00</span></div>
       <div class="meter"><div id="steerBar" class="fill"></div></div>
     </div>
 
-    <div class="card">
+    <div id="debugCard" class="card hidden">
       <div class="muted">Debug</div>
       <pre id="debugLog" class="debug-log"></pre>
     </div>

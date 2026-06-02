@@ -445,9 +445,9 @@ async def game_loop(app: web.Application):
     cleanup_interval = 1.0
 
     while True:
+        shared_pairing.cleanup()
         for room in list(rooms.values()):
             room.cleanup_inactive_players(grace_seconds=30.0)
-            shared_pairing.cleanup()
             if room.active_count == 0:
                 rooms.pop(room.room_id, None)
                 task = room_tasks.pop(room.room_id, None)
