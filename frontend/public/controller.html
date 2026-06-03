@@ -6,23 +6,33 @@
   <title>Race Controller</title>
   <style>
     :root {
-      --bg: #10141a;
-      --panel: #1b1f27;
-      --panel2: #252b36;
-      --border: #354052;
-      --text: #f2f2f2;
-      --muted: #aab2c0;
-      --accent: #4da3ff;
-      --ok: #47d17e;
-      --danger: #ff5c5c;
-      --nitro: #ff8a3d;
+      --bg: #080b10;
+      --panel: #141922;
+      --panel-2: #1c2430;
+      --panel-3: #263140;
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #f7f9fc;
+      --muted: #a9b4c4;
+      --blue: #4da3ff;
+      --green: #49d27f;
+      --red: #ff5c5c;
+      --yellow: #ffd166;
+      --orange: #ff8a3d;
     }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-    html, body {
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
       width: 100%;
       min-height: 100%;
       overflow-x: hidden;
     }
+
     body {
       margin: 0;
       min-height: 100svh;
@@ -32,194 +42,675 @@
         max(8px, env(safe-area-inset-right))
         max(8px, env(safe-area-inset-bottom))
         max(8px, env(safe-area-inset-left));
-      font-family: Arial, sans-serif;
       color: var(--text);
-      background: linear-gradient(180deg, #10141a, #171c24);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 50% -20%, rgba(77, 163, 255, 0.18), transparent 32rem),
+        linear-gradient(180deg, #07090d 0%, #111721 55%, #0c1017 100%);
       overscroll-behavior: none;
     }
-    .wrap { width: min(100%, 560px); margin: 0 auto; display: grid; gap: 8px; }
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
-    h1 { font-size: 1.18rem; margin: 0 0 5px; }
-    p { margin: 4px 0 0; }
-    .muted, label { color: var(--muted); font-size: 0.92rem; }
-    .row, .grid2, .grid3 { display: grid; gap: 10px; }
-    .row { grid-template-columns: 1fr 1fr; }
-    .grid2 { grid-template-columns: 1fr 1fr; }
-    .grid3 { grid-template-columns: repeat(3, 1fr); }
-    input, select, button {
-      width: 100%;
-      min-height: 40px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      font-size: 1rem;
+
+    button,
+    input,
+    select {
+      font: inherit;
     }
-    input, select { margin-top: 4px; padding: 8px; color: var(--text); background: var(--panel2); }
-    input[type="range"] { padding: 0; accent-color: var(--accent); }
-    button { border: 0; color: white; font-weight: 800; background: #343c4b; touch-action: none; }
-    button.primary { background: var(--accent); }
-    button.toggle-on { background: #2f7d52; }
-    button.toggle-off { background: #704040; }
-    button.throttle { min-height: 92px; background: linear-gradient(180deg, #58dd89, #2fb866); font-size: 1.08rem; }
-    button.brake { min-height: 74px; background: linear-gradient(180deg, #ff7474, #c84444); }
-    button.nitro { min-height: 74px; background: linear-gradient(180deg, #ffad5c, var(--nitro)); }
-    .pill { padding: 9px 10px; background: var(--panel2); border-radius: 8px; min-width: 0; overflow-wrap: anywhere; }
-    .ok { color: var(--ok); }
-    .bad { color: var(--danger); }
-    .meter { height: 16px; margin-top: 8px; background: #2d3440; border-radius: 999px; overflow: hidden; }
-    .fill { width: 0%; height: 100%; background: linear-gradient(90deg, #8c7cff, #53b7ff); }
-    .debug-log {
-      max-height: 130px;
-      overflow: auto;
-      white-space: pre-wrap;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.78rem;
+
+    button {
+      border: 0;
+      color: var(--text);
+      font-weight: 850;
+      touch-action: none;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      color: var(--text);
+      background: var(--panel-2);
+      outline: none;
+    }
+
+    input[type="range"] {
+      min-height: 28px;
+      padding: 0;
+      accent-color: var(--blue);
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .shell {
+      width: min(100%, 980px);
+      min-height: calc(100dvh - 16px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 8px;
+    }
+
+    .topbar,
+    .panel,
+    details.debug-panel {
+      background: rgba(18, 24, 33, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 0.8rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
       color: var(--muted);
     }
-    .hidden { display: none; }
-    @media (max-width: 560px) {
-      body { padding: 6px; }
-      .wrap { gap: 6px; }
-      .card { padding: 8px; }
-      .row, .grid2 { grid-template-columns: 1fr; }
-      .connection-card,
-      .settings-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .connection-card .pill { display: flex; align-items: center; min-height: 36px; padding: 7px 8px; }
-      .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      h1 { font-size: 1.05rem; }
-      .muted, label { font-size: 0.78rem; }
-      input, select, button { min-height: 36px; font-size: 0.86rem; }
-      button.throttle { min-height: 78px; }
-      button.brake,
-      button.nitro { min-height: 64px; }
-      .debug-log { max-height: 58px; }
+
+    .subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      overflow-wrap: anywhere;
     }
-    @media (max-height: 900px) {
-      body { padding-top: 5px; padding-bottom: 5px; }
-      .wrap { gap: 5px; }
-      .card { padding: 7px; }
-      h1 { font-size: 0.98rem; margin-bottom: 2px; }
-      p { margin-top: 2px; }
-      .muted, label { font-size: 0.74rem; }
-      input, select, button { min-height: 32px; font-size: 0.82rem; }
-      input, select { margin-top: 3px; padding: 6px; }
-      button.throttle { min-height: 68px; }
-      button.brake,
-      button.nitro { min-height: 56px; }
-      .meter { height: 12px; margin-top: 5px; }
-      .motion-hint { display: none; }
+
+    .status-pill {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      font-size: 0.78rem;
+      font-weight: 850;
+      white-space: nowrap;
     }
-    @media (max-width: 360px) {
-      .wrap { gap: 5px; }
-      .card { padding: 6px; }
-      .grid3 { gap: 6px; }
-      input, select, button { font-size: 0.78rem; }
-      .pill { font-size: 0.72rem; }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #6f7a89;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
     }
+
+    body.is-connecting .status-dot,
+    body.is-reconnecting .status-dot {
+      background: var(--yellow);
+    }
+
+    body.is-paired .status-dot {
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(73, 210, 127, 0.12);
+    }
+
+    body.is-error .status-dot,
+    body.is-disconnected .status-dot {
+      background: var(--red);
+      box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.12);
+    }
+
+    .connection-grid,
+    .settings-grid,
+    .audio-grid,
+    .command-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .connection-panel {
+      padding: 10px;
+    }
+
+    .connect-actions {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .panel {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .readout-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .readout {
+      min-height: 48px;
+      display: grid;
+      gap: 2px;
+      align-content: center;
+      padding: 8px;
+      border-radius: 8px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .readout span {
+      color: var(--muted);
+      font-size: 0.64rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .readout strong {
+      font-size: 1rem;
+    }
+
+    .steering-box {
+      display: grid;
+      grid-template-columns: 116px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .wheel {
+      width: 116px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 10px solid #303b4c;
+      background:
+        radial-gradient(circle at 50% 50%, #111721 0 28%, transparent 29%),
+        linear-gradient(135deg, #1f2937, #0f141d);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.06), 0 12px 26px rgba(0, 0, 0, 0.3);
+      position: relative;
+      transform: rotate(calc(var(--steer-angle, 0) * 1deg));
+      transition: transform 80ms linear;
+    }
+
+    .wheel::before,
+    .wheel::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 72px;
+      border-radius: 999px;
+      background: #56657a;
+      transform-origin: center;
+    }
+
+    .wheel::before {
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    .wheel::after {
+      transform: translate(-50%, -50%);
+    }
+
+    .steer-meter {
+      display: grid;
+      gap: 8px;
+    }
+
+    .steer-track {
+      height: 18px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #283241;
+      border: 1px solid var(--line);
+      position: relative;
+    }
+
+    .steer-track::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .steer-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      background: linear-gradient(90deg, var(--blue), var(--yellow));
+    }
+
+    .touch-steer {
+      width: 100%;
+    }
+
+    .pedals {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 8px;
+    }
+
+    .secondary-pedals {
+      display: grid;
+      gap: 8px;
+    }
+
+    .control-btn {
+      min-height: 44px;
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--panel-3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .control-btn.is-active {
+      filter: brightness(1.18);
+      transform: translateY(1px);
+    }
+
+    .primary {
+      background: linear-gradient(180deg, #56b0ff, #2f7fd4);
+    }
+
+    .success {
+      background: linear-gradient(180deg, #5be08d, #2f9d5e);
+    }
+
+    .danger {
+      background: linear-gradient(180deg, #ff7272, #bd3f3f);
+    }
+
+    .warning {
+      background: linear-gradient(180deg, #ffba64, #d8692a);
+    }
+
+    .throttle {
+      min-height: 146px;
+      font-size: 1.12rem;
+      background: linear-gradient(180deg, #59e38e, #25a95b);
+    }
+
+    .brake,
+    .nitro {
+      min-height: 70px;
+    }
+
+    .brake {
+      background: linear-gradient(180deg, #ff7474, #bc3c3c);
+    }
+
+    .nitro {
+      background: linear-gradient(180deg, #ffb257, #e0722f);
+    }
+
+    .toggle-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .toggle-on {
+      background: linear-gradient(180deg, #4ecf83, #2f8556);
+    }
+
+    .toggle-off {
+      background: var(--panel-3);
+    }
+
+    .wizard {
+      border: 1px solid rgba(77, 163, 255, 0.25);
+      background: rgba(77, 163, 255, 0.07);
+      border-radius: 8px;
+      padding: 9px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .wizard-copy {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+
+    details.debug-panel {
+      padding: 8px 10px;
+    }
+
+    details.debug-panel summary {
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .debug-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .debug-grid strong {
+      display: block;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 430px) {
+      body {
+        padding: 6px;
+      }
+
+      .shell {
+        min-height: calc(100dvh - 12px);
+        gap: 6px;
+      }
+
+      .topbar,
+      .panel,
+      details.debug-panel {
+        border-radius: 7px;
+      }
+
+      .topbar,
+      .panel {
+        padding: 8px;
+      }
+
+      .status-pill {
+        min-height: 30px;
+        padding: 6px 8px;
+      }
+
+      .connection-grid,
+      .settings-grid,
+      .audio-grid,
+      .command-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .steering-box {
+        grid-template-columns: 92px 1fr;
+      }
+
+      .wheel {
+        width: 92px;
+        border-width: 8px;
+      }
+
+      .wheel::before,
+      .wheel::after {
+        height: 56px;
+        width: 10px;
+      }
+
+      .throttle {
+        min-height: 128px;
+      }
+
+      .brake,
+      .nitro {
+        min-height: 62px;
+      }
+
+      input,
+      select,
+      .control-btn {
+        min-height: 38px;
+      }
+    }
+
+    @media (max-height: 760px) {
+      .subtitle,
+      .wizard-copy {
+        display: none;
+      }
+
+      .panel {
+        gap: 6px;
+      }
+
+      input,
+      select,
+      .control-btn {
+        min-height: 34px;
+        padding: 7px 8px;
+        font-size: 0.82rem;
+      }
+
+      label {
+        gap: 3px;
+        font-size: 0.68rem;
+      }
+
+      .readout {
+        min-height: 40px;
+        padding: 6px;
+      }
+
+      .throttle {
+        min-height: 112px;
+      }
+
+      .brake,
+      .nitro {
+        min-height: 54px;
+      }
+    }
+
     @media (orientation: landscape) and (max-height: 560px) {
-      body { overflow-y: auto; }
-      .wrap {
-        width: 100%;
-        max-width: 980px;
-        grid-template-columns: minmax(260px, 0.95fr) minmax(310px, 1.25fr);
+      body {
+        overflow-y: auto;
+      }
+
+      .shell {
+        grid-template-columns: minmax(290px, 0.85fr) minmax(380px, 1.15fr);
+        grid-template-rows: auto 1fr auto;
         align-items: start;
       }
-      .title-card,
-      .connection-card,
-      .motion-card,
-      .settings-card {
+
+      .topbar,
+      .connection-panel,
+      .settings-panel,
+      .audio-panel {
         grid-column: 1;
       }
-      .quick-card,
-      .action-card,
-      .pedals-card,
-      .steer-card,
-      #debugCard {
+
+      .drive-panel,
+      .commands-panel {
         grid-column: 2;
       }
-      .connection-card,
-      .settings-card {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      details.debug-panel {
+        grid-column: 1 / -1;
       }
-      .quick-card,
-      .action-card,
-      .pedals-card {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+
+      .topbar {
+        grid-template-columns: 1fr;
       }
-      button.throttle,
-      button.brake,
-      button.nitro {
-        min-height: 72px;
+
+      .main-grid {
+        display: contents;
+      }
+
+      .throttle {
+        min-height: 132px;
       }
     }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <div class="card title-card">
-      <h1>Race Controller</h1>
-      <p class="muted">Room <strong id="roomLabel">-</strong> · Player <strong id="playerLabel">-</strong></p>
+<body class="is-disconnected">
+  <main class="shell">
+    <section class="topbar">
+      <div>
+        <h1>Race Controller</h1>
+        <p class="subtitle">Room <strong id="roomLabel">-</strong> · Player <strong id="playerLabel">-</strong></p>
+      </div>
+      <div class="status-pill" aria-live="polite">
+        <span class="status-dot"></span>
+        <span id="statusText">Not connected</span>
+      </div>
+    </section>
+
+    <section class="panel connection-panel">
+      <h2>Pairing</h2>
+      <div class="connection-grid">
+        <label>Room ID<input id="roomInput" autocomplete="off" autocapitalize="characters" /></label>
+        <label>Player ID<input id="playerInput" autocomplete="off" autocapitalize="characters" /></label>
+        <label>Player Name<input id="nameInput" autocomplete="off" maxlength="20" /></label>
+        <label>Mode
+          <select id="modeSelect">
+            <option value="tilt">Tilt steering</option>
+            <option value="touch">Touch steering</option>
+          </select>
+        </label>
+      </div>
+      <div class="connect-actions">
+        <button id="connectBtn" class="control-btn primary">Connect</button>
+        <button id="disconnectBtn" class="control-btn">Disconnect</button>
+      </div>
+    </section>
+
+    <div class="main-grid">
+      <section class="panel drive-panel">
+        <h2>Drive</h2>
+        <div class="readout-row">
+          <div class="readout"><span>Steer</span><strong id="steerValue">0.00</strong></div>
+          <div class="readout"><span>Speed</span><strong id="speedValue">0</strong></div>
+          <div class="readout"><span>Health</span><strong id="healthValue">-</strong></div>
+        </div>
+
+        <div class="steering-box">
+          <div id="wheel" class="wheel" aria-hidden="true"></div>
+          <div class="steer-meter">
+            <div class="steer-track"><div id="steerFill" class="steer-fill"></div></div>
+            <input id="touchSteerSlider" class="touch-steer" type="range" min="-100" max="100" value="0" />
+          </div>
+        </div>
+
+        <div class="pedals">
+          <button id="throttleBtn" class="control-btn throttle">Throttle</button>
+          <div class="secondary-pedals">
+            <button id="brakeBtn" class="control-btn brake">Brake</button>
+            <button id="nitroBtn" class="control-btn nitro">Nitro</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel commands-panel">
+        <h2>Game</h2>
+        <div class="command-grid">
+          <button id="readyBtn" class="control-btn success">Ready</button>
+          <button id="respawnBtn" class="control-btn warning">Respawn</button>
+          <button id="pauseBtn" class="control-btn">Pause</button>
+          <button id="resumeBtn" class="control-btn">Resume</button>
+          <button id="restartBtn" class="control-btn">Restart</button>
+          <button id="quitBtn" class="control-btn danger">Quit</button>
+        </div>
+      </section>
+
+      <section class="panel settings-panel">
+        <h2>Sensors</h2>
+        <div class="settings-grid">
+          <label>Axis
+            <select id="axisSelect">
+              <option value="gamma">Gamma</option>
+              <option value="beta">Beta</option>
+              <option value="alpha">Alpha</option>
+            </select>
+          </label>
+          <label>Smoothing<input id="smoothingSlider" type="range" min="0" max="90" value="35" /></label>
+          <label>Sensitivity<input id="sensitivitySlider" type="range" min="50" max="180" value="100" /></label>
+          <label>Dead Zone<input id="deadzoneSlider" type="range" min="0" max="18" value="6" /></label>
+        </div>
+        <div class="toggle-row">
+          <button id="enableMotionBtn" class="control-btn primary">Enable Motion</button>
+          <button id="invertBtn" class="control-btn toggle-on">Invert: On</button>
+        </div>
+        <div class="wizard">
+          <div id="wizardText" class="wizard-copy">Calibration: hold centered, then capture left and right tilt.</div>
+          <div class="toggle-row">
+            <button id="calibrateWizardBtn" class="control-btn primary">Start Calibration</button>
+            <button id="resetCalibrationBtn" class="control-btn">Reset Calibration</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel audio-panel">
+        <h2>Audio</h2>
+        <div class="audio-grid">
+          <button id="muteBtn" class="control-btn">Mute</button>
+          <button id="sfxBtn" class="control-btn toggle-on">Effects: On</button>
+          <label>Volume<input id="volumeSlider" type="range" min="0" max="100" value="80" /></label>
+          <button id="testVibrationBtn" class="control-btn">Test Vibration</button>
+        </div>
+      </section>
     </div>
 
-    <div class="card row connection-card">
-      <label>Room ID<input id="roomInput" autocomplete="off" /></label>
-      <label>Player ID<input id="playerInput" autocomplete="off" /></label>
-      <button id="connectBtn" class="primary">Connect</button>
-      <div class="pill">WebSocket: <span id="wsStatus" class="bad">disconnected</span></div>
-    </div>
+    <details id="debugPanel" class="debug-panel">
+      <summary>Debug panel</summary>
+      <div class="debug-grid">
+        <div>Room<strong id="debugRoom">-</strong></div>
+        <div>Player<strong id="debugPlayer">-</strong></div>
+        <div>Status<strong id="debugStatus">disconnected</strong></div>
+        <div>Ping<strong id="debugPing">-</strong></div>
+        <div>Steer<strong id="debugSteer">0.00</strong></div>
+        <div>Pedals<strong id="debugPedals">idle</strong></div>
+        <div>Last input<strong id="debugLastInput">-</strong></div>
+        <div>Socket<strong id="debugSocket">none</strong></div>
+      </div>
+    </details>
+  </main>
 
-    <div class="card motion-card">
-      <button id="enableMotionBtn" class="primary">Enable Motion</button>
-      <p class="muted motion-hint">Hold the phone in your driving position, then calibrate.</p>
-    </div>
-
-    <div class="card grid3 quick-card">
-      <button id="readyBtn" class="primary">Ready</button>
-      <button id="testVibrationBtn">Vibrate</button>
-      <button id="pauseBtn">Pause</button>
-      <button id="restartBtn">Restart</button>
-    </div>
-
-    <div class="card grid3 action-card">
-      <button id="calibrateBtn">Calibrate</button>
-      <button id="zeroSteerBtn">Zero</button>
-      <button id="reconnectBtn">Reconnect</button>
-    </div>
-
-    <div class="card grid2 settings-card">
-      <label>Sensor Mode
-        <select id="modeSelect">
-          <option value="tilt">Tilt</option>
-          <option value="touch">Touch slider</option>
-        </select>
-      </label>
-      <label>Axis
-        <select id="axisSelect">
-          <option value="gamma">Gamma</option>
-          <option value="beta">Beta</option>
-        </select>
-      </label>
-      <label>Sensitivity <input id="sensitivitySlider" type="range" min="50" max="160" value="100" /></label>
-      <label>Dead Zone <input id="deadzoneSlider" type="range" min="0" max="15" value="6" /></label>
-      <button id="invertBtn" class="toggle-on">Invert: On</button>
-      <label>Touch Steering <input id="touchSteerSlider" type="range" min="-100" max="100" value="0" /></label>
-    </div>
-
-    <div class="card grid3 pedals-card">
-      <button id="throttleBtn" class="throttle">Throttle</button>
-      <button id="brakeBtn" class="brake">Brake</button>
-      <button id="nitroBtn" class="nitro">Nitro</button>
-    </div>
-
-    <div class="card steer-card">
-      <div>Steer: <span id="steerValue">0.00</span></div>
-      <div class="meter"><div id="steerBar" class="fill"></div></div>
-    </div>
-
-    <div id="debugCard" class="card hidden">
-      <div class="muted">Debug</div>
-      <pre id="debugLog" class="debug-log"></pre>
-    </div>
-  </div>
   <script src="/js/controller.js"></script>
 </body>
 </html>
