@@ -607,6 +607,7 @@
       error: 'is-error',
     }[status] || 'is-disconnected';
     els.body.classList.add(className);
+    els.body.classList.toggle('controller-locked', status === 'paired');
     els.statusText.textContent = detail ? `${label} · ${detail}` : label;
     updateDebug();
   }

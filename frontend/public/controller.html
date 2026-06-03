@@ -29,6 +29,7 @@
     html,
     body {
       width: 100%;
+      height: 100%;
       min-height: 100%;
       overflow-x: hidden;
     }
@@ -48,6 +49,10 @@
         radial-gradient(circle at 50% -20%, rgba(77, 163, 255, 0.18), transparent 32rem),
         linear-gradient(180deg, #07090d 0%, #111721 55%, #0c1017 100%);
       overscroll-behavior: none;
+    }
+
+    body.controller-locked {
+      overflow: hidden;
     }
 
     button,
@@ -98,12 +103,16 @@
     }
 
     .shell {
-      width: min(100%, 980px);
+      width: min(100%, 1100px);
+      min-height: calc(100svh - 16px);
       min-height: calc(100dvh - 16px);
+      height: calc(100svh - 16px);
+      height: calc(100dvh - 16px);
       margin: 0 auto;
       display: grid;
       grid-template-rows: auto auto 1fr auto;
       gap: 8px;
+      overflow: hidden;
     }
 
     .topbar,
@@ -113,6 +122,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      min-width: 0;
     }
 
     .topbar {
@@ -161,6 +171,15 @@
       font-size: 0.78rem;
       font-weight: 850;
       white-space: nowrap;
+      max-width: min(46vw, 320px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-pill span:last-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .status-dot {
@@ -211,6 +230,7 @@
       padding: 10px;
       display: grid;
       gap: 8px;
+      min-height: 0;
     }
 
     .main-grid {
@@ -218,6 +238,17 @@
       grid-template-columns: 1fr;
       gap: 8px;
       min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .main-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    body.is-paired .main-grid {
+      overflow: hidden;
     }
 
     .readout-row {
@@ -251,9 +282,10 @@
 
     .steering-box {
       display: grid;
-      grid-template-columns: 116px 1fr;
+      grid-template-columns: minmax(88px, 116px) minmax(0, 1fr);
       gap: 10px;
       align-items: center;
+      min-width: 0;
     }
 
     .wheel {
@@ -444,6 +476,47 @@
       overflow-wrap: anywhere;
     }
 
+    .drive-panel {
+      grid-template-rows: auto auto minmax(0, auto) minmax(0, 1fr);
+    }
+
+    .drive-panel h2,
+    .commands-panel h2,
+    .settings-panel h2,
+    .audio-panel h2 {
+      line-height: 1;
+    }
+
+    .drive-panel .pedals {
+      min-height: 0;
+    }
+
+    @media (min-width: 720px) and (min-height: 680px) {
+      .shell {
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+      }
+
+      .connection-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .main-grid {
+        grid-template-columns: minmax(360px, 1.1fr) minmax(280px, 0.9fr);
+        align-items: stretch;
+      }
+
+      .drive-panel {
+        grid-column: 1;
+        grid-row: 1 / span 3;
+      }
+
+      .commands-panel,
+      .settings-panel,
+      .audio-panel {
+        grid-column: 2;
+      }
+    }
+
     @media (max-width: 430px) {
       body {
         padding: 6px;
@@ -451,6 +524,7 @@
 
       .shell {
         min-height: calc(100dvh - 12px);
+        height: calc(100dvh - 12px);
         gap: 6px;
       }
 
@@ -479,7 +553,7 @@
       }
 
       .steering-box {
-        grid-template-columns: 92px 1fr;
+        grid-template-columns: minmax(76px, 92px) minmax(0, 1fr);
       }
 
       .wheel {
@@ -506,6 +580,34 @@
       select,
       .control-btn {
         min-height: 38px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .status-pill {
+        max-width: 100%;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .connection-grid,
+      .settings-grid,
+      .audio-grid {
+        gap: 5px;
+      }
+
+      .connect-actions {
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+      }
+
+      .command-grid {
+        gap: 5px;
       }
     }
 
@@ -547,13 +649,74 @@
       }
     }
 
+    @media (max-height: 720px), (max-width: 390px) {
+      body.is-paired .connection-panel,
+      body.is-paired .settings-panel,
+      body.is-paired .audio-panel {
+        display: none;
+      }
+
+      body.is-paired .shell {
+        grid-template-rows: auto 1fr auto;
+      }
+
+      body.is-paired .main-grid {
+        grid-template-rows: minmax(0, 1fr) auto;
+      }
+
+      body.is-paired .drive-panel {
+        gap: 5px;
+      }
+
+      body.is-paired .readout {
+        min-height: 34px;
+      }
+
+      body.is-paired .steering-box {
+        grid-template-columns: minmax(72px, 84px) minmax(0, 1fr);
+        gap: 7px;
+      }
+
+      body.is-paired .wheel {
+        width: 84px;
+        border-width: 7px;
+      }
+
+      body.is-paired .wheel::before,
+      body.is-paired .wheel::after {
+        width: 8px;
+        height: 50px;
+      }
+
+      body.is-paired .pedals {
+        gap: 6px;
+      }
+
+      body.is-paired .throttle {
+        min-height: 96px;
+      }
+
+      body.is-paired .brake,
+      body.is-paired .nitro {
+        min-height: 48px;
+      }
+
+      body.is-paired .commands-panel {
+        align-self: end;
+      }
+
+      body.is-paired .debug-panel {
+        display: none;
+      }
+    }
+
     @media (orientation: landscape) and (max-height: 560px) {
       body {
         overflow-y: auto;
       }
 
       .shell {
-        grid-template-columns: minmax(290px, 0.85fr) minmax(380px, 1.15fr);
+        grid-template-columns: minmax(230px, 0.85fr) minmax(300px, 1.15fr);
         grid-template-rows: auto 1fr auto;
         align-items: start;
       }

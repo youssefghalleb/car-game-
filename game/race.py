@@ -34,6 +34,7 @@ BOT_F1_NAMES = [
 
 CHECKPOINT_WARNING_SECONDS = 2.2
 MIN_VALID_LAP_PROGRESS = 0.78
+WRONG_WAY_RESPAWN_SECONDS = 0.45
 
 
 class Race:
@@ -193,6 +194,7 @@ class Race:
         car.last_valid_checkpoint = checkpoint
         car.visited_checkpoints = {checkpoint}
         car.lap_peak_progress = progress
+        car.lap_invalid = False
         car.shortcut_warning_timer = 0.0
         car.invalid_lap_warning_timer = 0.0
         car.off_track_warning_timer = 0.0
@@ -204,14 +206,18 @@ class Race:
         car.last_valid_checkpoint = checkpoint
         car.visited_checkpoints = {checkpoint}
         car.lap_peak_progress = progress
+        car.lap_invalid = False
 
     def _has_valid_lap_checkpoints(self, car) -> bool:
         if getattr(car, "is_bot", False):
             return True
 
+        if getattr(car, "lap_invalid", False):
+            return False
+
         peak_progress = getattr(car, "lap_peak_progress", 0.0)
         visited = getattr(car, "visited_checkpoints", set())
-        minimum_checkpoints = max(2, self.track.checkpoint_count - 2)
+        minimum_checkpoints = max(2, self.track.checkpoint_count - 1)
         return peak_progress >= MIN_VALID_LAP_PROGRESS and len(visited) >= minimum_checkpoints
 
     def _update_checkpoint_state(self, car):
@@ -228,21 +234,39 @@ class Race:
         forward_delta = (checkpoint - previous) % count
         reverse_delta = (previous - checkpoint) % count
 
-        if forward_delta and forward_delta <= max(2, count // 2):
+        if getattr(car, "is_bot", False):
+            if forward_delta and forward_delta <= max(2, count // 2):
+                car.current_checkpoint = checkpoint
+                car.last_valid_checkpoint = checkpoint
+                for step in range(1, forward_delta + 1):
+                    car.visited_checkpoints.add((previous + step) % count)
+                return "forward"
+
+            car.current_checkpoint = checkpoint
+            return "jump"
+
+        if forward_delta == 1:
             car.current_checkpoint = checkpoint
             car.last_valid_checkpoint = checkpoint
-            for step in range(1, forward_delta + 1):
-                car.visited_checkpoints.add((previous + step) % count)
-            return
+            car.visited_checkpoints.add(checkpoint)
+            return "forward"
+
+        if forward_delta:
+            car.shortcut_warning_timer = CHECKPOINT_WARNING_SECONDS
+            car.lap_invalid = True
+            car.current_checkpoint = checkpoint
+            return "shortcut"
 
         if reverse_delta and reverse_delta <= max(2, count // 2):
             car.current_checkpoint = checkpoint
+            car.lap_invalid = True
             car.wrong_way_timer = max(getattr(car, "wrong_way_timer", 0.0), 0.15)
-            return
+            return "reverse"
 
-        if not getattr(car, "is_bot", False):
-            car.shortcut_warning_timer = CHECKPOINT_WARNING_SECONDS
-            car.current_checkpoint = checkpoint
+        car.shortcut_warning_timer = CHECKPOINT_WARNING_SECONDS
+        car.lap_invalid = True
+        car.current_checkpoint = checkpoint
+        return "shortcut"
 
     def pop_crash_events(self):
         """
@@ -362,8 +386,9 @@ class Race:
         if getattr(car, "is_bot", False):
             return
 
-        # Avant le début du chronométrage, on ne détecte pas le mauvais sens.
-        if not car.lap_timing_started:
+        # Track 2 has enough room before the first valid start crossing that
+        # players can drive backward for a long time, so protect that path too.
+        if not car.lap_timing_started and self.track.layout_name != "track_2":
             car.wrong_way_timer = 0.0
             return
 
@@ -400,7 +425,7 @@ class Race:
             car.wrong_way_timer = max(0.0, car.wrong_way_timer - dt * 2.0)
 
         # Si le mauvais sens dure assez longtemps, respawn.
-        if car.wrong_way_timer >= 0.45:
+        if car.wrong_way_timer >= WRONG_WAY_RESPAWN_SECONDS:
             self._respawn_player_with_penalty(
                 car,
                 time_penalty=3.0,
@@ -472,7 +497,9 @@ class Race:
 
                 # Passage de la ligne dans le mauvais sens.
                 else:
-                    if car.lap_timing_started and not getattr(car, "is_bot", False):
+                    if not getattr(car, "is_bot", False):
+                        car.lap_invalid = True
+                        car.wrong_way_timer = WRONG_WAY_RESPAWN_SECONDS
                         self._respawn_player_with_penalty(
                             car,
                             time_penalty=3.0,
@@ -547,7 +574,10 @@ class Race:
                     )
                     continue
 
-                self._update_checkpoint_state(car)
+                checkpoint_status = self._update_checkpoint_state(car)
+
+                if checkpoint_status == "reverse":
+                    car.invalid_lap_warning_timer = CHECKPOINT_WARNING_SECONDS
 
                 # Vérification du mauvais sens.
                 self._check_wrong_direction(car, dt)

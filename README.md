@@ -37,6 +37,10 @@ cd frontend && npm install && npm start
 5. Click **Start Race**
 6. Controls: Arrow keys or WASD to drive, Space for nitro
 
+Need the short version? See [QUICK_PLAY.md](QUICK_PLAY.md).
+
+For a full player manual with controls, race modes, HUD details, penalties, and driving strategy, see [HOW_TO_PLAY.md](HOW_TO_PLAY.md).
+
 ## Project Structure
 
 ```
