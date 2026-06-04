@@ -11,13 +11,27 @@
   <div id="lobby-screen" class="screen active">
     <div class="lobby-container">
       <h1>🏎️ Car Race</h1>
+      <p class="lobby-subtitle">Create a room, pair your phone controller, ready up, then race clean laps.</p>
+      <div id="lobby-guide" class="lobby-card next-step-card">
+        <div class="guide-kicker">Next step</div>
+        <h2 id="lobby-guide-title">Set up your race</h2>
+        <p id="lobby-guide-text">Enter your name, choose a mode and track, then join as a driver. Leave the room code empty to create a new room.</p>
+        <div class="guide-progress" aria-label="Lobby setup checklist">
+          <span id="guide-step-room">Room</span>
+          <span id="guide-step-controller">Controller</span>
+          <span id="guide-step-ready">Ready</span>
+          <span id="guide-step-start">Start</span>
+        </div>
+      </div>
       <div class="lobby-card">
         <label for="player-name">Your Name</label>
         <input type="text" id="player-name" maxlength="20" placeholder="Enter name..." value="Player" />
+        <p class="field-hint">This name appears in the lobby, leaderboard, and race results.</p>
       </div>
       <div class="lobby-card">
         <label for="room-code">Room Code</label>
         <input type="text" id="room-code" maxlength="10" placeholder="Leave empty for new room" />
+        <p class="field-hint">Leave empty to create a room. Enter a code to join or spectate an existing room.</p>
       </div>
       <div class="lobby-card settings-grid">
         <div>
@@ -77,6 +91,32 @@
           </select>
         </div>
       </div>
+      <div class="lobby-card instruction-card">
+        <h3>Before You Start</h3>
+        <ol class="instruction-list">
+          <li>Join as a driver to create a car slot and receive a player ID.</li>
+          <li>Scan the controller QR code on your phone and wait for Controller ready.</li>
+          <li>Press Ready on the monitor. The host starts when every player is ready.</li>
+        </ol>
+      </div>
+      <div class="lobby-card mode-guide">
+        <h3>Race Modes</h3>
+        <p id="mode-hint" class="mode-hint">Sprint is the default multiplayer race: finish the selected laps first.</p>
+        <div class="mode-guide-grid">
+          <span><strong>Sprint</strong> Finish the selected laps first.</span>
+          <span><strong>Time Trial</strong> Solo lap-time run without bots.</span>
+          <span><strong>Practice</strong> Free driving for learning controls.</span>
+          <span><strong>Elimination</strong> Stay ahead when slow cars are removed.</span>
+        </div>
+      </div>
+      <div class="lobby-card instruction-card compact-guide">
+        <h3>Driving Rules</h3>
+        <ul class="instruction-list">
+          <li>Follow the track direction and pass checkpoints in order.</li>
+          <li>Wrong way, shortcuts, and missed checkpoints can invalidate your lap.</li>
+          <li>Ghost car appears only with one player in Practice or Time Trial.</li>
+        </ul>
+      </div>
       <div id="players-list" class="lobby-card">
         <h3>Room Overview</h3>
         <div id="room-overview" class="room-overview">
@@ -106,11 +146,17 @@
           <h3>Controller Pairing</h3>
           <p class="pairing-meta">Room <strong id="pair-room">-</strong> · Player <strong id="pair-player">-</strong></p>
           <a id="controller-link" href="#" target="_blank" rel="noreferrer">Open controller</a>
+          <ol class="pairing-steps">
+            <li>Scan the QR code or open the controller link on your phone.</li>
+            <li>Confirm the room and player fields are filled automatically.</li>
+            <li>Tap Connect and wait for Controller paired.</li>
+          </ol>
         </div>
         <img id="pair-qr" alt="Controller QR code" />
       </div>
       <button id="join-btn" class="btn primary">Join Game</button>
-      <button id="spectate-btn" class="btn">Spectate</button>
+      <button id="spectate-btn" class="btn subtle">Join as Spectator</button>
+      <button id="help-btn" class="btn subtle">Full How to Play</button>
       <button id="ready-btn" class="btn hidden">Ready</button>
       <button id="start-btn" class="btn success hidden">Start Race</button>
       <div id="lobby-status" class="status-msg"></div>
@@ -143,7 +189,8 @@
       <button id="restart-race-btn" class="btn compact">Restart</button>
       <button id="reset-race-btn" class="btn compact">Reset</button>
       <button id="quit-race-btn" class="btn compact danger">Quit</button>
-      <button id="ghost-toggle-btn" class="btn compact">Ghost On</button>
+      <button id="ghost-toggle-btn" class="btn compact hidden">Ghost On</button>
+      <button id="race-help-btn" class="btn compact">Help</button>
       <button id="mute-audio-btn" class="btn compact">Mute</button>
       <label for="volume-slider" class="volume-control">Volume</label>
       <input id="volume-slider" type="range" min="0" max="100" value="100" />
@@ -153,6 +200,10 @@
         <option value="high" selected>Hi-Fi</option>
         <option value="low">Lite</option>
       </select>
+    </div>
+    <div id="race-guide" class="race-guide">
+      <strong>Race guide</strong>
+      <span>Pass checkpoints in order. Wrong way, off-track driving, and missed checkpoints trigger penalties.</span>
     </div>
     <div id="minimap-panel">
       <canvas id="minimap-canvas" width="220" height="140"></canvas>
@@ -167,6 +218,79 @@
       <h2>Race Finished!</h2>
       <ol id="results-list"></ol>
       <button id="back-to-lobby-btn" class="btn primary">Back to Lobby</button>
+    </div>
+  </div>
+
+  <div id="help-overlay" class="help-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="help-dialog">
+      <div class="help-header">
+        <div>
+          <h2 id="help-title">How to Play</h2>
+          <p>Use this as a quick reminder during setup or before a race.</p>
+        </div>
+        <button id="help-close-btn" class="help-close" aria-label="Close help">×</button>
+      </div>
+
+      <div class="help-grid">
+        <section class="help-section">
+          <h3>Lobby Flow</h3>
+          <ol>
+            <li>Enter your name and choose race settings.</li>
+            <li>Leave room empty to create one, or enter a code to join.</li>
+            <li>Click Join Game, then pair your phone controller.</li>
+            <li>Press Ready. The host starts when everyone is ready.</li>
+          </ol>
+        </section>
+
+        <section class="help-section">
+          <h3>Phone Controller</h3>
+          <ul>
+            <li>Scan the QR code shown after joining.</li>
+            <li>Confirm room and player are auto-filled.</li>
+            <li>Tap Connect and wait for Controller paired.</li>
+            <li>Use throttle, brake, nitro, and tilt or touch steering.</li>
+          </ul>
+        </section>
+
+        <section class="help-section">
+          <h3>Keyboard Backup</h3>
+          <ul>
+            <li>W or Up Arrow accelerates.</li>
+            <li>S or Down Arrow brakes or reverses.</li>
+            <li>A/D or Left/Right Arrow steer.</li>
+            <li>Space uses nitro.</li>
+          </ul>
+        </section>
+
+        <section class="help-section">
+          <h3>Race Modes</h3>
+          <ul>
+            <li>Sprint: complete the selected laps first.</li>
+            <li>Time Trial: solo lap-time challenge.</li>
+            <li>Practice: free driving for learning the track.</li>
+            <li>Elimination: avoid being the slowest car.</li>
+          </ul>
+        </section>
+
+        <section class="help-section">
+          <h3>Rules</h3>
+          <ul>
+            <li>Pass checkpoints in order.</li>
+            <li>Avoid wrong-way driving and shortcuts.</li>
+            <li>Off-track driving slows you down and can trigger warnings.</li>
+            <li>Track 2 has stricter anti-cheat checks.</li>
+          </ul>
+        </section>
+
+        <section class="help-section">
+          <h3>Spectator / Ghost</h3>
+          <ul>
+            <li>Join as Spectator to watch without creating a car.</li>
+            <li>Spectators do not need a phone controller.</li>
+            <li>Ghost car works only with one player in Practice or Time Trial.</li>
+          </ul>
+        </section>
+      </div>
     </div>
   </div>
 

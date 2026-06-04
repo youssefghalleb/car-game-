@@ -1,0 +1,1919 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R] /Count 11 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 6056 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 28.00 Tf 48.00 787.89 Td (How to Play Car Race) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F2 10.50 Tf 48.00 769.89 Td (Player Guide / Multiplayer Racing Game) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+2.20 w 48.00 753.89 m 547.28 753.89 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 729.89 Td (Car Race is a real-time multiplayer browser racing game with a monitor view and optional phone) Tj ET
+BT /F1 10.50 Tf 48.00 715.72 Td (controllers. The monitor shows the lobby, race, leaderboard, minimap, HUD, and results. A phone) Tj ET
+BT /F1 10.50 Tf 48.00 701.54 Td (controller can pair to one specific player and drive only that player.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 673.37 Td (Table of Contents) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 662.37 m 547.28 662.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 650.37 Td (1.) Tj ET
+BT /F1 10.50 Tf 76.00 650.37 Td (Game Setup) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 634.37 Td (2.) Tj ET
+BT /F1 10.50 Tf 76.00 634.37 Td (Lobby Flow) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 618.37 Td (3.) Tj ET
+BT /F1 10.50 Tf 76.00 618.37 Td (Phone Controller Pairing) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 602.37 Td (4.) Tj ET
+BT /F1 10.50 Tf 76.00 602.37 Td (Controller Interface) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 586.37 Td (5.) Tj ET
+BT /F1 10.50 Tf 76.00 586.37 Td (Keyboard and Touch Fallback) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 570.37 Td (6.) Tj ET
+BT /F1 10.50 Tf 76.00 570.37 Td (Race Modes) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 554.37 Td (7.) Tj ET
+BT /F1 10.50 Tf 76.00 554.37 Td (Lobby Settings) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 538.37 Td (8.) Tj ET
+BT /F1 10.50 Tf 76.00 538.37 Td (Race HUD) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 522.37 Td (9.) Tj ET
+BT /F1 10.50 Tf 76.00 522.37 Td (Track Rules and Penalties) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 506.37 Td (10.) Tj ET
+BT /F1 10.50 Tf 76.00 506.37 Td (Game Controls) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 490.37 Td (11.) Tj ET
+BT /F1 10.50 Tf 76.00 490.37 Td (Records and Ghosts) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 474.37 Td (12.) Tj ET
+BT /F1 10.50 Tf 76.00 474.37 Td (Driving Tips) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 458.37 Td (13.) Tj ET
+BT /F1 10.50 Tf 76.00 458.37 Td (Troubleshooting) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 442.37 Td (14.) Tj ET
+BT /F1 10.50 Tf 76.00 442.37 Td (Test Checklist) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 415.37 Td (1. Game Setup) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 404.37 m 547.28 404.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 392.37 Td (Open the game:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 372.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 372.19 Td (Azure: https://cargame-frontend.purpleriver-82827e89.swedencentral.azurecontainerapps.io) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 356.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 356.19 Td (Local development: http://localhost:3000) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 337.19 Td (The game has two main surfaces:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 317.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 317.02 Td (Monitor / display page: the main browser page used to create rooms, show the race, and) Tj ET
+BT /F1 10.50 Tf 64.00 303.02 Td (render the track.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 287.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 287.02 Td (Controller page: controller.html, usually opened on a phone using the QR code shown in the) Tj ET
+BT /F1 10.50 Tf 64.00 273.02 Td (lobby.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 254.02 Td (The controller does not create a new player. It pairs to an existing player using:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 233.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 233.84 Td (roomId) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 217.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 217.84 Td (playerId) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 201.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 201.84 Td (role = controller) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 174.84 Td (2. Lobby Flow) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 163.84 m 547.28 163.84 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 146.84 Td (Create a Room) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 131.84 Td (1.) Tj ET
+BT /F1 10.50 Tf 76.00 131.84 Td (Open the game on the monitor.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 115.84 Td (2.) Tj ET
+BT /F1 10.50 Tf 76.00 115.84 Td (Enter your player name.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 99.84 Td (3.) Tj ET
+BT /F1 10.50 Tf 76.00 99.84 Td (Leave Room Code empty.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 83.84 Td (4.) Tj ET
+BT /F1 10.50 Tf 76.00 83.84 Td (Choose race settings.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 67.84 Td (5.) Tj ET
+BT /F1 10.50 Tf 76.00 67.84 Td (Click Join Game.) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 1) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 5842 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 787.89 Td (The game creates a room code. The first driver in the room becomes the host.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 762.72 Td (Join an Existing Room) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 747.72 Td (1.) Tj ET
+BT /F1 10.50 Tf 76.00 747.72 Td (Open the game on another monitor/browser.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 731.72 Td (2.) Tj ET
+BT /F1 10.50 Tf 76.00 731.72 Td (Enter your name.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 715.72 Td (3.) Tj ET
+BT /F1 10.50 Tf 76.00 715.72 Td (Enter the existing room code.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 699.72 Td (4.) Tj ET
+BT /F1 10.50 Tf 76.00 699.72 Td (Click Join Game.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 675.72 Td (Ready and Start) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 660.72 Td (Each driver has a monitor/display connection and, for normal phone play, a controller) Tj ET
+BT /F1 10.50 Tf 48.00 646.54 Td (connection.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 626.37 Td (To start:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 606.19 Td (1.) Tj ET
+BT /F1 10.50 Tf 76.00 606.19 Td (Each driver clicks Ready on the monitor.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 590.19 Td (2.) Tj ET
+BT /F1 10.50 Tf 76.00 590.19 Td (Each controller should also be paired and ready.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 574.19 Td (3.) Tj ET
+BT /F1 10.50 Tf 76.00 574.19 Td (The host clicks Start Race.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 555.19 Td (If the race cannot start, the lobby shows blockers such as a missing controller, disconnected) Tj ET
+BT /F1 10.50 Tf 48.00 541.02 Td (monitor, or player not ready.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 515.84 Td (Spectating) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 500.84 Td (Use Spectate to join a room without taking a driving slot. Spectators can watch the lobby and) Tj ET
+BT /F1 10.50 Tf 48.00 486.67 Td (race but do not control a car.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 458.49 Td (3. Phone Controller Pairing) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 447.49 m 547.28 447.49 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 435.49 Td (After a driver joins, the lobby shows a controller pairing card with:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 415.32 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 415.32 Td (Room ID) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 399.32 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 399.32 Td (Player ID) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 383.32 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 383.32 Td (Controller link) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 367.32 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 367.32 Td (QR code) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 348.32 Td (Open the controller page on the phone by scanning the QR code or using the link.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 328.14 Td (Example:) Tj ET
+0.930 0.960 0.990 rg
+0.930 0.960 0.990 RG
+48.00 290.97 499.28 25.00 re f
+0.120 0.180 0.300 rg
+0.120 0.180 0.300 RG
+48.00 290.97 3.00 25.00 re f
+0.100 0.130 0.200 rg
+0.100 0.130 0.200 RG
+BT /F3 8.50 Tf 58.00 301.97 Td (controller.html?room=RACE123&player=P1) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 276.97 Td (The controller page auto-fills:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 256.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 256.79 Td (Room ID) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 240.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 240.79 Td (Player ID) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 221.79 Td (You can also enter a player name for the phone controller. Then tap Connect.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 196.62 Td (Pairing States) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 181.62 Td (The controller page shows clear status:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 161.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 161.44 Td (Not connected: no active socket.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 145.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 145.44 Td (Connecting: opening the WebSocket.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 129.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 129.44 Td (Connected: socket opened and pairing is being registered.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 113.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 113.44 Td (Controller paired: the phone is attached to the matching player.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 97.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 97.44 Td (Pairing failed: the player or room did not match, or the server rejected the connection.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 81.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 81.44 Td (Disconnected: socket closed.) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 2) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 5341 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 787.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 787.89 Td (Reconnecting: temporary disconnect recovery is in progress.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 763.89 Td (Important Pairing Rule) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 748.89 Td (The controller always joins with:) Tj ET
+0.930 0.960 0.990 rg
+0.930 0.960 0.990 RG
+48.00 667.72 499.28 69.00 re f
+0.120 0.180 0.300 rg
+0.120 0.180 0.300 RG
+48.00 667.72 3.00 69.00 re f
+0.100 0.130 0.200 rg
+0.100 0.130 0.200 RG
+BT /F3 8.50 Tf 58.00 722.72 Td ({) Tj ET
+BT /F3 8.50 Tf 58.00 711.72 Td (  "action": "join",) Tj ET
+BT /F3 8.50 Tf 58.00 700.72 Td (  "role": "controller",) Tj ET
+BT /F3 8.50 Tf 58.00 689.72 Td (  "player_id": "P1") Tj ET
+BT /F3 8.50 Tf 58.00 678.72 Td (}) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 653.72 Td (It never joins as a display. It never creates a separate player. It only sends input for the) Tj ET
+BT /F1 10.50 Tf 48.00 639.54 Td (player matching the room and player ID.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 611.37 Td (4. Controller Interface) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 600.37 m 547.28 600.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 588.37 Td (The phone controller is designed as a mobile gamepad.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 563.19 Td (Pairing Section) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 548.19 Td (Fields:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 528.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 528.02 Td (Room ID) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 512.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 512.02 Td (Player ID) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 496.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 496.02 Td (Player Name) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 480.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 480.02 Td (steering mode) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 461.02 Td (Buttons:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 440.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 440.84 Td (Connect) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 424.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 424.84 Td (Disconnect) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 400.84 Td (Drive Section) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 385.84 Td (Main controls:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 365.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 365.67 Td (Throttle) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 349.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 349.67 Td (Brake) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 333.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 333.67 Td (Nitro) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 317.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 317.67 Td (steering display) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 301.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 301.67 Td (touch steering slider) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 285.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 285.67 Td (speed readout) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 269.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 269.67 Td (health readout) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 245.67 Td (Steering Modes) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 230.67 Td (The controller supports:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 210.49 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 210.49 Td (Tilt steering: steer by tilting the phone.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 194.49 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 194.49 Td (Touch steering: steer with the slider.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 175.49 Td (Use Enable Motion before tilt steering. Some phones require a permission prompt before motion) Tj ET
+BT /F1 10.50 Tf 48.00 161.32 Td (sensors work.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 136.14 Td (Sensor Options) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 121.14 Td (Available sensor controls:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 100.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 100.97 Td (axis selection: Gamma, Beta, Alpha) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 84.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 84.97 Td (sensitivity) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 68.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 68.97 Td (dead zone) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 3) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 5670 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 787.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 787.89 Td (invert axis) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 771.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 771.89 Td (smoothing) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 755.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 755.89 Td (reset calibration) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 731.89 Td (Calibration Wizard) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 716.89 Td (Use the calibration wizard when steering feels off.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 696.72 Td (Steps:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 676.54 Td (1.) Tj ET
+BT /F1 10.50 Tf 76.00 676.54 Td (Hold the phone centered and save center.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 660.54 Td (2.) Tj ET
+BT /F1 10.50 Tf 76.00 660.54 Td (Tilt left and save left.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 644.54 Td (3.) Tj ET
+BT /F1 10.50 Tf 76.00 644.54 Td (Tilt right and save right.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 628.54 Td (4.) Tj ET
+BT /F1 10.50 Tf 76.00 628.54 Td (Save calibration.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 609.54 Td (This teaches the controller what "center", "left", and "right" mean for your grip and phone) Tj ET
+BT /F1 10.50 Tf 48.00 595.37 Td (orientation.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 570.19 Td (Haptics) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 555.19 Td (If the phone supports vibration, the controller vibrates for:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 535.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 535.02 Td (successful connection) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 519.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 519.02 Td (countdown) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 503.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 503.02 Td (race start) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 487.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 487.02 Td (nitro activation) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 471.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 471.02 Td (collision) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 455.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 455.02 Td (off-track / warning states) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 439.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 439.02 Td (finish line) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 420.02 Td (If vibration is unsupported, the controller keeps working normally.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 394.84 Td (Controller Audio) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 379.84 Td (The controller has lightweight audio feedback:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 359.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 359.67 Td (Mute) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 343.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 343.67 Td (volume slider) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 327.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 327.67 Td (sound effects on/off) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 308.67 Td (Controller audio is optional and separate from the monitor's race audio.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 283.49 Td (Debug Panel) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 268.49 Td (The debug panel is collapsed by default. Open it when diagnosing a controller issue.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 248.32 Td (It shows:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 228.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 228.14 Td (room) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 212.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 212.14 Td (player) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 196.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 196.14 Td (WebSocket status) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 180.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 180.14 Td (last input sent) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 164.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 164.14 Td (steering value) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 148.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 148.14 Td (throttle/brake/nitro state) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 132.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 132.14 Td (ping field when available) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 116.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 116.14 Td (socket state) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 89.14 Td (5. Keyboard and Touch Fallback) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 78.14 m 547.28 78.14 l S
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 4) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 6600 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 787.89 Td (If no phone controller is linked to your player, the monitor page can send keyboard input.) Tj ET
+0.060 0.140 0.250 rg
+0.060 0.140 0.250 RG
+48.00 749.22 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 749.22 499.28 22.50 re S
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+BT /F2 8.70 Tf 53.00 759.72 Td (Action) Tj ET
+0.50 w 297.64 749.22 m 297.64 771.72 l S
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+BT /F2 8.70 Tf 302.64 759.72 Td (Keys) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 726.72 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 726.72 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 737.22 Td (Accelerate) Tj ET
+0.50 w 297.64 726.72 m 297.64 749.22 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 737.22 Td (Up Arrow or W) Tj ET
+0.965 0.975 0.990 rg
+0.965 0.975 0.990 RG
+48.00 704.22 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 704.22 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 714.72 Td (Brake) Tj ET
+0.50 w 297.64 704.22 m 297.64 726.72 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 714.72 Td (Down Arrow or S) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 681.72 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 681.72 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 692.22 Td (Steer Left) Tj ET
+0.50 w 297.64 681.72 m 297.64 704.22 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 692.22 Td (Left Arrow or A) Tj ET
+0.965 0.975 0.990 rg
+0.965 0.975 0.990 RG
+48.00 659.22 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 659.22 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 669.72 Td (Steer Right) Tj ET
+0.50 w 297.64 659.22 m 297.64 681.72 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 669.72 Td (Right Arrow or D) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 636.72 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 636.72 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 647.22 Td (Nitro) Tj ET
+0.50 w 297.64 636.72 m 297.64 659.22 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 647.22 Td (Space) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 624.72 Td (On touch displays, the monitor may show simple touch buttons for gas, brake, and nitro. For the) Tj ET
+BT /F1 10.50 Tf 48.00 610.54 Td (best multiplayer experience, use the phone controller.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 582.37 Td (6. Race Modes) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 571.37 m 547.28 571.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 554.37 Td (Sprint) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 539.37 Td (Sprint is the main race mode.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 519.19 Td (Goal: finish the selected number of laps first.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 499.02 Td (Features:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 478.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 478.84 Td (multiplayer-friendly) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 462.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 462.84 Td (bots can be enabled) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 446.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 446.84 Td (leaderboard and minimap are important) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 430.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 430.84 Td (selected lap count matters) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 411.84 Td (Best for normal races with friends or bots.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 386.67 Td (Time Trial) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 371.67 Td (Time Trial is a solo lap-time mode.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 351.49 Td (Goal: drive clean, fast laps and beat your own best time.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 331.32 Td (Features:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 311.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 311.14 Td (no bots) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 295.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 295.14 Td (no traffic) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 279.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 279.14 Td (good for learning braking points) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 263.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 263.14 Td (supports personal records and ghosts) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 244.14 Td (Best for improving lap times.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 218.97 Td (Practice) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 203.97 Td (Practice is a free driving mode.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 183.79 Td (Goal: learn the track without race pressure.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 163.62 Td (Features:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 143.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 143.44 Td (no bots) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 127.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 127.44 Td (no fixed competitive finish pressure) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 111.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 111.44 Td (good for testing steering assist and phone calibration) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 95.44 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 95.44 Td (useful before trying Sprint or Time Trial) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 76.44 Td (Best for warmups and learning corners.) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 5) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 5095 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 782.89 Td (Elimination) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 767.89 Td (Elimination is a survival race.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 747.72 Td (Goal: stay ahead when elimination pressure hits.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 727.54 Td (Features:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 707.37 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 707.37 Td (bots can be enabled) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 691.37 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 691.37 Td (if there are too few human players, the game can add bot pressure) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 675.37 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 675.37 Td (lap count is not used like Sprint) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 659.37 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 659.37 Td (staying out of last place matters) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 640.37 Td (Best for chaotic races and pressure sessions.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 612.19 Td (7. Lobby Settings) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 601.19 m 547.28 601.19 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 584.19 Td (Mode) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 569.19 Td (Choose:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 549.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 549.02 Td (Sprint) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 533.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 533.02 Td (Time Trial) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 517.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 517.02 Td (Practice) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 501.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 501.02 Td (Elimination) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 477.02 Td (Track) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 462.02 Td (Choose:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 441.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 441.84 Td (Circuit 1) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 425.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 425.84 Td (Circuit 2) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 406.84 Td (Each track has a different rhythm. Practice one before chasing speed on both.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 381.67 Td (Laps) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 366.67 Td (Used mainly by Sprint and Time Trial.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 346.49 Td (Options in the current UI:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 326.32 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 326.32 Td (3) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 310.32 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 310.32 Td (5) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 294.32 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 294.32 Td (10) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 275.32 Td (Practice and Elimination do not use laps the same way.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 250.14 Td (Bots) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 235.14 Td (Bots can be used in:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 214.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 214.97 Td (Sprint) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 198.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 198.97 Td (Elimination) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 179.97 Td (Bots are disabled for:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 159.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 159.79 Td (Time Trial) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 143.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 143.79 Td (Practice) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 119.79 Td (Difficulty) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 104.79 Td (Bot difficulty:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 84.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 84.62 Td (Easy) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 68.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 68.62 Td (Medium) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 6) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 5539 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 787.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 787.89 Td (Hard) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 771.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 771.89 Td (Expert) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 747.89 Td (Damage) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 732.89 Td (Damage can be on or off.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 712.72 Td (When damage is on:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 692.54 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 692.54 Td (hard crashes reduce health) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 676.54 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 676.54 Td (low health makes mistakes more costly) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 660.54 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 660.54 Td (repeated crashes can seriously hurt race pace) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 636.54 Td (Steering) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 621.54 Td (Monitor-side steering assist options:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 601.37 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 601.37 Td (Direct: raw steering.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 585.37 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 585.37 Td (Assist: smoother, easier control.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 569.37 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 569.37 Td (Stable: strongest smoothing for beginners or twitchy inputs.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 550.37 Td (If your car feels too nervous, try Assist or Stable.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 522.19 Td (8. Race HUD) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 511.19 m 547.28 511.19 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 499.19 Td (During a race, the monitor shows:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 479.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 479.02 Td (position) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 463.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 463.02 Td (lap/progress) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 447.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 447.02 Td (speed) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 431.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 431.02 Td (time) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 415.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 415.02 Td (nitro bar) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 399.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 399.02 Td (health bar) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 383.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 383.02 Td (leaderboard) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 367.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 367.02 Td (minimap) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 351.02 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 351.02 Td (race warnings) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 327.02 Td (Leaderboard) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 312.02 Td (The leaderboard shows current order and progress. In Sprint, it reflects laps and track) Tj ET
+BT /F1 10.50 Tf 48.00 297.84 Td (progress. In solo modes, use it with lap timing and records.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 272.67 Td (Minimap) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 257.67 Td (The minimap shows:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 237.49 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 237.49 Td (track shape) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 221.49 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 221.49 Td (car positions) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 205.49 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 205.49 Td (nearby opponents) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 186.49 Td (Use it to anticipate traffic and understand where you are on the circuit.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 161.32 Td (Race Warnings) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 146.32 Td (Warnings can include:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 126.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 126.14 Td (Wrong way) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 110.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 110.14 Td (Shortcut penalty) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 94.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 94.14 Td (Checkpoint missed) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 78.14 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 78.14 Td (off-track warning behavior) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 7) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 5386 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 787.89 Td (Correct the problem quickly to avoid losing time or being respawned.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 759.72 Td (9. Track Rules and Penalties) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 748.72 m 547.28 748.72 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 736.72 Td (The game tracks progress using checkpoints and direction.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 711.54 Td (Checkpoints) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 696.54 Td (Clean laps require passing the expected checkpoint sequence. Crossing the line after skipping) Tj ET
+BT /F1 10.50 Tf 48.00 682.37 Td (too much of the track may not count.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 657.19 Td (Wrong Way) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 642.19 Td (Driving backward around the track triggers Wrong way. If you keep going the wrong direction,) Tj ET
+BT /F1 10.50 Tf 48.00 628.02 Td (the game can respawn you near a valid checkpoint.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 602.84 Td (Shortcut Penalty) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 587.84 Td (Cutting too much of the track can trigger a shortcut warning or invalidate progress.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 562.67 Td (Checkpoint Missed) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 547.67 Td (If you cross the finish line without enough valid checkpoint progress, the lap may be rejected.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 522.49 Td (Off Track) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 507.49 Td (Leaving the road can slow your race, trigger warnings, or cause a penalty respawn depending on) Tj ET
+BT /F1 10.50 Tf 48.00 493.32 Td (the situation.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 468.14 Td (Collisions) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 453.14 Td (Collisions reduce speed. With damage enabled, hard impacts also reduce health.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 424.97 Td (10. Game Controls) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 413.97 m 547.28 413.97 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 396.97 Td (Monitor Race Buttons) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 381.97 Td (The monitor race UI includes:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 361.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 361.79 Td (Pause) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 345.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 345.79 Td (Resume) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 329.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 329.79 Td (Restart) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 313.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 313.79 Td (Reset) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 297.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 297.79 Td (Quit) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 281.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 281.79 Td (Ghost On / Ghost Off) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 265.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 265.79 Td (Mute) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 249.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 249.79 Td (volume and FX controls) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 233.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 233.79 Td (sound quality selector) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 209.79 Td (Phone Controller Game Buttons) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 194.79 Td (The phone controller includes:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 174.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 174.62 Td (Ready) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 158.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 158.62 Td (Pause) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 142.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 142.62 Td (Resume) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 126.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 126.62 Td (Restart) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 110.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 110.62 Td (Quit) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 94.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 94.62 Td (Respawn) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 75.62 Td (The controller only sends commands to the server. It does not implement race logic by itself.) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 8) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 5624 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 787.89 Td (Current note: the controller's Respawn button sends the existing server reset command. It is a) Tj ET
+BT /F1 10.50 Tf 48.00 773.72 Td (race reset/respawn-style command, not separate custom car logic.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 745.54 Td (11. Records and Ghosts) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 734.54 m 547.28 734.54 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 722.54 Td (Personal records are saved in the browser.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 702.37 Td (Tracked items include:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 682.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 682.19 Td (best lap) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 666.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 666.19 Td (best race time) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 650.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 650.19 Td (races completed) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 634.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 634.19 Td (wins) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 618.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 618.19 Td (podiums) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 602.19 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 602.19 Td (achievements) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 583.19 Td (In Practice and Time Trial, ghost paths can help compare your current driving line against a) Tj ET
+BT /F1 10.50 Tf 48.00 569.02 Td (previous lap. Use Ghost On or Ghost Off on the monitor to control this display.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 540.84 Td (12. Driving Tips) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 529.84 m 547.28 529.84 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 512.84 Td (Brake Before Turning) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 497.84 Td (The car turns better when it is not entering a corner too fast. Brake while straight, then) Tj ET
+BT /F1 10.50 Tf 48.00 483.67 Td (turn.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 458.49 Td (Win the Exit) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 443.49 Td (A clean corner exit is usually faster than a wild corner entry. Straighten the car before using) Tj ET
+BT /F1 10.50 Tf 48.00 429.32 Td (full throttle and nitro.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 404.14 Td (Use Nitro Carefully) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 389.14 Td (Good nitro moments:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 368.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 368.97 Td (long straights) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 352.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 352.97 Td (clean corner exits) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 336.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 336.97 Td (safe overtakes) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 320.97 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 320.97 Td (recovery after a slow section) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 301.97 Td (Bad nitro moments:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 281.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 281.79 Td (right before sharp corners) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 265.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 265.79 Td (while sliding) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 249.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 249.79 Td (while pointed at a wall) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 233.79 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 233.79 Td (in traffic with no room) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 209.79 Td (Calibrate the Phone) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 194.79 Td (If tilt steering feels wrong:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 174.62 Td (1.) Tj ET
+BT /F1 10.50 Tf 76.00 174.62 Td (Enable motion.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 158.62 Td (2.) Tj ET
+BT /F1 10.50 Tf 76.00 158.62 Td (Start calibration.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 142.62 Td (3.) Tj ET
+BT /F1 10.50 Tf 76.00 142.62 Td (Save center, left, and right.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 126.62 Td (4.) Tj ET
+BT /F1 10.50 Tf 76.00 126.62 Td (Adjust sensitivity, dead zone, and smoothing.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 102.62 Td (Use the Right Mode to Improve) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 87.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 87.62 Td (Practice: learn the road.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 71.62 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 71.62 Td (Time Trial: improve lap times.) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 9) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 5795 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 787.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 787.89 Td (Sprint: race under pressure.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 771.89 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 771.89 Td (Elimination: learn survival and recovery.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 744.89 Td (13. Troubleshooting) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 733.89 m 547.28 733.89 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 716.89 Td (Controller Does Not Pair) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 701.89 Td (Check:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 681.72 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 681.72 Td (the monitor joined the room first) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 665.72 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 665.72 Td (the controller URL has the correct room and player) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 649.72 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 649.72 Td (the controller status reaches Controller paired) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 633.72 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 633.72 Td (the player ID exists in the lobby) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 617.72 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 617.72 Td (you did not open a stale QR code from another room) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 598.72 Td (If needed, disconnect and reconnect the controller.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 573.54 Td (Extra Player Appears) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 558.54 Td (The phone controller should not create a player. If an extra player appears, you likely opened) Tj ET
+BT /F1 10.50 Tf 48.00 544.37 Td (the main game page instead of controller.html.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 524.19 Td (Use the QR code or controller link from the lobby.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 499.02 Td (Race Will Not Start) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 484.02 Td (Common blockers:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 463.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 463.84 Td (a monitor is not ready) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 447.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 447.84 Td (a controller is missing) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 431.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 431.84 Td (a controller is not ready) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 415.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 415.84 Td (you are not the host) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 399.84 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 399.84 Td (the room is still in another race state) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 375.84 Td (Steering Feels Wrong) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 360.84 Td (Try:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 340.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 340.67 Td (recalibrating the phone) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 324.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 324.67 Td (switching axis between Gamma, Beta, and Alpha) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 308.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 308.67 Td (lowering sensitivity) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 292.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 292.67 Td (increasing dead zone) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 276.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 276.67 Td (increasing smoothing) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 260.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 260.67 Td (using touch steering instead of tilt) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 244.67 Td (-) Tj ET
+BT /F1 10.50 Tf 64.00 244.67 Td (using Assist or Stable steering on the monitor settings) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 220.67 Td (Motion Permission Does Not Work) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 205.67 Td (Some mobile browsers require tapping Enable Motion and accepting a permission prompt. If the) Tj ET
+BT /F1 10.50 Tf 48.00 191.49 Td (prompt is denied, tilt steering will not work until permission is allowed again.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 166.32 Td (Vibration Does Not Work) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 151.32 Td (Not all phones or browsers support vibration. The controller will still work without haptics.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 126.14 Td (Keyboard Input Does Not Move the Car) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 111.14 Td (If a phone controller is linked to your player, the monitor stops sending keyboard input for) Tj ET
+BT /F1 10.50 Tf 48.00 96.97 Td (that player. Use the controller, or disconnect it to return to keyboard fallback.) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 10) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 7780 >>
+stream
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 12.20 Tf 48.00 782.89 Td (Nitro Feels Weak) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 767.89 Td (Nitro works best when the car is straight and already accelerating. Avoid using it while) Tj ET
+BT /F1 10.50 Tf 48.00 753.72 Td (turning hard or sliding.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 725.54 Td (14. Test Checklist) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 714.54 m 547.28 714.54 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 702.54 Td (Use this checklist after deployment or before a play session:) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 682.37 Td (1.) Tj ET
+BT /F1 10.50 Tf 76.00 682.37 Td (Open the monitor on PC or iPad.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 666.37 Td (2.) Tj ET
+BT /F1 10.50 Tf 76.00 666.37 Td (Create a room.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 650.37 Td (3.) Tj ET
+BT /F1 10.50 Tf 76.00 650.37 Td (Note the room ID and player ID.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 634.37 Td (4.) Tj ET
+BT /F1 10.50 Tf 76.00 634.37 Td (Open the phone controller link or scan the QR code.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 618.37 Td (5.) Tj ET
+BT /F1 10.50 Tf 76.00 618.37 Td (Confirm room ID and player ID are auto-filled.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 602.37 Td (6.) Tj ET
+BT /F1 10.50 Tf 76.00 602.37 Td (Tap Connect.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 586.37 Td (7.) Tj ET
+BT /F1 10.50 Tf 76.00 586.37 Td (Confirm the controller says Controller paired.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 570.37 Td (8.) Tj ET
+BT /F1 10.50 Tf 76.00 570.37 Td (Confirm the lobby shows the controller linked to the same player.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 554.37 Td (9.) Tj ET
+BT /F1 10.50 Tf 76.00 554.37 Td (Confirm no extra player was created.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 538.37 Td (10.) Tj ET
+BT /F1 10.50 Tf 76.00 538.37 Td (Test tilt or touch steering.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 522.37 Td (11.) Tj ET
+BT /F1 10.50 Tf 76.00 522.37 Td (Test throttle, brake, and nitro.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 506.37 Td (12.) Tj ET
+BT /F1 10.50 Tf 76.00 506.37 Td (Test ready, pause, resume, restart, and respawn/reset.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 490.37 Td (13.) Tj ET
+BT /F1 10.50 Tf 76.00 490.37 Td (Test calibration, sensitivity, dead zone, invert, and smoothing.) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F2 10.50 Tf 52.00 474.37 Td (14.) Tj ET
+BT /F1 10.50 Tf 76.00 474.37 Td (Start a race and confirm the correct car moves.) Tj ET
+0.060 0.240 0.460 rg
+0.060 0.240 0.460 RG
+BT /F2 16.00 Tf 48.00 447.37 Td (Quick Reference) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.80 w 48.00 436.37 m 547.28 436.37 l S
+0.060 0.140 0.250 rg
+0.060 0.140 0.250 RG
+48.00 405.87 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 405.87 499.28 22.50 re S
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+BT /F2 8.70 Tf 53.00 416.37 Td (Need) Tj ET
+0.50 w 297.64 405.87 m 297.64 428.37 l S
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+BT /F2 8.70 Tf 302.64 416.37 Td (Use) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 383.37 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 383.37 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 393.87 Td (Create a race) Tj ET
+0.50 w 297.64 383.37 m 297.64 405.87 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 393.87 Td (Main monitor page) Tj ET
+0.965 0.975 0.990 rg
+0.965 0.975 0.990 RG
+48.00 360.87 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 360.87 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 371.37 Td (Pair phone) Tj ET
+0.50 w 297.64 360.87 m 297.64 383.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 371.37 Td (Lobby QR code) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 338.37 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 338.37 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 348.87 Td (Phone URL format) Tj ET
+0.50 w 297.64 338.37 m 297.64 360.87 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 348.87 Td (controller.html?room=ROOM&player=P1) Tj ET
+0.965 0.975 0.990 rg
+0.965 0.975 0.990 RG
+48.00 315.87 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 315.87 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 326.37 Td (Main race) Tj ET
+0.50 w 297.64 315.87 m 297.64 338.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 326.37 Td (Sprint) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 293.37 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 293.37 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 303.87 Td (Solo lap times) Tj ET
+0.50 w 297.64 293.37 m 297.64 315.87 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 303.87 Td (Time Trial) Tj ET
+0.965 0.975 0.990 rg
+0.965 0.975 0.990 RG
+48.00 270.87 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 270.87 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 281.37 Td (Learn track) Tj ET
+0.50 w 297.64 270.87 m 297.64 293.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 281.37 Td (Practice) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 248.37 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 248.37 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 258.87 Td (Survival pressure) Tj ET
+0.50 w 297.64 248.37 m 297.64 270.87 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 258.87 Td (Elimination) Tj ET
+0.965 0.975 0.990 rg
+0.965 0.975 0.990 RG
+48.00 225.87 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 225.87 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 236.37 Td (Fix tilt steering) Tj ET
+0.50 w 297.64 225.87 m 297.64 248.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 236.37 Td (Calibration wizard) Tj ET
+1.000 1.000 1.000 rg
+1.000 1.000 1.000 RG
+48.00 203.37 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 203.37 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 213.87 Td (Reduce twitchy steering) Tj ET
+0.50 w 297.64 203.37 m 297.64 225.87 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 213.87 Td (Smoothing, dead zone, Assist/Stable) Tj ET
+0.965 0.975 0.990 rg
+0.965 0.975 0.990 RG
+48.00 180.87 499.28 22.50 re f
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+48.00 180.87 499.28 22.50 re S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 53.00 191.37 Td (Diagnose pairing) Tj ET
+0.50 w 297.64 180.87 m 297.64 203.37 l S
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 8.70 Tf 302.64 191.37 Td (Debug panel) Tj ET
+0.070 0.100 0.170 rg
+0.070 0.100 0.170 RG
+BT /F1 10.50 Tf 48.00 168.87 Td (Drive clean first. Speed comes after the car is under control.) Tj ET
+0.350 0.400 0.480 rg
+0.350 0.400 0.480 RG
+BT /F1 8.50 Tf 48.00 26.00 Td (Car Race - How to Play     Page 11) Tj ET
+0.820 0.860 0.910 rg
+0.820 0.860 0.910 RG
+0.60 w 48.00 38.00 m 547.28 38.00 l S
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+endstream
+endobj
+xref
+0 28
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000191 00000 n 
+0000000261 00000 n 
+0000000336 00000 n 
+0000000404 00000 n 
+0000000556 00000 n 
+0000006664 00000 n 
+0000006816 00000 n 
+0000012710 00000 n 
+0000012864 00000 n 
+0000018258 00000 n 
+0000018412 00000 n 
+0000024135 00000 n 
+0000024289 00000 n 
+0000030942 00000 n 
+0000031096 00000 n 
+0000036244 00000 n 
+0000036398 00000 n 
+0000041990 00000 n 
+0000042144 00000 n 
+0000047583 00000 n 
+0000047737 00000 n 
+0000053414 00000 n 
+0000053568 00000 n 
+0000059416 00000 n 
+0000059570 00000 n 
+trailer
+<< /Size 28 /Root 1 0 R >>
+startxref
+67403
+%%EOF
