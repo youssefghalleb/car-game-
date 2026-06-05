@@ -221,7 +221,7 @@
 
     .connect-actions {
       display: grid;
-      grid-template-columns: 1.3fr 0.7fr;
+      grid-template-columns: 1fr 1fr 0.8fr;
       gap: 8px;
       margin-top: 8px;
     }
@@ -233,6 +233,49 @@
       min-height: 0;
     }
 
+    details.panel {
+      display: block;
+    }
+
+    details.panel[open] {
+      display: grid;
+    }
+
+    .panel-summary {
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 850;
+      line-height: 1;
+      list-style: none;
+      text-transform: uppercase;
+    }
+
+    .panel-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .panel-summary::after {
+      content: "+";
+      width: 24px;
+      height: 24px;
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 999px;
+      color: var(--text);
+      background: var(--panel-3);
+    }
+
+    details[open] > .panel-summary::after {
+      content: "-";
+    }
+
     .main-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -241,6 +284,7 @@
       overflow: auto;
       overscroll-behavior: contain;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
 
     .main-grid::-webkit-scrollbar {
@@ -248,7 +292,7 @@
     }
 
     body.is-paired .main-grid {
-      overflow: hidden;
+      overflow: auto;
     }
 
     .readout-row {
@@ -602,12 +646,17 @@
       }
 
       .connect-actions {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 5px;
       }
 
       .command-grid {
         gap: 5px;
+      }
+
+      .connect-actions .control-btn {
+        padding: 7px 5px;
+        font-size: 0.76rem;
       }
     }
 
@@ -650,18 +699,13 @@
     }
 
     @media (max-height: 720px), (max-width: 390px) {
-      body.is-paired .connection-panel,
-      body.is-paired .settings-panel,
-      body.is-paired .audio-panel {
-        display: none;
-      }
-
       body.is-paired .shell {
-        grid-template-rows: auto 1fr auto;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
       }
 
       body.is-paired .main-grid {
-        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto auto;
+        overflow: auto;
       }
 
       body.is-paired .drive-panel {
@@ -706,7 +750,7 @@
       }
 
       body.is-paired .debug-panel {
-        display: none;
+        display: block;
       }
     }
 
@@ -716,8 +760,8 @@
       }
 
       .shell {
-        grid-template-columns: minmax(230px, 0.85fr) minmax(300px, 1.15fr);
-        grid-template-rows: auto 1fr auto;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
         align-items: start;
       }
 
@@ -725,16 +769,16 @@
       .connection-panel,
       .settings-panel,
       .audio-panel {
-        grid-column: 1;
+        grid-column: auto;
       }
 
       .drive-panel,
       .commands-panel {
-        grid-column: 2;
+        grid-column: auto;
       }
 
       details.debug-panel {
-        grid-column: 1 / -1;
+        grid-column: auto;
       }
 
       .topbar {
@@ -742,13 +786,27 @@
       }
 
       .main-grid {
-        display: contents;
+        display: grid;
+        grid-template-columns: minmax(260px, 1.05fr) minmax(220px, 0.95fr);
+        overflow: auto;
+      }
+
+      .drive-panel {
+        grid-column: 1;
+        grid-row: 1 / span 3;
+      }
+
+      .commands-panel,
+      .settings-panel,
+      .audio-panel {
+        grid-column: 2;
       }
 
       .throttle {
-        min-height: 132px;
+        min-height: 110px;
       }
     }
+
   </style>
 </head>
 <body class="is-disconnected">
@@ -779,6 +837,7 @@
       </div>
       <div class="connect-actions">
         <button id="connectBtn" class="control-btn primary">Connect</button>
+        <button id="enableMotionBtn" class="control-btn primary">Motion</button>
         <button id="disconnectBtn" class="control-btn">Disconnect</button>
       </div>
     </section>
@@ -821,8 +880,8 @@
         </div>
       </section>
 
-      <section class="panel settings-panel">
-        <h2>Sensors</h2>
+      <details class="panel settings-panel">
+        <summary class="panel-summary">Sensors / motion</summary>
         <div class="settings-grid">
           <label>Axis
             <select id="axisSelect">
@@ -836,7 +895,6 @@
           <label>Dead Zone<input id="deadzoneSlider" type="range" min="0" max="18" value="6" /></label>
         </div>
         <div class="toggle-row">
-          <button id="enableMotionBtn" class="control-btn primary">Enable Motion</button>
           <button id="invertBtn" class="control-btn toggle-on">Invert: On</button>
         </div>
         <div class="wizard">
@@ -846,17 +904,17 @@
             <button id="resetCalibrationBtn" class="control-btn">Reset Calibration</button>
           </div>
         </div>
-      </section>
+      </details>
 
-      <section class="panel audio-panel">
-        <h2>Audio</h2>
+      <details class="panel audio-panel">
+        <summary class="panel-summary">Audio / vibration</summary>
         <div class="audio-grid">
           <button id="muteBtn" class="control-btn">Mute</button>
           <button id="sfxBtn" class="control-btn toggle-on">Effects: On</button>
           <label>Volume<input id="volumeSlider" type="range" min="0" max="100" value="80" /></label>
           <button id="testVibrationBtn" class="control-btn">Test Vibration</button>
         </div>
-      </section>
+      </details>
     </div>
 
     <details id="debugPanel" class="debug-panel">

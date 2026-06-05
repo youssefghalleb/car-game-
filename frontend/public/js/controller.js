@@ -468,7 +468,7 @@
       window.addEventListener('deviceorientation', handleOrientation, true);
       state.sensorEnabled = true;
     }
-    els.enableMotionBtn.textContent = 'Motion Enabled';
+    els.enableMotionBtn.textContent = 'Motion On';
     els.enableMotionBtn.classList.add('success');
   }
 
@@ -607,7 +607,7 @@
       error: 'is-error',
     }[status] || 'is-disconnected';
     els.body.classList.add(className);
-    els.body.classList.toggle('controller-locked', status === 'paired');
+    els.body.classList.toggle('controller-locked', false);
     els.statusText.textContent = detail ? `${label} · ${detail}` : label;
     updateDebug();
   }
