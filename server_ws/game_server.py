@@ -18,11 +18,11 @@ from server_ws import shared_pairing
 # - connexion/déconnexion des joueurs
 # - dispatch des messages WebSocket
 # - boucle de jeu (tick) à 60 Hz
-# - broadcast de l'état à ~24 Hz
+# - broadcast de l'état à ~30 Hz
 # ============================================================
 
 TICK_RATE = 60          # Simulation ticks per second
-BROADCAST_RATE = 24     # State broadcasts per second
+BROADCAST_RATE = 30     # State broadcasts per second
 LOBBY_REFRESH_RATE = 4  # Pairing/status refreshes per second
 WS_HEARTBEAT_SECONDS = 20.0
 WS_REPLACED_CLOSE_CODE = 4001

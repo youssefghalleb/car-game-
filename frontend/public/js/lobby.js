@@ -2,6 +2,14 @@
 // Lobby UI logic
 // ============================================================
 
+const MAX_REASONABLE_RACE_RECORDS = 500;
+const COUNT_BASED_ACHIEVEMENTS = new Set([
+  'First Race',
+  'First Win',
+  '10 Wins',
+  'Long Distance Driver',
+]);
+
 export class LobbyUI {
   constructor(client) {
     this.client = client;
@@ -277,11 +285,16 @@ export class LobbyUI {
 
   updateRecords() {
     if (!this.recordsSummaryEl) return;
-    let records = {};
+    let rawRecords = {};
     try {
-      records = JSON.parse(localStorage.getItem('carGameRecords') || '{}');
+      rawRecords = JSON.parse(localStorage.getItem('carGameRecords') || '{}');
     } catch (_) {
-      records = {};
+      rawRecords = {};
+    }
+
+    const records = this._sanitizeRecords(rawRecords);
+    if (JSON.stringify(records) !== JSON.stringify(rawRecords)) {
+      localStorage.setItem('carGameRecords', JSON.stringify(records));
     }
 
     const achievements = records.achievements || [];
@@ -354,7 +367,7 @@ export class LobbyUI {
     if (!controllerReady) {
       this._setGuide(
         'Pair your phone controller',
-        'Scan the QR code with your phone, tap Connect, then wait until this lobby says Controller ready.',
+        'Scan the QR code, tap Connect, then tap Motion on your phone. If steering feels off-center, open Sensors / motion and run calibration before pressing Ready.',
         'controller',
         ['room']
       );
@@ -453,5 +466,41 @@ export class LobbyUI {
 
   _formatTime(value) {
     return Number.isFinite(value) ? `${value.toFixed(2)}s` : '-';
+  }
+
+  _sanitizeRecords(records = {}) {
+    const clean = { ...records };
+    const races = this._safeCount(clean.races_completed);
+    const wins = this._safeCount(clean.wins);
+    const podiums = this._safeCount(clean.podiums);
+    const corruptedCounts = [races, wins, podiums].some(count => count > MAX_REASONABLE_RACE_RECORDS)
+      || wins > races
+      || podiums > races;
+
+    clean.races_completed = corruptedCounts ? 0 : races;
+    clean.wins = corruptedCounts ? 0 : Math.min(wins, clean.races_completed);
+    clean.podiums = corruptedCounts ? 0 : Math.min(Math.max(podiums, clean.wins), clean.races_completed);
+    clean.best_lap = this._safeTime(clean.best_lap);
+    clean.best_race_time = this._safeTime(clean.best_race_time);
+    clean.achievements = Array.isArray(clean.achievements)
+      ? [...new Set(clean.achievements.map(String))].sort()
+      : [];
+    if (corruptedCounts) {
+      clean.achievements = clean.achievements.filter(name => !COUNT_BASED_ACHIEVEMENTS.has(name));
+    }
+    clean.recorded_finishes = !corruptedCounts && Array.isArray(clean.recorded_finishes)
+      ? clean.recorded_finishes.map(String).filter(Boolean).slice(0, 50)
+      : [];
+    return clean;
+  }
+
+  _safeCount(value) {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) && numeric > 0 ? Math.floor(numeric) : 0;
+  }
+
+  _safeTime(value) {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) && numeric > 0 ? numeric : undefined;
   }
 }

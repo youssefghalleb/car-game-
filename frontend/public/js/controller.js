@@ -15,6 +15,9 @@
     sensitivitySlider: document.getElementById('sensitivitySlider'),
     deadzoneSlider: document.getElementById('deadzoneSlider'),
     smoothingSlider: document.getElementById('smoothingSlider'),
+    sensitivityValue: document.getElementById('sensitivityValue'),
+    deadzoneValue: document.getElementById('deadzoneValue'),
+    smoothingValue: document.getElementById('smoothingValue'),
     invertBtn: document.getElementById('invertBtn'),
     enableMotionBtn: document.getElementById('enableMotionBtn'),
     calibrateWizardBtn: document.getElementById('calibrateWizardBtn'),
@@ -50,9 +53,11 @@
   };
 
   const STORAGE_KEY = 'carGameControllerSettings';
-  const INPUT_RATE_MS = 1000 / 30;
-  const INPUT_HEARTBEAT_MS = 250;
+  const INPUT_RATE_MS = 1000 / 45;
+  const INPUT_HEARTBEAT_MS = 150;
   const CONNECT_DEBOUNCE_MS = 650;
+  const SENSOR_STALE_MS = 450;
+  const SENSOR_SAMPLE_WINDOW = 8;
 
   const settings = loadSettings();
   const state = {
@@ -71,6 +76,9 @@
     configPromise: null,
     sensorEnabled: false,
     latestAxis: 0,
+    filteredAxis: Number(settings.calibration?.center) || 0,
+    sensorLastAt: 0,
+    sensorSamples: [],
     rawSteer: 0,
     steer: 0,
     throttle: false,
@@ -107,13 +115,14 @@
     els.axisSelect.value = settings.axis || 'gamma';
     els.sensitivitySlider.value = settings.sensitivity || 100;
     els.deadzoneSlider.value = settings.deadzone || 6;
-    els.smoothingSlider.value = settings.smoothing ?? 35;
+    els.smoothingSlider.value = settings.smoothing ?? 22;
     els.volumeSlider.value = state.volume;
 
     bindEvents();
     updateReadyButton();
     updateInvertButton(settings.invert ?? true);
     updateAudioButtons();
+    applySensorSettings();
     setStatus('disconnected', 'Not connected');
     updateLabels();
     updateSteeringUI(true);
@@ -155,7 +164,12 @@
     els.modeSelect.addEventListener('change', () => {
       if (els.modeSelect.value === 'touch') {
         state.rawSteer = Number(els.touchSteerSlider.value) / 100;
+      } else {
+        state.rawSteer = computeTiltSteer(state.latestAxis);
       }
+      state.steer = state.rawSteer;
+      state.lastSent = '';
+      updateSteeringUI(true);
       saveSettings();
     });
     [
@@ -165,8 +179,22 @@
       els.smoothingSlider,
       els.volumeSlider,
     ].forEach((el) => {
-      el.addEventListener('input', saveSettings);
-      el.addEventListener('change', saveSettings);
+      el.addEventListener('input', () => {
+        if (el === els.volumeSlider) {
+          saveSettings();
+          return;
+        }
+        if (el === els.axisSelect) handleAxisChanged();
+        applySensorSettings();
+      });
+      el.addEventListener('change', () => {
+        if (el === els.volumeSlider) {
+          saveSettings();
+          return;
+        }
+        if (el === els.axisSelect) handleAxisChanged();
+        applySensorSettings();
+      });
     });
     els.touchSteerSlider.addEventListener('input', () => {
       if (els.modeSelect.value === 'touch') {
@@ -386,6 +414,7 @@
   }
 
   function inputLoop() {
+    releaseStaleSensor();
     updateSteeringFromControls();
     updateSteeringUI();
 
@@ -409,12 +438,18 @@
 
   function updateSteeringFromControls() {
     if (els.modeSelect.value === 'touch') {
-      state.rawSteer = Number(els.touchSteerSlider.value) / 100;
+      state.rawSteer = getRangeValue(els.touchSteerSlider, -100, 100, 0) / 100;
     }
 
-    const smoothing = Number(els.smoothingSlider.value) / 100;
-    const alpha = 1 - Math.min(0.92, smoothing);
-    state.steer += (state.rawSteer - state.steer) * Math.max(0.1, alpha);
+    const smoothing = getRangeValue(els.smoothingSlider, 0, 90, 22) / 100;
+    const delta = state.rawSteer - state.steer;
+    let alpha = clamp(1 - smoothing, 0.12, 1);
+    if (Math.abs(delta) > 0.35) alpha = Math.max(alpha, 0.72);
+    if (Math.abs(state.rawSteer) < 0.02) alpha = Math.max(alpha, 0.35);
+    state.steer += (state.rawSteer - state.steer) * alpha;
+    if (Math.abs(state.rawSteer) < 0.015 && Math.abs(state.steer) < 0.025) {
+      state.steer = 0;
+    }
   }
 
   function computeTiltSteer(axisValue) {
@@ -423,8 +458,8 @@
     const center = Number(calibration.center) || 0;
     const left = Number(calibration.left);
     const right = Number(calibration.right);
-    const sensitivity = Number(els.sensitivitySlider.value) / 100;
-    const deadzone = Number(els.deadzoneSlider.value) / 100;
+    const sensitivity = getRangeValue(els.sensitivitySlider, 50, 180, 100) / 100;
+    const deadzone = getRangeValue(els.deadzoneSlider, 0, 18, 6) / 100;
     let normalized;
 
     if (Number.isFinite(left) && Number.isFinite(right) && Math.abs(left - center) > 1 && Math.abs(right - center) > 1) {
@@ -442,14 +477,90 @@
 
     const sign = normalized >= 0 ? 1 : -1;
     const shaped = (Math.abs(normalized) - deadzone) / Math.max(0.001, 1 - deadzone);
-    return clamp(sign * shaped * sensitivity, -1, 1);
+    const responseCurve = sensitivity >= 1 ? 0.95 : 1.12;
+    const steer = clamp(sign * (shaped ** responseCurve) * sensitivity, -1, 1);
+    return Math.abs(steer) < 0.015 ? 0 : steer;
   }
 
   function handleOrientation(event) {
     const axisName = els.axisSelect.value;
-    state.latestAxis = Number(event[axisName]) || 0;
+    const axis = Number(event[axisName]);
+    if (!Number.isFinite(axis)) return;
+
+    state.latestAxis = filterSensorAxis(axis, performance.now());
+    rememberSensorSample(state.latestAxis);
     if (els.modeSelect.value === 'tilt') {
       state.rawSteer = computeTiltSteer(state.latestAxis);
+    }
+  }
+
+  function filterSensorAxis(axis, now) {
+    if (!state.sensorLastAt) {
+      state.sensorLastAt = now;
+      state.filteredAxis = axis;
+      return axis;
+    }
+
+    const dt = clamp(now - state.sensorLastAt, 8, 80);
+    const smoothing = getRangeValue(els.smoothingSlider, 0, 90, 22) / 100;
+    const delta = axis - state.filteredAxis;
+    const absDelta = Math.abs(delta);
+    let alpha = clamp((1 - smoothing) * (dt / INPUT_RATE_MS), 0.08, 0.92);
+
+    if (absDelta < 0.08) {
+      alpha = 0;
+    } else if (absDelta < 0.25) {
+      alpha = Math.min(alpha, 0.16);
+    } else if (absDelta > 6) {
+      alpha = Math.max(alpha, 0.85);
+    } else if (absDelta > 2.5) {
+      alpha = Math.max(alpha, 0.65);
+    }
+
+    state.filteredAxis += delta * alpha;
+    state.sensorLastAt = now;
+    return state.filteredAxis;
+  }
+
+  function rememberSensorSample(axis) {
+    state.sensorSamples.push(axis);
+    if (state.sensorSamples.length > SENSOR_SAMPLE_WINDOW) {
+      state.sensorSamples.shift();
+    }
+  }
+
+  function getStableAxisSample() {
+    if (!state.sensorSamples.length) return state.latestAxis;
+    const samples = state.sensorSamples.slice(-SENSOR_SAMPLE_WINDOW).sort((a, b) => a - b);
+    const trimmed = samples.length >= 5 ? samples.slice(1, -1) : samples;
+    const total = trimmed.reduce((sum, value) => sum + value, 0);
+    return total / trimmed.length;
+  }
+
+  function resetSensorSamples() {
+    state.sensorSamples = [];
+    state.sensorLastAt = 0;
+    state.filteredAxis = Number(state.calibration?.center) || 0;
+    state.latestAxis = state.filteredAxis;
+  }
+
+  function handleAxisChanged() {
+    state.calibration = defaultCalibration();
+    state.calibrationStep = 'idle';
+    state.rawSteer = 0;
+    state.steer = 0;
+    els.calibrateWizardBtn.textContent = 'Start Calibration';
+    els.wizardText.textContent = 'Axis changed. Recalibrate this axis before racing.';
+    resetSensorSamples();
+    state.lastSent = '';
+  }
+
+  function releaseStaleSensor() {
+    if (els.modeSelect.value !== 'tilt' || !state.sensorEnabled || !state.sensorLastAt) return;
+    if (performance.now() - state.sensorLastAt <= SENSOR_STALE_MS) return;
+    if (state.rawSteer !== 0 || Math.abs(state.steer) > 0.02) {
+      state.rawSteer = 0;
+      state.lastSent = '';
     }
   }
 
@@ -479,6 +590,7 @@
     }
 
     if (state.calibrationStep === 'idle') {
+      resetSensorSamples();
       state.calibrationStep = 'center';
       els.wizardText.textContent = 'Step 1/4: hold the phone centered, then tap Save Center.';
       els.calibrateWizardBtn.textContent = 'Save Center';
@@ -486,7 +598,8 @@
     }
 
     if (state.calibrationStep === 'center') {
-      state.calibration.center = state.latestAxis;
+      state.calibration.center = getStableAxisSample();
+      resetSensorSamples();
       state.calibrationStep = 'left';
       els.wizardText.textContent = 'Step 2/4: tilt left as far as comfortable, then tap Save Left.';
       els.calibrateWizardBtn.textContent = 'Save Left';
@@ -495,7 +608,8 @@
     }
 
     if (state.calibrationStep === 'left') {
-      state.calibration.left = state.latestAxis;
+      state.calibration.left = getStableAxisSample();
+      resetSensorSamples();
       state.calibrationStep = 'right';
       els.wizardText.textContent = 'Step 3/4: tilt right as far as comfortable, then tap Save Right.';
       els.calibrateWizardBtn.textContent = 'Save Right';
@@ -503,13 +617,14 @@
       return;
     }
 
-    state.calibration.right = state.latestAxis;
+    state.calibration.right = getStableAxisSample();
     state.calibrationStep = 'idle';
     els.wizardText.textContent = 'Step 4/4: calibration saved.';
     els.calibrateWizardBtn.textContent = 'Start Calibration';
     state.rawSteer = 0;
     state.steer = 0;
     els.touchSteerSlider.value = 0;
+    resetSensorSamples();
     saveSettings();
     haptic([50, 25, 90]);
   }
@@ -517,6 +632,7 @@
   function resetCalibration() {
     state.calibration = defaultCalibration();
     state.calibrationStep = 'idle';
+    resetSensorSamples();
     state.rawSteer = 0;
     state.steer = 0;
     els.touchSteerSlider.value = 0;
@@ -664,6 +780,27 @@
     els.debugSocket.textContent = state.ws ? socketStateName(state.ws.readyState) : 'none';
   }
 
+  function applySensorSettings() {
+    clampRangeInput(els.smoothingSlider, 0, 90, 22);
+    clampRangeInput(els.sensitivitySlider, 50, 180, 100);
+    clampRangeInput(els.deadzoneSlider, 0, 18, 6);
+
+    els.smoothingValue.textContent = `${Math.round(getRangeValue(els.smoothingSlider, 0, 90, 22))}%`;
+    els.sensitivityValue.textContent = `${Math.round(getRangeValue(els.sensitivitySlider, 50, 180, 100))}%`;
+    els.deadzoneValue.textContent = `${Math.round(getRangeValue(els.deadzoneSlider, 0, 18, 6))}%`;
+
+    if (els.modeSelect.value === 'tilt') {
+      state.rawSteer = computeTiltSteer(state.latestAxis);
+    } else {
+      state.rawSteer = getRangeValue(els.touchSteerSlider, -100, 100, 0) / 100;
+    }
+    updateSteeringFromControls();
+    updateSteeringUI(true);
+    state.lastSent = '';
+    saveSettings();
+    updateDebug();
+  }
+
   function haptic(pattern) {
     if (!('vibrate' in navigator)) {
       if (!state.vibrationUnsupportedLogged) state.vibrationUnsupportedLogged = true;
@@ -776,10 +913,21 @@
   }
 
   function roundInput(value) {
-    return Math.round(clamp(value, -1, 1) * 1000) / 1000;
+    return Math.round(clamp(value, -1, 1) * 200) / 200;
   }
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
+  }
+
+  function getRangeValue(input, min, max, fallback) {
+    const value = Number(input.value);
+    return clamp(Number.isFinite(value) ? value : fallback, min, max);
+  }
+
+  function clampRangeInput(input, min, max, fallback) {
+    const value = getRangeValue(input, min, max, fallback);
+    if (String(input.value) !== String(value)) input.value = value;
+    return value;
   }
 })();

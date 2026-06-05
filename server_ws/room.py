@@ -28,6 +28,7 @@ PLAYER_COLORS = [
 MAX_PLAYERS = 6
 COUNTDOWN_SECONDS = 3.0
 GO_HOLD_SECONDS = 0.65
+REMOTE_INPUT_POLL_RATE = 45
 DEBUG_CONTROLLER = os.environ.get("DEBUG_CONTROLLER", "0") == "1"
 
 
@@ -297,9 +298,13 @@ class Room:
             slot.assist_steer_state = steer
             return steer
 
-        deadzone = 0.08 if assist == "medium" else 0.14
-        expo = 1.18 if assist == "medium" else 1.36
-        max_step = 0.34 if assist == "medium" else 0.22
+        profiles = {
+            "medium": {"deadzone": 0.035, "expo": 1.05, "blend": 0.72, "max_step": 0.55},
+            "full": {"deadzone": 0.06, "expo": 1.12, "blend": 0.52, "max_step": 0.42},
+        }
+        profile = profiles.get(assist, profiles["full"])
+        deadzone = profile["deadzone"]
+        expo = profile["expo"]
 
         if abs(steer) <= deadzone:
             target = 0.0
@@ -308,11 +313,16 @@ class Room:
             shaped = (abs(steer) - deadzone) / max(1e-6, 1.0 - deadzone)
             target = sign * (shaped ** expo)
 
+        if abs(target) < 0.02 and abs(slot.assist_steer_state) < 0.04:
+            slot.assist_steer_state = 0.0
+            return 0.0
+
         delta = target - slot.assist_steer_state
-        if abs(delta) <= max_step:
+        step = max(-profile["max_step"], min(profile["max_step"], delta * profile["blend"]))
+        if abs(delta) <= 0.01:
             slot.assist_steer_state = target
         else:
-            slot.assist_steer_state += max_step * (1.0 if delta > 0 else -1.0)
+            slot.assist_steer_state += step
 
         return slot.assist_steer_state
 
@@ -390,7 +400,7 @@ class Room:
             controls = {}
             for pid, slot in self.players.items():
                 now = time.monotonic()
-                if slot.controller_ws is None and now - slot._last_remote_input_poll >= 1.0 / 30.0:
+                if slot.controller_ws is None and now - slot._last_remote_input_poll >= 1.0 / REMOTE_INPUT_POLL_RATE:
                     slot._last_remote_input_poll = now
                     remote_input = shared_pairing.read_input(self.room_id, pid)
                     if remote_input:

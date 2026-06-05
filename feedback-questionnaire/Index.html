@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Race Beta Feedback</title>
+  <style>
+    :root {
+      --bg: #10141a;
+      --panel: #1b1f27;
+      --panel2: #252b36;
+      --border: #303847;
+      --text: #f2f2f2;
+      --muted: #aab2c0;
+      --accent: #ffd166;
+      --blue: #4da3ff;
+      --success: #47d17e;
+      --danger: #ff6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(77, 163, 255, 0.16), transparent 32%),
+        linear-gradient(135deg, #10141a 0%, #14191f 44%, #182017 100%);
+    }
+
+    main {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 22px 16px 40px;
+    }
+
+    header {
+      margin-bottom: 14px;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      line-height: 1.05;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    section {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(27, 31, 39, 0.9);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+    }
+
+    label,
+    legend {
+      display: block;
+      font-weight: 800;
+    }
+
+    .field-label,
+    legend {
+      margin-bottom: 10px;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel2);
+      color: var(--text);
+      font: inherit;
+      padding: 12px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    fieldset {
+      padding: 0;
+      margin: 0;
+      border: 0;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .choice {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      min-height: 46px;
+      padding: 11px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.055);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .choice:has(input:checked) {
+      border-color: rgba(255, 209, 102, 0.7);
+      background: rgba(255, 209, 102, 0.12);
+    }
+
+    .choice input {
+      margin-top: 2px;
+      accent-color: var(--accent);
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    button {
+      width: 100%;
+      min-height: 50px;
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2f8df2, #5ab7ff);
+      color: white;
+      font-size: 1.04rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    #status {
+      min-height: 1.4em;
+      margin: 0;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    #status.ok {
+      color: var(--success);
+    }
+
+    #status.error {
+      color: var(--danger);
+    }
+
+    .success-panel {
+      display: none;
+      padding: 18px;
+      border: 1px solid rgba(71, 209, 126, 0.45);
+      border-radius: 8px;
+      background: rgba(71, 209, 126, 0.12);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .success-panel.active {
+      display: block;
+    }
+
+    @media (max-width: 620px) {
+      main {
+        padding: 14px 10px 30px;
+      }
+
+      section {
+        padding: 13px;
+      }
+
+      .choices {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="kicker">Friends beta test</p>
+      <h1>Car Race Feedback</h1>
+      <p>Answer the quick multiple-choice questions after testing the game. Your name is required so I can match feedback with each beta tester.</p>
+    </header>
+
+    <div id="success-panel" class="success-panel">
+      Thanks, your feedback was saved in the Google Sheet.
+    </div>
+
+    <form id="feedback-form">
+      <section>
+        <label class="field-label" for="name">Your name</label>
+        <input id="name" name="name" type="text" maxlength="40" required>
+        <p class="hint">Required because this beta group is friends-only.</p>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>1. How easy was it to connect your phone controller?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="connectionEase" value="Very easy" required> Very easy</label>
+            <label class="choice"><input type="radio" name="connectionEase" value="Easy"> Easy</label>
+            <label class="choice"><input type="radio" name="connectionEase" value="A bit confusing"> A bit confusing</label>
+            <label class="choice"><input type="radio" name="connectionEase" value="Difficult"> Difficult</label>
+            <label class="choice"><input type="radio" name="connectionEase" value="I could not connect"> I could not connect</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>2. Did the controller control the correct car?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="correctCar" value="Yes, always" required> Yes, always</label>
+            <label class="choice"><input type="radio" name="correctCar" value="Yes, but after retrying"> Yes, but after retrying</label>
+            <label class="choice"><input type="radio" name="correctCar" value="Sometimes"> Sometimes</label>
+            <label class="choice"><input type="radio" name="correctCar" value="No"> No</label>
+            <label class="choice"><input type="radio" name="correctCar" value="I did not test controller"> I did not test controller</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>3. How smooth did the game feel?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="smoothness" value="Very smooth" required> Very smooth</label>
+            <label class="choice"><input type="radio" name="smoothness" value="Mostly smooth"> Mostly smooth</label>
+            <label class="choice"><input type="radio" name="smoothness" value="Some lag"> Some lag</label>
+            <label class="choice"><input type="radio" name="smoothness" value="Strong lag/freezes"> Strong lag/freezes</label>
+            <label class="choice"><input type="radio" name="smoothness" value="Unplayable"> Unplayable</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>4. How responsive did the car controls feel?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="responsiveness" value="Very responsive" required> Very responsive</label>
+            <label class="choice"><input type="radio" name="responsiveness" value="Good"> Good</label>
+            <label class="choice"><input type="radio" name="responsiveness" value="Slight delay"> Slight delay</label>
+            <label class="choice"><input type="radio" name="responsiveness" value="Too delayed"> Too delayed</label>
+            <label class="choice"><input type="radio" name="responsiveness" value="Hard to control"> Hard to control</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>5. How clear were the lobby instructions?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="lobbyInstructions" value="Very clear" required> Very clear</label>
+            <label class="choice"><input type="radio" name="lobbyInstructions" value="Clear"> Clear</label>
+            <label class="choice"><input type="radio" name="lobbyInstructions" value="Somewhat clear"> Somewhat clear</label>
+            <label class="choice"><input type="radio" name="lobbyInstructions" value="Confusing"> Confusing</label>
+            <label class="choice"><input type="radio" name="lobbyInstructions" value="I did not read them"> I did not read them</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>6. How clear were the race rules/checkpoints?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="raceRules" value="Very clear" required> Very clear</label>
+            <label class="choice"><input type="radio" name="raceRules" value="Clear"> Clear</label>
+            <label class="choice"><input type="radio" name="raceRules" value="Somewhat clear"> Somewhat clear</label>
+            <label class="choice"><input type="radio" name="raceRules" value="Confusing"> Confusing</label>
+            <label class="choice"><input type="radio" name="raceRules" value="I did not understand them"> I did not understand them</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>7. Which race mode did you enjoy most?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="favoriteMode" value="Sprint" required> Sprint</label>
+            <label class="choice"><input type="radio" name="favoriteMode" value="Time Trial"> Time Trial</label>
+            <label class="choice"><input type="radio" name="favoriteMode" value="Practice"> Practice</label>
+            <label class="choice"><input type="radio" name="favoriteMode" value="Elimination"> Elimination</label>
+            <label class="choice"><input type="radio" name="favoriteMode" value="I did not notice the modes"> I did not notice the modes</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>8. How do you rate the game graphics?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="graphics" value="Excellent" required> Excellent</label>
+            <label class="choice"><input type="radio" name="graphics" value="Good"> Good</label>
+            <label class="choice"><input type="radio" name="graphics" value="Okay"> Okay</label>
+            <label class="choice"><input type="radio" name="graphics" value="Needs improvement"> Needs improvement</label>
+            <label class="choice"><input type="radio" name="graphics" value="Poor"> Poor</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>9. What was the biggest problem you had?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="biggestProblem" value="Phone connection" required> Phone connection</label>
+            <label class="choice"><input type="radio" name="biggestProblem" value="Lag/freezing"> Lag/freezing</label>
+            <label class="choice"><input type="radio" name="biggestProblem" value="Car control/twitching"> Car control/twitching</label>
+            <label class="choice"><input type="radio" name="biggestProblem" value="Understanding the game"> Understanding the game</label>
+            <label class="choice"><input type="radio" name="biggestProblem" value="Graphics/UI"> Graphics/UI</label>
+            <label class="choice"><input type="radio" name="biggestProblem" value="No major problem"> No major problem</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>10. Would you play this game again?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="playAgain" value="Yes" required> Yes</label>
+            <label class="choice"><input type="radio" name="playAgain" value="Maybe"> Maybe</label>
+            <label class="choice"><input type="radio" name="playAgain" value="Probably not"> Probably not</label>
+            <label class="choice"><input type="radio" name="playAgain" value="No"> No</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>11. Overall rating</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="overallRating" value="5 - Excellent" required> 5 - Excellent</label>
+            <label class="choice"><input type="radio" name="overallRating" value="4 - Good"> 4 - Good</label>
+            <label class="choice"><input type="radio" name="overallRating" value="3 - Okay"> 3 - Okay</label>
+            <label class="choice"><input type="radio" name="overallRating" value="2 - Needs work"> 2 - Needs work</label>
+            <label class="choice"><input type="radio" name="overallRating" value="1 - Poor"> 1 - Poor</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <fieldset>
+          <legend>12. What should be improved first?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="improveFirst" value="Connectivity" required> Connectivity</label>
+            <label class="choice"><input type="radio" name="improveFirst" value="Latency/smoothness"> Latency/smoothness</label>
+            <label class="choice"><input type="radio" name="improveFirst" value="Car controls"> Car controls</label>
+            <label class="choice"><input type="radio" name="improveFirst" value="Graphics"> Graphics</label>
+            <label class="choice"><input type="radio" name="improveFirst" value="Race modes"> Race modes</label>
+            <label class="choice"><input type="radio" name="improveFirst" value="Instructions/tutorial"> Instructions/tutorial</label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section>
+        <label class="field-label" for="comment">Optional comment</label>
+        <textarea id="comment" name="comment" maxlength="800" placeholder="Anything else you noticed? Bugs, confusing parts, ideas..."></textarea>
+        <p class="hint">Optional. Leave blank if the multiple-choice answers are enough.</p>
+      </section>
+
+      <div class="actions">
+        <button id="submit-button" type="submit">Send Feedback</button>
+        <p id="status" role="status"></p>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('feedback-form');
+    const button = document.getElementById('submit-button');
+    const statusEl = document.getElementById('status');
+    const successPanel = document.getElementById('success-panel');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      button.disabled = true;
+      statusEl.className = '';
+      statusEl.textContent = 'Sending feedback...';
+
+      const data = Object.fromEntries(new FormData(form).entries());
+      google.script.run
+        .withSuccessHandler((result) => {
+          form.reset();
+          successPanel.classList.add('active');
+          statusEl.className = 'ok';
+          statusEl.textContent = result && result.lastRow
+            ? 'Saved in ' + result.sheetName + ' row ' + result.lastRow + '. Thank you.'
+            : 'Saved. Thank you.';
+          button.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        .withFailureHandler((error) => {
+          statusEl.className = 'error';
+          statusEl.textContent = error && error.message
+            ? error.message
+            : 'Could not save feedback. Try again.';
+          button.disabled = false;
+        })
+        .submitFeedback(data);
+    });
+  </script>
+</body>
+</html>

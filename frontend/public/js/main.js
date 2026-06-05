@@ -41,8 +41,16 @@ let raceStats = {
 let lastInputSentAt = 0;
 let lastInputPayload = '';
 let activeScreenId = document.querySelector('.screen.active')?.id || null;
-const INPUT_SEND_INTERVAL_MS = 1000 / 30;
-const INPUT_HEARTBEAT_MS = 250;
+let lastRecordedFinishKey = '';
+const INPUT_SEND_INTERVAL_MS = 1000 / 45;
+const INPUT_HEARTBEAT_MS = 150;
+const MAX_REASONABLE_RACE_RECORDS = 500;
+const COUNT_BASED_ACHIEVEMENTS = new Set([
+  'First Race',
+  'First Win',
+  '10 Wins',
+  'Long Distance Driver',
+]);
 
 // Handle screen transitions
 function showScreen(id) {
@@ -235,6 +243,7 @@ function resetRaceTracking() {
   lastCheckpoint = null;
   lastCompletedLaps = 0;
   lastNitroActive = false;
+  lastRecordedFinishKey = '';
   ghostSamples = [];
   personalGhost = null;
   sessionGhost = null;
@@ -248,12 +257,15 @@ function updatePersonalRecords(state) {
   if (!myPlayerId || !state.cars) return;
   const myCar = state.cars.find(c => c.id === myPlayerId);
   if (!myCar) return;
+  const finishKey = getFinishRecordKey(state, myCar);
+  if (!finishKey || finishKey === lastRecordedFinishKey) return;
 
-  let records = {};
-  try {
-    records = JSON.parse(localStorage.getItem('carGameRecords') || '{}');
-  } catch (_) {
-    records = {};
+  const records = sanitizeRecords(readPersonalRecords());
+  if (records.recorded_finishes.includes(finishKey)) {
+    lastRecordedFinishKey = finishKey;
+    localStorage.setItem('carGameRecords', JSON.stringify(records));
+    lobby.updateRecords();
+    return;
   }
 
   const leaderboard = state.leaderboard || [];
@@ -280,8 +292,73 @@ function updatePersonalRecords(state) {
   if ((records.races_completed || 0) >= 25) achievements.add('Long Distance Driver');
 
   records.achievements = [...achievements].sort();
-  localStorage.setItem('carGameRecords', JSON.stringify(records));
+  records.recorded_finishes = [finishKey, ...records.recorded_finishes].slice(0, 50);
+  const cleanRecords = sanitizeRecords(records);
+  lastRecordedFinishKey = finishKey;
+  localStorage.setItem('carGameRecords', JSON.stringify(cleanRecords));
   lobby.updateRecords();
+}
+
+function getFinishRecordKey(state, myCar) {
+  const leaderboard = state.leaderboard || [];
+  if (!leaderboard.length) return '';
+  const leaderboardKey = leaderboard
+    .map(p => `${p.name}:${p.laps}:${p.time}`)
+    .join('|');
+  return [
+    state.room_id || '',
+    myPlayerId,
+    state.track_id || state.settings?.track_layout || state.track?.layout_name || '',
+    state.race_mode || state.settings?.race_mode || '',
+    myCar.completed_laps || 0,
+    myCar.total_time || '',
+    myCar.best_lap_time || '',
+    leaderboardKey,
+  ].join('::');
+}
+
+function readPersonalRecords() {
+  try {
+    return JSON.parse(localStorage.getItem('carGameRecords') || '{}');
+  } catch (_) {
+    return {};
+  }
+}
+
+function sanitizeRecords(records = {}) {
+  const clean = { ...records };
+  const races = safeCount(clean.races_completed);
+  const wins = safeCount(clean.wins);
+  const podiums = safeCount(clean.podiums);
+  const corruptedCounts = [races, wins, podiums].some(count => count > MAX_REASONABLE_RACE_RECORDS)
+    || wins > races
+    || podiums > races;
+
+  clean.races_completed = corruptedCounts ? 0 : races;
+  clean.wins = corruptedCounts ? 0 : Math.min(wins, clean.races_completed);
+  clean.podiums = corruptedCounts ? 0 : Math.min(Math.max(podiums, clean.wins), clean.races_completed);
+  clean.best_lap = safeTime(clean.best_lap);
+  clean.best_race_time = safeTime(clean.best_race_time);
+  clean.achievements = Array.isArray(clean.achievements)
+    ? [...new Set(clean.achievements.map(String))].sort()
+    : [];
+  if (corruptedCounts) {
+    clean.achievements = clean.achievements.filter(name => !COUNT_BASED_ACHIEVEMENTS.has(name));
+  }
+  clean.recorded_finishes = !corruptedCounts && Array.isArray(clean.recorded_finishes)
+    ? clean.recorded_finishes.map(String).filter(Boolean).slice(0, 50)
+    : [];
+  return clean;
+}
+
+function safeCount(value) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric > 0 ? Math.floor(numeric) : 0;
+}
+
+function safeTime(value) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : undefined;
 }
 
 // Results
