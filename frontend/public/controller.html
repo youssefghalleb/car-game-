@@ -221,7 +221,7 @@
 
     .connect-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr 0.8fr;
+      grid-template-columns: 1.3fr 0.7fr;
       gap: 8px;
       margin-top: 8px;
     }
@@ -233,48 +233,6 @@
       min-height: 0;
     }
 
-    details.panel {
-      display: block;
-    }
-
-    details.panel[open] {
-      display: grid;
-    }
-
-    .panel-summary {
-      min-height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 850;
-      line-height: 1;
-      list-style: none;
-      text-transform: uppercase;
-    }
-
-    .panel-summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .panel-summary::after {
-      content: "+";
-      width: 24px;
-      height: 24px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      color: var(--text);
-      background: var(--panel-3);
-    }
-
-    details[open] > .panel-summary::after {
-      content: "-";
-    }
-
     .main-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -283,7 +241,6 @@
       overflow: auto;
       overscroll-behavior: contain;
       scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
     }
 
     .main-grid::-webkit-scrollbar {
@@ -291,7 +248,7 @@
     }
 
     body.is-paired .main-grid {
-      overflow: auto;
+      overflow: hidden;
     }
 
     .readout-row {
@@ -645,7 +602,7 @@
       }
 
       .connect-actions {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 5px;
       }
 
@@ -693,13 +650,18 @@
     }
 
     @media (max-height: 720px), (max-width: 390px) {
+      body.is-paired .connection-panel,
+      body.is-paired .settings-panel,
+      body.is-paired .audio-panel {
+        display: none;
+      }
+
       body.is-paired .shell {
-        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        grid-template-rows: auto 1fr auto;
       }
 
       body.is-paired .main-grid {
-        grid-template-rows: auto auto auto auto;
-        overflow: auto;
+        grid-template-rows: minmax(0, 1fr) auto;
       }
 
       body.is-paired .drive-panel {
@@ -744,7 +706,7 @@
       }
 
       body.is-paired .debug-panel {
-        display: block;
+        display: none;
       }
     }
 
@@ -817,7 +779,6 @@
       </div>
       <div class="connect-actions">
         <button id="connectBtn" class="control-btn primary">Connect</button>
-        <button id="enableMotionBtn" class="control-btn primary">Enable Motion</button>
         <button id="disconnectBtn" class="control-btn">Disconnect</button>
       </div>
     </section>
@@ -860,8 +821,8 @@
         </div>
       </section>
 
-      <details class="panel settings-panel">
-        <summary class="panel-summary">Sensors / motion</summary>
+      <section class="panel settings-panel">
+        <h2>Sensors</h2>
         <div class="settings-grid">
           <label>Axis
             <select id="axisSelect">
@@ -875,6 +836,7 @@
           <label>Dead Zone<input id="deadzoneSlider" type="range" min="0" max="18" value="6" /></label>
         </div>
         <div class="toggle-row">
+          <button id="enableMotionBtn" class="control-btn primary">Enable Motion</button>
           <button id="invertBtn" class="control-btn toggle-on">Invert: On</button>
         </div>
         <div class="wizard">
@@ -884,17 +846,17 @@
             <button id="resetCalibrationBtn" class="control-btn">Reset Calibration</button>
           </div>
         </div>
-      </details>
+      </section>
 
-      <details class="panel audio-panel">
-        <summary class="panel-summary">Audio / vibration</summary>
+      <section class="panel audio-panel">
+        <h2>Audio</h2>
         <div class="audio-grid">
           <button id="muteBtn" class="control-btn">Mute</button>
           <button id="sfxBtn" class="control-btn toggle-on">Effects: On</button>
           <label>Volume<input id="volumeSlider" type="range" min="0" max="100" value="80" /></label>
           <button id="testVibrationBtn" class="control-btn">Test Vibration</button>
         </div>
-      </details>
+      </section>
     </div>
 
     <details id="debugPanel" class="debug-panel">
