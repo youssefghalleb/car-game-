@@ -66,6 +66,7 @@ client.on('state', (state) => {
     playerInfo = state.players;
   }
   currentState = state;
+  updateGhostAvailability(state);
 
   if (state.state === 'lobby') {
     lobby.updatePlayers(playerInfo);
@@ -316,9 +317,64 @@ document.getElementById('quit-race-btn').addEventListener('click', () => {
   window.location.reload();
 });
 
-document.getElementById('ghost-toggle-btn').addEventListener('click', (event) => {
+const ghostToggleBtn = document.getElementById('ghost-toggle-btn');
+
+function isSoloGhostMode(state = currentState) {
+  const mode = state?.race_mode || state?.settings?.race_mode || null;
+  const humanPlayerCount = Object.keys(playerInfo || {}).length;
+  return (mode === 'practice' || mode === 'time_trial') && humanPlayerCount === 1;
+}
+
+function updateGhostAvailability(state = currentState) {
+  const available = !!myPlayerId && isSoloGhostMode(state);
+  ghostToggleBtn.classList.toggle('hidden', !available);
+  ghostToggleBtn.disabled = !available;
+  ghostToggleBtn.textContent = ghostEnabled ? 'Ghost On' : 'Ghost Off';
+
+  if (!available) {
+    ghostSamples = [];
+    personalGhost = null;
+    sessionGhost = null;
+    lastGhostSampleAt = 0;
+    lastGhostLap = 0;
+  }
+}
+
+ghostToggleBtn.addEventListener('click', (event) => {
+  if (!isSoloGhostMode()) return;
   ghostEnabled = !ghostEnabled;
   event.currentTarget.textContent = ghostEnabled ? 'Ghost On' : 'Ghost Off';
+});
+
+const helpOverlay = document.getElementById('help-overlay');
+const helpButtons = [
+  document.getElementById('help-btn'),
+  document.getElementById('race-help-btn'),
+].filter(Boolean);
+const helpCloseBtn = document.getElementById('help-close-btn');
+
+function openHelp() {
+  if (!helpOverlay || !helpCloseBtn) return;
+  helpOverlay.classList.remove('hidden');
+  helpCloseBtn.focus();
+}
+
+function closeHelp() {
+  if (!helpOverlay) return;
+  helpOverlay.classList.add('hidden');
+}
+
+helpButtons.forEach(button => button.addEventListener('click', openHelp));
+if (helpCloseBtn) helpCloseBtn.addEventListener('click', closeHelp);
+if (helpOverlay) {
+  helpOverlay.addEventListener('click', (event) => {
+    if (event.target === helpOverlay) closeHelp();
+  });
+}
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && helpOverlay && !helpOverlay.classList.contains('hidden')) {
+    closeHelp();
+  }
 });
 
 const muteAudioBtn = document.getElementById('mute-audio-btn');
@@ -342,10 +398,11 @@ soundQualitySelect.addEventListener('change', () => {
 // Game loop: render + send input
 function gameLoop(now = performance.now()) {
   if (currentState && currentState.cars && currentState.track) {
-    renderer.render(currentState, myPlayerId, ghostEnabled ? {
+    const ghostPayload = ghostEnabled && isSoloGhostMode(currentState) && myPlayerId ? {
       personal: personalGhost?.samples || null,
       session: sessionGhost?.samples || null,
-    } : null);
+    } : null;
+    renderer.render(currentState, myPlayerId, ghostPayload);
   }
 
   // Send input to server at a stable rate, with a small heartbeat for held keys.

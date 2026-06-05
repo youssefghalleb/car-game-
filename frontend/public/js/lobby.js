@@ -27,6 +27,15 @@ export class LobbyUI {
     this.overviewSpectatorsEl = document.getElementById('overview-spectators');
     this.overviewModeEl = document.getElementById('overview-mode');
     this.overviewTrackEl = document.getElementById('overview-track');
+    this.guideTitleEl = document.getElementById('lobby-guide-title');
+    this.guideTextEl = document.getElementById('lobby-guide-text');
+    this.guideSteps = {
+      room: document.getElementById('guide-step-room'),
+      controller: document.getElementById('guide-step-controller'),
+      ready: document.getElementById('guide-step-ready'),
+      start: document.getElementById('guide-step-start'),
+    };
+    this.modeHintEl = document.getElementById('mode-hint');
     this.modeSelect = document.getElementById('mode-select');
     this.lapsSelect = document.getElementById('laps-select');
     this.botsSelect = document.getElementById('bots-select');
@@ -46,8 +55,14 @@ export class LobbyUI {
     this.chatInputEl.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') this._sendChat();
     });
-    this.modeSelect.addEventListener('change', () => this._syncModeControls());
+    this.modeSelect.addEventListener('change', () => {
+      this._syncModeControls();
+      this._updateModeHint();
+      this._updateLobbyGuide();
+    });
     this._syncModeControls();
+    this._updateModeHint();
+    this._updateLobbyGuide();
     this.updateRecords();
     this.client.on('connected', () => {
       if (this._pendingJoinName) {
@@ -77,6 +92,12 @@ export class LobbyUI {
     document.getElementById('room-code').value = roomCode;
 
     this.showStatus('Connecting...');
+    this._setGuide(
+      'Connecting to room',
+      'Opening the WebSocket connection. Once joined, the game will generate your player ID and controller QR code.',
+      'room',
+      []
+    );
     this._pendingJoinName = name;
     this._pendingJoinRole = 'display';
     this.client.connect(roomCode);
@@ -92,6 +113,12 @@ export class LobbyUI {
 
     document.getElementById('room-code').value = roomCode;
     this.showStatus('Connecting as spectator...');
+    this._setGuide(
+      'Joining as spectator',
+      'Spectator mode watches an existing room without creating a car or requiring a phone controller.',
+      'room',
+      []
+    );
     this._pendingJoinName = name;
     this._pendingJoinRole = 'spectator';
     this.client.connect(roomCode);
@@ -151,6 +178,7 @@ export class LobbyUI {
     }
     this.overviewRoomEl.textContent = data.room_id;
     this._updateReadyButton();
+    this._updateLobbyGuide();
   }
 
   showPairing(roomId, playerId) {
@@ -183,6 +211,7 @@ export class LobbyUI {
         `;
       })
       .join('');
+    this._updateLobbyGuide({ players });
   }
 
   updateStartState(state) {
@@ -204,6 +233,7 @@ export class LobbyUI {
     }
     this.overviewModeEl.textContent = this._formatMode(state.settings?.race_mode || state.race_mode || 'sprint');
     this.overviewTrackEl.textContent = this._formatTrack(state.settings?.track_layout || 'track_1');
+    this._updateLobbyGuide(state);
     if (!this._isHost) {
       this.showStatus('Waiting for host');
     } else if (canStart) {
@@ -278,6 +308,108 @@ export class LobbyUI {
     this.lapsSelect.disabled = lapsDisabled;
     if (botsDisabled) this.botsSelect.value = '0';
     this._syncHostControls();
+  }
+
+  _updateModeHint() {
+    if (!this.modeHintEl) return;
+    const hints = {
+      sprint: 'Sprint is the standard multiplayer race: finish the selected laps before the others.',
+      time_trial: 'Time Trial is for solo clean laps. Bots are disabled and ghost car can appear when you are alone.',
+      practice: 'Practice is free driving for learning the track, testing steering, and calibrating your phone.',
+      elimination: 'Elimination removes the slowest cars over time. Stay ahead until you are the last car active.',
+    };
+    this.modeHintEl.textContent = hints[this.modeSelect.value] || hints.sprint;
+  }
+
+  _updateLobbyGuide(state = null) {
+    if (!this.guideTitleEl || !this.guideTextEl) return;
+
+    if (!this._joined) {
+      this._setGuide(
+        'Set up your race',
+        'Enter your name, choose a mode and track, then join as a driver. Leave the room code empty to create a new room.',
+        'room',
+        []
+      );
+      return;
+    }
+
+    if (this._isSpectator) {
+      this._setGuide(
+        'Spectator mode',
+        'You are watching this room without controlling a car. The race view will open automatically when the host starts.',
+        null,
+        ['room']
+      );
+      return;
+    }
+
+    const players = state?.players || {};
+    const me = players[this._myPlayerId] || null;
+    const controllerReady = !!(me?.controller_ready || me?.controller);
+    const monitorReady = !!me?.ready;
+    const canStart = !!state?.can_start;
+    const blockers = state?.start_blockers || [];
+
+    if (!controllerReady) {
+      this._setGuide(
+        'Pair your phone controller',
+        'Scan the QR code with your phone, tap Connect, then wait until this lobby says Controller ready.',
+        'controller',
+        ['room']
+      );
+      return;
+    }
+
+    if (!monitorReady) {
+      this._setGuide(
+        'Press Ready',
+        'Your controller is connected. Press Ready on this monitor when you are prepared to start.',
+        'ready',
+        ['room', 'controller']
+      );
+      return;
+    }
+
+    if (!this._isHost) {
+      this._setGuide(
+        'Waiting for host',
+        'You are ready. The host will start the race when every player and controller is ready.',
+        'start',
+        ['room', 'controller', 'ready']
+      );
+      return;
+    }
+
+    if (canStart) {
+      this._setGuide(
+        'Start the race',
+        'Everyone is ready. Click Start Race to begin the countdown.',
+        'start',
+        ['room', 'controller', 'ready']
+      );
+      return;
+    }
+
+    const blockerText = blockers.length
+      ? blockers.slice(0, 2).join(' · ')
+      : 'Waiting for every player to pair a controller and press Ready.';
+    this._setGuide(
+      'Waiting for players',
+      blockerText,
+      'start',
+      ['room', 'controller', 'ready']
+    );
+  }
+
+  _setGuide(title, text, currentStep, doneSteps = []) {
+    if (this.guideTitleEl) this.guideTitleEl.textContent = title;
+    if (this.guideTextEl) this.guideTextEl.textContent = text;
+    Object.entries(this.guideSteps).forEach(([key, el]) => {
+      if (!el) return;
+      el.classList.toggle('done', doneSteps.includes(key));
+      el.classList.toggle('current', key === currentStep);
+    });
   }
 
   _syncHostControls() {
