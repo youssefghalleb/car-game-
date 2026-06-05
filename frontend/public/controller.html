@@ -521,7 +521,9 @@
     }
 
     .drive-panel {
-      grid-template-rows: auto auto minmax(0, auto) minmax(0, 1fr);
+      grid-template-rows: auto auto auto auto;
+      align-content: start;
+      overflow: visible;
     }
 
     .drive-panel h2,
@@ -804,6 +806,105 @@
 
       .throttle {
         min-height: 110px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      html,
+      body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      body {
+        min-height: 100dvh;
+        padding:
+          max(6px, env(safe-area-inset-top))
+          6px
+          max(14px, env(safe-area-inset-bottom))
+          6px;
+        overscroll-behavior-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      body.controller-locked {
+        overflow-y: auto;
+      }
+
+      .shell {
+        height: auto;
+        min-height: auto;
+        grid-template-rows: auto auto auto auto;
+        align-content: start;
+        overflow: visible;
+      }
+
+      body.is-paired .shell {
+        grid-template-rows: auto auto auto auto;
+      }
+
+      .main-grid,
+      body.is-paired .main-grid {
+        min-height: 0;
+        overflow: visible;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+        grid-auto-rows: auto;
+        align-items: start;
+      }
+
+      .panel,
+      details.debug-panel {
+        min-height: auto;
+        overflow: visible;
+      }
+
+      .drive-panel,
+      body.is-paired .drive-panel {
+        grid-template-rows: auto auto auto auto;
+        gap: 8px;
+        overflow: visible;
+      }
+
+      .commands-panel,
+      .settings-panel,
+      .audio-panel {
+        align-self: start;
+      }
+
+      .steering-box,
+      body.is-paired .steering-box {
+        grid-template-columns: minmax(80px, 96px) minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .wheel,
+      body.is-paired .wheel {
+        width: 96px;
+      }
+
+      .pedals,
+      body.is-paired .pedals {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 8px;
+      }
+
+      .throttle,
+      body.is-paired .throttle {
+        min-height: 118px;
+      }
+
+      .brake,
+      .nitro,
+      body.is-paired .brake,
+      body.is-paired .nitro {
+        min-height: 56px;
+      }
+
+      details.panel[open] {
+        gap: 10px;
       }
     }
 
