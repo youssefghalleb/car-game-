@@ -241,6 +241,7 @@
       overflow: auto;
       overscroll-behavior: contain;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
 
     .main-grid::-webkit-scrollbar {
@@ -248,7 +249,7 @@
     }
 
     body.is-paired .main-grid {
-      overflow: hidden;
+      overflow: auto;
     }
 
     .readout-row {
@@ -650,18 +651,13 @@
     }
 
     @media (max-height: 720px), (max-width: 390px) {
-      body.is-paired .connection-panel,
-      body.is-paired .settings-panel,
-      body.is-paired .audio-panel {
-        display: none;
-      }
-
       body.is-paired .shell {
-        grid-template-rows: auto 1fr auto;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
       }
 
       body.is-paired .main-grid {
-        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto auto;
+        overflow: auto;
       }
 
       body.is-paired .drive-panel {
@@ -706,7 +702,7 @@
       }
 
       body.is-paired .debug-panel {
-        display: none;
+        display: block;
       }
     }
 
